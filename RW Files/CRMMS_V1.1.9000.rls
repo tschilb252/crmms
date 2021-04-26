@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.2
-# Created 12:44 April 23, 2021
+# Created 12:36 April 26, 2021
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -5075,7 +5075,7 @@ BEGIN
 
             $ "AnnualWaterUse.NvTotalMonthlyActual" [date] := $ "Nevada_CU_Actual.SNWP" [date] + $ "Nevada_CU_Actual.FtMohaveNv" [date] + $ "Nevada_CU_Actual.BigBend" [date] + $ "Nevada_CU_Actual.SCE" [date] + $ "Nevada_CU_Actual.LMNRA Mohave" [date];
 
-            $ "AnnualWaterUse.CaNoMWDTotalMonthlyActual" [date] := $ "California_CU_Actual.CaPumpersAbvImp" [date] + $ "California_CU_Actual.Chemehuevi" [date] + $ "California_CU_Actual.Coachella" [date] + $ "California_CU_Actual.CRIRCa" [date] + $ "California_CU_Actual.FtMohaveCa" [date] + $ "California_CU_Actual.IID" [date] + $ "California_CU_Actual.Needles" [date] + $ "California_CU_Actual.OtherLCWSP" [date] + $ "California_CU_Actual.PaloVerde" [date] + $ "California_CU_Actual.Ranch5" [date] + $ "California_CU_Actual.SaltonSea" [date] + $ "California_CU_Actual.Winterhaven" [date] + $ "California_CU_Actual.YumaIsland" [date] + $ "California_CU_Actual.YumaProject" [date];
+            $ "AnnualWaterUse.CaNoMWDTotalMonthlyActual" [date] := $ "California_CU_Actual.CaPumpersAbvImp" [date] + $ "California_CU_Actual.Chemehuevi" [date] + $ "California_CU_Actual.Coachella" [date] + $ "California_CU_Actual.CRIRCa" [date] + $ "California_CU_Actual.FtMohaveCa" [date] + $ "California_CU_Actual.IID" [date] + $ "California_CU_Actual.Needles" [date] + $ "California_CU_Actual.CaPumpersDvsToPkr" [date] + $ "California_CU_Actual.PaloVerde" [date] + $ "California_CU_Actual.Ranch5" [date] + $ "California_CU_Actual.SaltonSea" [date] + $ "California_CU_Actual.Winterhaven" [date] + $ "California_CU_Actual.YumaIsland" [date] + $ "California_CU_Actual.YumaProject" [date];
 
       ENDFOREACH;
 
@@ -5616,11 +5616,11 @@ BEGIN
   "VolumeToFlow"( $ "California_CU_Schedules.Needles" [date], date )
  ENDIF;
 
-            $ "CaDvsToPkr:OtherLCWSP.Diversion Requested" [date] := IF ( date < @"Start Timestep" )
+            $ "CaDvsToPkr:CaPumpersDvsToPkr.Diversion Requested" [date] := IF ( date < @"Start Timestep" )
  THEN
-  "VolumeToFlow"( $ "California_CU_Actual.OtherLCWSP" [date], date )
+  "VolumeToFlow"( $ "California_CU_Actual.CaPumpersDvsToPkr" [date], date )
  ELSE
-  "VolumeToFlow"( $ "California_CU_Schedules.OtherLCWSP" [date], date )
+  "VolumeToFlow"( $ "California_CU_Schedules.CaPumpersDvsToPkr" [date], date )
  ENDIF;
 
             $ "OthersMeadToMohave:DavisDamProject.Diversion Requested" [date] := IF ( date < @"Start Timestep" )
@@ -14254,32 +14254,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{a98f412c-b5d1-4486-a6e8-527808607d36}";
+    UUID "{a8e399a6-ec12-4912-9a10-940c7edaca09}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{6102a4a1-a756-472c-8c5d-52c5c54536eb}";
+    UUID "{79509b2c-4cf1-4d64-8614-bcd389299d30}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{339e7725-a474-4518-bb0f-298a28cff588}";
+    UUID "{0fd5425a-2f61-4d82-bb8e-09c31ffc3c41}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{d3a16bc8-363f-4ae8-879c-d1127e5f16c2}";
+    UUID "{a1677434-c3ea-46c9-91ee-b8ff7419da98}";
 ;
 
   END
-  UUID "{e9b8708e-4e68-4f49-aa3e-8d0653fbf001}";;
+  UUID "{082a6218-9903-47dc-a802-74c819bd9481}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14290,11 +14290,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{356ca480-69fa-4963-828f-b61ab0b4d68f}";
+    UUID "{64858397-1801-4acb-ab8e-de6b839d07ce}";
 ;
 
   END
-  UUID "{4cf5c49c-68a1-4c86-9cfb-60537d58e1b5}";;
+  UUID "{9054477e-41e9-49d6-929d-be7ab7db334b}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14305,11 +14305,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{332b8eb1-b15c-4f53-a2a2-00d2871bed50}";
+    UUID "{6e1ad2ef-6c53-4132-ba18-081f8d056f49}";
 ;
 
   END
-  UUID "{e76e712c-9d61-4435-b01d-df1d2a8c71c1}";;
+  UUID "{2d888129-713a-4d4b-85d7-403338995198}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14320,11 +14320,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{c46fad87-f4d7-488c-a02d-b6a4a9a2384f}";
+    UUID "{04a3f9af-be2c-4fde-bd84-6d0c6b605af2}";
 ;
 
   END
-  UUID "{fc9417e1-6da6-4900-9952-9955d80e2ced}";;
+  UUID "{41bff7f9-f097-4aa1-8e30-1dca8b5ad343}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
