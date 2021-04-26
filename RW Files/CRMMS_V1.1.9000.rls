@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.2
-# Created 11:59 April 23, 2021
+# Created 12:44 April 23, 2021
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -2041,13 +2041,13 @@ BEGIN
 
     DESCRIPTION          "MWD will take on the full amount of DCP contribution for the state of California and all <br>accounting works under this assumption. Since MWD is taking the full DCP contribution for the <br>state, any DCP contribution required by Coachella Valley will be water left on the system for <br>MWD to take as delivery. Any potential DCP ICS created by Coachella is considered an <br>intrastate deal, and thus is in the MWD balance.<br><br>This rule solves for part A below. <br><br>Per MWD's instructions,  DCP will be handled the following way:<br><br>(A) If available, convert existing EC ICS to meet the DCP contribution.<br><br>The value is stored in the AnnualConversionPreviousECtoDCP_MWD slot. If the existing EC <br>ICS can not cover the full DCP amount, then the model will store any remaining DCP <br>contribution in the AnnualRemainingDCPContribution_MWD slot.<br><br>(B) Reduce deliveries to simultaneously create DCP ICS until bank is filled. <br><br>Since the model  already has current year EC ICS creation which is solved for in a later rule, it <br>attempts to use this first prior to reducing the delivery further. This math happens in the <br>accounting rule using the AnnualRemainingDCPContribution_MWD slot.<br><br>(C) Create system water if there is no bank space (handled in the CA accounting rule)                      <br>";
       IF_STATEMENT ($ "ICS Credits.AnnualDCPContribution_CA" [@"24:00:00 December Max DayOfMonth, Current Year"] > 0.00000000 "acre-ft") THEN
-            WITH_STATEMENT (NUMERIC AnnualDCPContribution = $ "ICS Credits.AnnualDCPContribution_CA" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
+            WITH_STATEMENT (NUMERIC AnnualDCPContribution = $ "ICS Credits.AnnualDCPContribution_CA" [@"24:00:00 December Max DayOfMonth, Current Year"] - "Conversion of Excess DCP ICS to ICS Provision"( "CA" )) DO
           DESCRIPTION          "If a DCP contribution is needed for the year, detemine how much can be covered by previously <br>created EC ICS. If there is any left over, store it in the AnnualRemainingDCPContribution_MWD <br>slot (Part A above).    <br>";
       WITH_STATEMENT (NUMERIC PreviousECtoDCP = "Min"( AnnualDCPContribution, $ "ICS Credits.ExtraordinaryConservationICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] )) DO
             WITH_STATEMENT (NUMERIC RemainingContribution = AnnualDCPContribution - PreviousECtoDCP) DO
             $ "ICS Credits.AnnualConversionPreviousECtoDCP_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := PreviousECtoDCP;
 
-            $ "ICS Credits.AnnualRemainingDCPContribution_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := RemainingContribution;
+            $ "ICS Credits.AnnualRemainingDCPContribution_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := RemainingContribution + "Conversion of Excess DCP ICS to ICS Provision"( "CA" );
 
       END_WITH_STATEMENT;
 
@@ -14254,32 +14254,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{8d8b716e-b04b-43b0-9b72-3aa51794fafa}";
+    UUID "{a98f412c-b5d1-4486-a6e8-527808607d36}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{4bd7a65d-7baa-4012-a23f-997207514332}";
+    UUID "{6102a4a1-a756-472c-8c5d-52c5c54536eb}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{8df27e2e-da19-4cb4-8e62-fafcd8810b35}";
+    UUID "{339e7725-a474-4518-bb0f-298a28cff588}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{083e1f0c-1c20-4101-8f8b-3989c8efed53}";
+    UUID "{d3a16bc8-363f-4ae8-879c-d1127e5f16c2}";
 ;
 
   END
-  UUID "{4707f0ec-2da2-4db4-a5be-a69e84a08d93}";;
+  UUID "{e9b8708e-4e68-4f49-aa3e-8d0653fbf001}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14290,11 +14290,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{e74fbcd3-a759-47a4-a1e4-7e06880732b9}";
+    UUID "{356ca480-69fa-4963-828f-b61ab0b4d68f}";
 ;
 
   END
-  UUID "{23454235-3b94-4555-b012-d85394508b0e}";;
+  UUID "{4cf5c49c-68a1-4c86-9cfb-60537d58e1b5}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14305,11 +14305,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{30311318-4e57-44bd-b988-a564d09730d3}";
+    UUID "{332b8eb1-b15c-4f53-a2a2-00d2871bed50}";
 ;
 
   END
-  UUID "{3dcfc45e-5436-42b4-a5e6-bf065f95d552}";;
+  UUID "{e76e712c-9d61-4435-b01d-df1d2a8c71c1}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14320,11 +14320,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{d6f1c4b0-eed8-46d3-a721-1a52d4914235}";
+    UUID "{c46fad87-f4d7-488c-a02d-b6a4a9a2384f}";
 ;
 
   END
-  UUID "{78d8e6b7-8489-4b73-8903-305349ecfb89}";;
+  UUID "{fc9417e1-6da6-4900-9952-9955d80e2ced}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
