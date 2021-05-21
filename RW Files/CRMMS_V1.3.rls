@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.2.2 Patch
-# Created 11:57 May 3, 2021
+# Created 11:13 May 12, 2021
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -10666,8 +10666,8 @@ BEGIN
     NOTES          "AUTHOR, DATE: unknown<br><br>SB 20210216: pulled out of other functions into a general function for calculation";
     BEGIN
 
-      WITH NUMERIC tempPE = "StorageToElevation"( % "Powell", "ElevationToStorage"( % "Powell", PreviousPE ) + "FlowToVolume"( $ "Powell.Inflow" [CurrentDate], CurrentDate ) - "FlowToVolume"( Outflow, CurrentDate ) - NaNToZero ( $ "Powell.Change in Bank Storage" [CurrentDate] ) ) DO
-  WITH NUMERIC NewPE = "StorageToElevation"( % "Powell", "ElevationToStorage"( % "Powell", PreviousPE ) + "FlowToVolume"( $ "Powell.Inflow" [CurrentDate], CurrentDate ) - "PowellEvapEstimation"( CurrentDate, PreviousPE, tempPE ) - "FlowToVolume"( Outflow, CurrentDate ) - NaNToZero ( $ "Powell.Change in Bank Storage" [CurrentDate] ) ) DO
+      WITH NUMERIC tempPE = "StorageToElevation"( % "Powell", "ElevationToStorage"( % "Powell", PreviousPE ) + "FlowToVolume"( $ "Powell.Inflow" [CurrentDate], CurrentDate ) - "FlowToVolume"( Outflow, CurrentDate ) ) DO
+  WITH NUMERIC NewPE = "StorageToElevation"( % "Powell", "ElevationToStorage"( % "Powell", PreviousPE ) + "FlowToVolume"( $ "Powell.Inflow" [CurrentDate], CurrentDate ) - "PowellEvapEstimation"( CurrentDate, PreviousPE, tempPE ) - "FlowToVolume"( Outflow, CurrentDate ) ) DO
    NewPE
   ENDWITH
  ENDWITH;
@@ -14249,32 +14249,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{afd4b896-a680-42cd-abeb-cc594a92f84f}";
+    UUID "{68ea60e6-b948-4e75-ba6f-f11beff32cda}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{d7d0d36a-b36b-4c05-a277-620fc0f80e3b}";
+    UUID "{c7e1f399-7083-4938-8b34-ecf1be8162ba}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{877ee3f9-0a59-4c91-924b-d35e9370719b}";
+    UUID "{8e1c35a9-7a0d-4a16-96c1-a25a858ec1e9}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{25855913-c9b5-4cd2-867c-1022b2e4b8bd}";
+    UUID "{ff04e55a-32ba-4bd7-87d1-7ca439d82432}";
 ;
 
   END
-  UUID "{a3d6d567-8356-49b3-b697-dc2859fac0f6}";;
+  UUID "{ad696573-08c1-42b9-9390-3acb61ef4572}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14285,11 +14285,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{a6779d42-a44b-414e-90d0-9769a361919e}";
+    UUID "{d3ff6873-bca0-4679-a6fe-f225a3352596}";
 ;
 
   END
-  UUID "{6af68cb6-eb16-4eff-b602-734513d344c8}";;
+  UUID "{d39a2a5b-1365-4973-8932-749d9951bc92}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14300,11 +14300,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{2cc2b55d-f330-4574-abab-c72b3239f6b1}";
+    UUID "{598ad826-3623-44eb-9c09-0313ca916018}";
 ;
 
   END
-  UUID "{c05d0660-cd3e-4b2d-9a1f-5e3637c35c8d}";;
+  UUID "{5f8e960a-4645-4ec8-ace5-4f5a6664be54}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14315,11 +14315,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{9e3439f7-129e-4035-9f30-a1f69a95691b}";
+    UUID "{55d67605-099e-4b89-bb6a-ecb1a9b8f0ad}";
 ;
 
   END
-  UUID "{94056f4d-07b8-47e0-af48-8834148d6a59}";;
+  UUID "{b34507cd-32be-433a-af3d-687c70aca4bf}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
