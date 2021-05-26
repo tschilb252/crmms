@@ -1,3 +1,0 @@
-# Load the model
-OpenWorkspace {RW Files/MTOM_Model.mdl}
-# Run the MRM simulation
