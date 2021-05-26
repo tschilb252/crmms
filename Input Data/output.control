@@ -140,10 +140,10 @@ GunnisonBelowCrystal:TunnelDivBelowCrystalForAg.Diversion: file = $CRMMS_DIR/rdf
 
 
 ## Daily ##
-KNN_CRMMS.FlamingGorgeDaily: file = $CRMMS_DIR/rdfOutput/daily.rdf
-KNN_CRMMS.YampaDailyDeerlodgeDepleted: file = $CRMMS_DIR/rdfOutput/daily.rdf
-KNN_CRMMS.JensenDaily: file = $CRMMS_DIR/rdfOutput/daily.rdf
-KNN_CRMMS.DeerlodgeDaily: file = $CRMMS_DIR/rdfOutput/daily.rdf
+KNN_MTOM.FlamingGorgeDaily: file = $CRMMS_DIR/rdfOutput/daily.rdf
+KNN_MTOM.YampaDailyDeerlodgeDepleted: file = $CRMMS_DIR/rdfOutput/daily.rdf
+KNN_MTOM.JensenDaily: file = $CRMMS_DIR/rdfOutput/daily.rdf
+KNN_MTOM.DeerlodgeDaily: file = $CRMMS_DIR/rdfOutput/daily.rdf
 BlueMesaData.TargetDailyWhitewaterFlows: file = $CRMMS_DIR/rdfOutput/daily.rdf
 BlueMesaData.TargetDailyBlackCanyonFlows: file = $CRMMS_DIR/rdfOutput/daily.rdf
 BlueMesaData.TargetDailyOutflowFromBlueMesa: file = $CRMMS_DIR/rdfOutput/daily.rdf
@@ -212,7 +212,7 @@ BlueMesaData.TunnelDivCheck: file = $CRMMS_DIR/rdfOutput/annualEIS.rdf
 ## EIS Monthly ##
 
 FlamingGorgeData.YampaHClass: file = $CRMMS_DIR/rdfOutput/monthlyEIS.rdf
-KNN_CRMMS.SpringHClass: file = $CRMMS_DIR/rdfOutput/monthlyEIS.rdf
+KNN_MTOM.SpringHClass: file = $CRMMS_DIR/rdfOutput/monthlyEIS.rdf
 FlamingGorgeData.YampaAprJulVol: file = $CRMMS_DIR/rdfOutput/monthlyEIS.rdf
 BlueMesaData.ReleaseControl: file = $CRMMS_DIR/rdfOutput/monthlyEIS.rdf
 #Add whitewater target the first of which is in cfs and the second in ac-ft
