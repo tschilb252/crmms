@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.2.2 Patch
-# Created 09:06 May 26, 2021
+# Created 14:39 May 27, 2021
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -603,7 +603,7 @@ BEGIN
   "IsJANofOutyear"(  )
  ELSE
   @"t" == @"Start Timestep" OR @"t" == @"24:00:00 January Max DayOfMonth, Current Year"
- ENDIF AND "GetRunCycleIndex"(  ) >= 3.00000000 AND NOT "IsFloodControl"(  );
+ ENDIF COMMENTED_BY "This rule needs to run in the start year for SNWA to apply demand variability in ensemble mode <br>" AND "GetRunCycleIndex"(  ) >= 3.00000000 AND NOT "IsFloodControl"(  );
     NOTES                "S. Baker, 20200311: Add description. Add function IsDomesticOrQuantifiedOrFloodControl() & IsLBorDCPconditionChanged() to replace Or statement to improve readability. <br>A. Pivarnik, 20200501: Replaced non SNWP water users individually listed with function call. Changed the month percent calculation to be based off volume and not flow. Adjusted logic and run constraint to allow rule to adjust for domestic surplus<br>A. Pivarnik, 20200505: Reorded delivery logic and added notes. Rule now solves for quantified surplus scenarios. Changed run constraint to allow rule to fire in quantified surplus. Refernced Annual Shortage volume slot instead of calculating shortage via table<br>A. PIvarnik, 20200714: Integration effort. Added execution constraint to not fire in start timestep of RC3 in 24MS mode. This rule is different than the 24 MS rule due to MTOM's ruleset structure but accomplishes that same thing. Besides the execution constraint this rule is unchanged<br>";
     BEGIN
 
@@ -14249,32 +14249,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{6a1e9a62-1cce-496a-8f5f-e5681ba39296}";
+    UUID "{f8ab6be8-b540-4535-ad89-121570fa3d65}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{aeab188a-cfb4-4c03-9805-7d88ee9d215d}";
+    UUID "{f7b74067-0f27-4481-9957-5591991ce54e}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{e3dddf56-0fed-4ca4-b898-3451293e82e8}";
+    UUID "{3a21d1ae-0a06-4966-aab1-7855e7fb210d}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{1256484c-b90e-4ee8-9538-5ea60a687474}";
+    UUID "{61f4fbc4-15a6-45de-9501-b72e879be867}";
 ;
 
   END
-  UUID "{0b8344a8-f9cc-4946-b0d8-fcf058810c50}";;
+  UUID "{cf4165fe-0995-4e78-8d18-842edc61b6e1}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14285,11 +14285,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{18b9a321-c50b-4720-b9df-0639c015f519}";
+    UUID "{bfc6cd5e-b03d-4415-81ad-da60aa00ae4c}";
 ;
 
   END
-  UUID "{4ad035e1-e6e0-48cc-87d1-5072a7a45322}";;
+  UUID "{96129f62-4766-4659-9737-d027225e2258}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14300,11 +14300,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{b47cac75-41ce-4fb1-8a68-3b80dd558eec}";
+    UUID "{b6f01dd6-c5c6-451f-ac29-d370dddb15ed}";
 ;
 
   END
-  UUID "{6f3868c3-4a06-40ff-ab13-9934365f6154}";;
+  UUID "{ffa0b903-10d1-4861-8547-a7cb818df12b}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14315,11 +14315,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{ff10de86-b8e3-4fc4-a480-8a9c40d661bb}";
+    UUID "{e3a73291-4e97-46c4-b0e8-ffefafa3d795}";
 ;
 
   END
-  UUID "{f6f5e26e-3686-48bf-b0d4-5cf698291fdc}";;
+  UUID "{43a7da11-fded-411c-8c83-a5f84692422a}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
