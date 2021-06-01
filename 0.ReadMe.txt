@@ -16,18 +16,18 @@ whatsoever to any individual or group entity by reason of any use made thereof.
 - Depending on your familiarity with RiverWare, you can either run the model by opening 
 	and running it within the interface, or you can run the model via the Batch program 
 	included in this package. 
-- It is imperative that you execute the "1.SetMtomDirectory.bat" program to set the 
-	MTOM_DIR Environment Variable on your local machine. The Environment Variable is 
+- It is imperative that you execute the "1.SetCrmmsDirectory.bat" program to set the 
+	Crmms_DIR Environment Variable on your local machine. The Environment Variable is 
 	referenced within the model to find the required input and output files and 
 	directories.
-- Open the MTOM RiverWare model located in the "RW Files" directory. In RiverWare, navigate
+- Open the CRMMS RiverWare model located in the "RW Files" directory. In RiverWare, navigate
 	to Multiple Run Management and choose the "Run_CBRFC_Ensemble_Fcst_RFC" Multiple Run 
 	Configuration. Click "Start" after first making sure the Excel workbooks with 
 	ensemble forecasts and outputs are closed. This will run the Most Probable and ESP 
 	forecasts. 
 - Model outputs are automatically placed by the model in the "Output Data" directory
 	and runs initiated from the RiverWare interface will output results to the existing
-	files. Open the Excel workbook "MTOM_EnsembleOutput.xlsm", navigate to the "Comparison"
+	files. Open the Excel workbook "Crmms_EnsembleOutput.xlsm", navigate to the "Comparison"
 	tab, and check that the Start Timestep is correct. Then click the "Load All Data" button 
 	to load new output traces to the workbook. 
 - Model inputs are queried by the model from the "Inflow Forecasts" and "Input Data"
@@ -35,27 +35,27 @@ whatsoever to any individual or group entity by reason of any use made thereof.
 	files in these directories.
 	
 ------------------------Package Contents-------------------------------------------------
-MTOM_DIR
+Crmms_DIR
 	|
 	|- Read Me text file
-	|- Program to set the MTOM_DIR Environment Variable
+	|- Program to set the Crmms_DIR Environment Variable
 	|
 	|- Inflow Forecasts
 	|		|- Ensemble Forecast input analysis spreadsheet
 	|		|- Ensemble Forecast input pass-through spreadsheet
 	|		|- ESP Traces
 	|				|- Program to download ESP Traces
-	|				|- 17 ESP Trace files
+	|				|- 12 ESP Trace files
 	|
 	|- Input Data
 	|		|- Empty output control files
 	|		|- Control files for outputting to RDF
 	|
 	|- Output Data
-	|		|- MTOM Output Analysis Spreadsheet
-	|               |- MTOM outputs spreadsheet for input into Analysis App 
-	|		|- MTOM outputs spreadsheet for Monthly CRSS inputs
-	|		|- MTOM outputs spreadsheet for Yearly CRSS inputs
+	|		|- CRMMS Output Analysis Spreadsheet
+	|               |- CRMMS outputs spreadsheet for input into Analysis App 
+	|		|- CRMMS outputs spreadsheet for Monthly CRSS inputs
+	|		|- CRMMS outputs spreadsheet for Yearly CRSS inputs
 	|	
 	|- RW Files
 	|		|- RiverWare model
@@ -63,9 +63,9 @@ MTOM_DIR
 	|		|- RiverWare model background photo
 	|
 	|- Report Files
-			|- MTOM report template document
-			|- MTOM report template slides
-			|- MTOM report images directory
+			|- CRMMS report template document
+			|- CRMMS report template slides
+
 
 ------------------------USBR POCs--------------------------------------------------------
 Upper Colorado Region: 	Heather Patno		hpatno@usbr.gov		(801) 524-3883
