@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.2.2 Patch
-# Created 12:24 July 22, 2021
+# Created 15:04 July 22, 2021
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -1059,7 +1059,11 @@ BEGIN
             $ "ICS Credits.BiNationalICS_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 1.00000000 FROM azICSvalues;
 
           DESCRIPTION          "System Eff Balances <br>";
-      $ "ICS Credits.SystemEfficiencyICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 0.00000000 FROM azICSvalues;
+      $ "ICS Credits.SystemEfficiencyICS_Brock_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 11.00000000 FROM azICSvalues;
+
+            $ "ICS Credits.SystemEfficiencyICS_YDP_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 12.00000000 FROM azICSvalues;
+
+            $ "ICS Credits.SystemEfficiencyICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 0.00000000 FROM azICSvalues;
 
             $ "ICS Credits.SystemEfficiencyICS_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 0.00000000 FROM azICSvalues;
 
@@ -1249,7 +1253,7 @@ BEGIN
 
       WITH_STATEMENT (NUMERIC ECICStoDCP = "SetNegativeToZero"( "Min"( $ "ICS Credits.MeadBankParameters" ["Arizona", "Max Capacity"] - ( $ "ICS Credits.Bank_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.ExtraordinaryConservationICS_GRIC" [@"24:00:00 December Max DayOfMonth, Current Year"] COMMENTED_BY "Non cap water user bank is equal to the EC ICS balance of the current year <br>" + $ "ICS Credits.ExtraordinaryConservationICS_CRIT" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.ExtraordinaryConservationICS_MVIDD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.ExtraordinaryConservationICS_WM" [@"24:00:00 December Max DayOfMonth, Current Year"] ), $ "ICSProjectionData.AnnualCreationEC_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] ) ) COMMENTED_BY "EC ICS converted to DCP ICS during the current year, constrained by bank capacity.<br><br>Since CAWCD is not converting from previous ICS balance, its the minimum between the bank <br>space and the amount of ICS created during the year.   <br>") DO
             WITH_STATEMENT (NUMERIC AnnualDelivery = "ICSDeliveryReduction_DCP"( $ "ICSProjectionData.AnnualICSDelivery_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], "Arizona", "Max Delivery", ECICStoDCP ) COMMENTED_BY "Checks desired ICS delivery amount against DCP policy restrictions   <br>") DO
-            WITH_STATEMENT (LIST DeliveryChargedList = FOR ( NUMERIC CategoryBalance IN { $ "ICS Credits.DCPICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] , $ "ICS Credits.ExtraordinaryConservationICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] , $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] , $ "ICS Credits.SystemEfficiencyICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] } COMMENTED_BY "Accounts for ICS delivery (in order) <br>" ) WITH LIST result = {  } DO
+            WITH_STATEMENT (LIST DeliveryChargedList = FOR ( NUMERIC CategoryBalance IN { $ "ICS Credits.DCPICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] , $ "ICS Credits.ExtraordinaryConservationICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] , $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] , $ "ICS Credits.SystemEfficiencyICS_YDP_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] , "Max Brock Delivery Volume"( "CAWCD" ) } COMMENTED_BY "Accounts for ICS delivery (in order) <br>" ) WITH LIST result = {  } DO
   WITH NUMERIC RemainingBalance = IF ( ( LENGTH result ) == 0.00000000 )
   THEN
    AnnualDelivery
@@ -1273,7 +1277,11 @@ BEGIN
 
             $ "ICS Credits.AnnualDeliveryBiNat_CAWCD" [@"24:00:00 December 31, Current Year"] := GET @INDEX 2.00000000 FROM DeliveryChargedList;
 
-            $ "ICS Credits.AnnualDeliverySysEff_CAWCD" [@"24:00:00 December 31, Current Year"] := GET @INDEX 3.00000000 FROM DeliveryChargedList;
+            $ "ICS Credits.AnnualDeliverySysEff_YDP_CAWCD" [@"24:00:00 December 31, Current Year"] := GET @INDEX 3.00000000 FROM DeliveryChargedList;
+
+            $ "ICS Credits.AnnualDeliverySysEff_Brock_CAWCD" [@"24:00:00 December 31, Current Year"] := GET @INDEX 4.00000000 FROM DeliveryChargedList;
+
+            $ "ICS Credits.AnnualDeliverySysEff_CAWCD" [@"24:00:00 December 31, Current Year"] := ( GET @INDEX 3.00000000 FROM DeliveryChargedList ) + GET @INDEX 4.00000000 FROM DeliveryChargedList;
 
             $ "ICS Credits.AnnualICSDelivery_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := "Sum"( DeliveryChargedList );
 
@@ -11363,71 +11371,75 @@ BEGIN
     NOTES          "DEVELOPMENT NOTES<br>AUTHOR, DATE: TP, 9/10/2014<br><br>CH, 4/27/18: Deleted if else statements in creation of SE and Binat ICS so that AZ is allowed to created these types of ICS even in Shortage condition (only EC ICS cannot be created during a shortage). Cleaned up list the function returns and unused with statments: only 7 out of the 9 that were included are being used. <br>S.Baker, 09/25/2018: Changed the Mead.Pool Elevation input to function GetProjectedPoolElevation() function instead of looking at Mead.Pool Elevation. This will allow MTOM to determine which Mead PE projection to use (ie. AugEOYProjectedMeadPool elevation).<br>AP, 11/30/18: Changed all evap tax references  from *0.97 to the EvapTaxAdjustment function, changed all system tax references  from *0.95 to the SystemTaxAdjustment function.<br>AP, 20191130: Updated for DCP.<br>A.Pivarnik, 20200714: Integration effort. Rewrote ICS accounting for AZ function to match the other states. Also rewrote all neccessary ICS creation/delivery rules and functions in ruleset for AZ to better match other states. This prevented the ICSAccountingforAZ function from getting too big during the integration effort (was solving for approx 34 variables, some twice depending on 24 MS mode vs MTOM mode)";
     BEGIN
 
-      WITH NUMERIC SysEff_CAWCD = ( $ "ICS Credits.SystemEfficiencyICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationSysEff_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] ) DO
-  WITH NUMERIC BiNat_CAWCD = ( $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryBiNat_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] ) DO
-   WITH NUMERIC nontaxableECICScreation = $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
-    WITH NUMERIC CAWCDpreliminaryECICScreation = $ "ICSProjectionData.AnnualCreationEC_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-     WITH NUMERIC ConversionofExcessDCPICStoICSprovisionVolume = "Conversion of Excess DCP ICS to ICS Provision"( "AZ" ) DO
-      WITH NUMERIC AnnualDCPContribution = $ "ICS Credits.AnnualDCPContribution_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-       WITH NUMERIC CAWCDcreationECICSforDCPcontribution = "Min"( $ "ICS Credits.AnnualRemainingDCPContribution_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"], CAWCDpreliminaryECICScreation ) DO
-        WITH NUMERIC CAWCDdcpCONTRIBUTIONasECICS = "Min"( ConversionofExcessDCPICStoICSprovisionVolume, CAWCDcreationECICSforDCPcontribution ) DO
-         WITH NUMERIC CAWCDdcpCONTRIBUTIONasDCPICS = CAWCDcreationECICSforDCPcontribution - CAWCDdcpCONTRIBUTIONasECICS DO
-          WITH NUMERIC CAWCDsyswaterDCPContribution = AnnualDCPContribution - CAWCDdcpCONTRIBUTIONasDCPICS - CAWCDdcpCONTRIBUTIONasECICS DO
-           WITH NUMERIC AnnualCreationEC_CAWCD = "SetNegativeToZero"( CAWCDpreliminaryECICScreation - CAWCDcreationECICSforDCPcontribution ) + CAWCDdcpCONTRIBUTIONasECICS DO
-            WITH LIST EC_DCP_accounting = FOR ( NUMERIC account IN { AnnualCreationEC_CAWCD , CAWCDdcpCONTRIBUTIONasDCPICS } ) WITH LIST result = {  } DO
-             WITH NUMERIC remainingNONTAXABLEics = IF ( ( LENGTH result ) == 0.00000000 )
-             THEN
-              nontaxableECICScreation
-             ELSE
-              nontaxableECICScreation - "SumByIndex"( result, 0.00000000 )
-             ENDIF DO
-              WITH NUMERIC nontaxedICS = "Min"( account, remainingNONTAXABLEics ) DO
-               WITH NUMERIC taxedICS = account - nontaxedICS DO
-                APPEND { nontaxedICS , taxedICS } ONTO result
+      WITH NUMERIC SysEff_CAWCD_Brock = $ "ICS Credits.SystemEfficiencyICS_Brock_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+  WITH NUMERIC SysEff_CAWCD_YDP = $ "ICS Credits.SystemEfficiencyICS_YDP_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_YDP_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+   WITH NUMERIC SysEff_CAWCD = ( $ "ICS Credits.SystemEfficiencyICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationSysEff_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] ) DO
+    WITH NUMERIC BiNat_CAWCD = ( $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryBiNat_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] ) DO
+     WITH NUMERIC nontaxableECICScreation = $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
+      WITH NUMERIC CAWCDpreliminaryECICScreation = $ "ICSProjectionData.AnnualCreationEC_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+       WITH NUMERIC ConversionofExcessDCPICStoICSprovisionVolume = "Conversion of Excess DCP ICS to ICS Provision"( "AZ" ) DO
+        WITH NUMERIC AnnualDCPContribution = $ "ICS Credits.AnnualDCPContribution_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+         WITH NUMERIC CAWCDcreationECICSforDCPcontribution = "Min"( $ "ICS Credits.AnnualRemainingDCPContribution_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"], CAWCDpreliminaryECICScreation ) DO
+          WITH NUMERIC CAWCDdcpCONTRIBUTIONasECICS = "Min"( ConversionofExcessDCPICStoICSprovisionVolume, CAWCDcreationECICSforDCPcontribution ) DO
+           WITH NUMERIC CAWCDdcpCONTRIBUTIONasDCPICS = CAWCDcreationECICSforDCPcontribution - CAWCDdcpCONTRIBUTIONasECICS DO
+            WITH NUMERIC CAWCDsyswaterDCPContribution = AnnualDCPContribution - CAWCDdcpCONTRIBUTIONasDCPICS - CAWCDdcpCONTRIBUTIONasECICS DO
+             WITH NUMERIC AnnualCreationEC_CAWCD = "SetNegativeToZero"( CAWCDpreliminaryECICScreation - CAWCDcreationECICSforDCPcontribution ) + CAWCDdcpCONTRIBUTIONasECICS DO
+              WITH LIST EC_DCP_accounting = FOR ( NUMERIC account IN { AnnualCreationEC_CAWCD , CAWCDdcpCONTRIBUTIONasDCPICS } ) WITH LIST result = {  } DO
+               WITH NUMERIC remainingNONTAXABLEics = IF ( ( LENGTH result ) == 0.00000000 )
+               THEN
+                nontaxableECICScreation
+               ELSE
+                nontaxableECICScreation - "SumByIndex"( result, 0.00000000 )
+               ENDIF DO
+                WITH NUMERIC nontaxedICS = "Min"( account, remainingNONTAXABLEics ) DO
+                 WITH NUMERIC taxedICS = account - nontaxedICS DO
+                  APPEND { nontaxedICS , taxedICS } ONTO result
+                 ENDWITH
+                ENDWITH
                ENDWITH
-              ENDWITH
-             ENDWITH
-            ENDFOR DO
-             WITH LIST AnnualCreationEC_CAWCDlist = GET @INDEX 0.00000000 FROM EC_DCP_accounting DO
-              WITH LIST CAWCDdcpCONTRIBUTIONasDCPICSlist = GET @INDEX 1.00000000 FROM EC_DCP_accounting DO
-               WITH NUMERIC AnnualCreationEC_CAWCDnontaxed = GET @INDEX 0.00000000 FROM AnnualCreationEC_CAWCDlist DO
-                WITH NUMERIC AnnualCreationEC_CAWCDtaxed = GET @INDEX 1.00000000 FROM AnnualCreationEC_CAWCDlist DO
-                 WITH NUMERIC CAWCDdcpCONTRIBUTIONasDCPICSnontaxed = GET @INDEX 0.00000000 FROM CAWCDdcpCONTRIBUTIONasDCPICSlist DO
-                  WITH NUMERIC CAWCDdcpCONTRIBUTIONasDCPICStaxed = GET @INDEX 1.00000000 FROM CAWCDdcpCONTRIBUTIONasDCPICSlist DO
-                   WITH NUMERIC SimultaneousCreationDCPICS_CAWCD = CAWCDdcpCONTRIBUTIONasDCPICSnontaxed + CAWCDdcpCONTRIBUTIONasDCPICStaxed DO
-                    WITH LIST AZFiming = "AZ Firming Agreement"(  ) DO
-                     WITH NUMERIC FirmingBalanceAZ = $ "ICS Credits.FirmingAgreementBalance_AZ" [@"24:00:00 December Max DayOfMonth, Previous Year"] - GET @INDEX 1.00000000 FROM AZFiming DO
-                      WITH NUMERIC FirmingBalanceUS = $ "ICS Credits.FirmingAgreementBalance_US" [@"24:00:00 December Max DayOfMonth, Previous Year"] - GET @INDEX 2.00000000 FROM AZFiming DO
-                       WITH NUMERIC ECICS_CAWCD = ( $ "ICS Credits.ExtraordinaryConservationICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + AnnualCreationEC_CAWCDnontaxed + AnnualCreationEC_CAWCDtaxed * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] ) DO
-                        WITH NUMERIC DCP_CAWCD = $ "ICS Credits.DCPICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliveryDCP_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] + CAWCDdcpCONTRIBUTIONasDCPICSnontaxed + CAWCDdcpCONTRIBUTIONasDCPICStaxed * "SystemTaxAdjustment_DCP"(  ) DO
-                         WITH NUMERIC Bank_CAWCD = DCP_CAWCD + BiNat_CAWCD + ECICS_CAWCD DO
-                          WITH NUMERIC TotalICS_CAWCD = ECICS_CAWCD + BiNat_CAWCD + SysEff_CAWCD + DCP_CAWCD DO
-                           { SysEff_CAWCD , BiNat_CAWCD , SimultaneousCreationDCPICS_CAWCD , CAWCDsyswaterDCPContribution , AnnualCreationEC_CAWCD , FirmingBalanceAZ , FirmingBalanceUS , ECICS_CAWCD , DCP_CAWCD , Bank_CAWCD , TotalICS_CAWCD }
+              ENDFOR DO
+               WITH LIST AnnualCreationEC_CAWCDlist = GET @INDEX 0.00000000 FROM EC_DCP_accounting DO
+                WITH LIST CAWCDdcpCONTRIBUTIONasDCPICSlist = GET @INDEX 1.00000000 FROM EC_DCP_accounting DO
+                 WITH NUMERIC AnnualCreationEC_CAWCDnontaxed = GET @INDEX 0.00000000 FROM AnnualCreationEC_CAWCDlist DO
+                  WITH NUMERIC AnnualCreationEC_CAWCDtaxed = GET @INDEX 1.00000000 FROM AnnualCreationEC_CAWCDlist DO
+                   WITH NUMERIC CAWCDdcpCONTRIBUTIONasDCPICSnontaxed = GET @INDEX 0.00000000 FROM CAWCDdcpCONTRIBUTIONasDCPICSlist DO
+                    WITH NUMERIC CAWCDdcpCONTRIBUTIONasDCPICStaxed = GET @INDEX 1.00000000 FROM CAWCDdcpCONTRIBUTIONasDCPICSlist DO
+                     WITH NUMERIC SimultaneousCreationDCPICS_CAWCD = CAWCDdcpCONTRIBUTIONasDCPICSnontaxed + CAWCDdcpCONTRIBUTIONasDCPICStaxed DO
+                      WITH LIST AZFiming = "AZ Firming Agreement"(  ) DO
+                       WITH NUMERIC FirmingBalanceAZ = $ "ICS Credits.FirmingAgreementBalance_AZ" [@"24:00:00 December Max DayOfMonth, Previous Year"] - GET @INDEX 1.00000000 FROM AZFiming DO
+                        WITH NUMERIC FirmingBalanceUS = $ "ICS Credits.FirmingAgreementBalance_US" [@"24:00:00 December Max DayOfMonth, Previous Year"] - GET @INDEX 2.00000000 FROM AZFiming DO
+                         WITH NUMERIC ECICS_CAWCD = ( $ "ICS Credits.ExtraordinaryConservationICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + AnnualCreationEC_CAWCDnontaxed + AnnualCreationEC_CAWCDtaxed * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] ) DO
+                          WITH NUMERIC DCP_CAWCD = $ "ICS Credits.DCPICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliveryDCP_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] + CAWCDdcpCONTRIBUTIONasDCPICSnontaxed + CAWCDdcpCONTRIBUTIONasDCPICStaxed * "SystemTaxAdjustment_DCP"(  ) DO
+                           WITH NUMERIC Bank_CAWCD = DCP_CAWCD + BiNat_CAWCD + ECICS_CAWCD DO
+                            WITH NUMERIC TotalICS_CAWCD = ECICS_CAWCD + BiNat_CAWCD + SysEff_CAWCD + DCP_CAWCD DO
+                             { SysEff_CAWCD , BiNat_CAWCD , SimultaneousCreationDCPICS_CAWCD , CAWCDsyswaterDCPContribution , AnnualCreationEC_CAWCD , FirmingBalanceAZ , FirmingBalanceUS , ECICS_CAWCD , DCP_CAWCD , Bank_CAWCD , TotalICS_CAWCD , SysEff_CAWCD_Brock , SysEff_CAWCD_YDP }
+                            ENDWITH
+                           ENDWITH
                           ENDWITH
                          ENDWITH
                         ENDWITH
                        ENDWITH
-                      ENDWITH
+                      ENDWITH COMMENTED_BY "########################################  <br>"
                      ENDWITH
-                    ENDWITH COMMENTED_BY "########################################  <br>"
+                    ENDWITH
                    ENDWITH
                   ENDWITH
-                 ENDWITH
+                 ENDWITH COMMENTED_BY "Store the list values as indivdual variables <br>"
                 ENDWITH
-               ENDWITH COMMENTED_BY "Store the list values as indivdual variables <br>"
-              ENDWITH
-             ENDWITH COMMENTED_BY "Pull out the individual lists <br>"
-            ENDWITH COMMENTED_BY "########################################  <br>5. Using the following FOR loop, categorize the ICS creation as either non taxed or taxed for the <br>ICS going into EC or DCP accounts. The result of this FOR loop is a list of lists, with the first list <br>being the nontaxed/taxed EC ICS values, and the second list being the nontaxed/taxed DCP ICS <br>values. These values are then taken out of the lists and stored in temporary variables to be used <br>in the following balance calculations.     <br>"
-           ENDWITH COMMENTED_BY "######################################## <br>4. Calculate the Annual Creation of EC ICS for CAWCD. The logic above converted as much of <br>the preliminary EC ICS creation as it needed to help meet the required DCP contribution, so <br>subtract that value (CAWCDcreationECICSforDCPcontribution) from the preliminary EC ICS <br>creation. Add back in any of the DCP contribution which can be made as EC ICS under the <br>provision previously discussed.     <br>"
-          ENDWITH COMMENTED_BY "The system water is calculated by taking the full DCP contribution for the year and subtracting <br>any simulatneous conversion of EC ICS to DCP contribution<br>            <br>"
-         ENDWITH
-        ENDWITH COMMENTED_BY "########################################<br>3. Categorize the DCP Contribution as either the Excess DCP ICS to ICS Conversion volume (DCP <br>contirbution as EC ICS) or  DCP ICS. By setting the DCP contribution as EC ICS first, it prioritizes <br>putting ICS into the EC ICS account. <br><br>This takes as much of the CAWCDcreationECICSforDCPcontribution creation volume as you can <br>and puts it into DCP contribution as EC ICS. The remaining is going to be placed in the DCP ICS <br>account. If there is no ConversionofExcessDCPICStoICSvolume then the contribution will solve as <br>0 acre-ft.     <br>"
-       ENDWITH COMMENTED_BY "########################################<br>2. EC to DCP Conversion (simultaneous creation)   <br>"
+               ENDWITH COMMENTED_BY "Pull out the individual lists <br>"
+              ENDWITH COMMENTED_BY "########################################  <br>5. Using the following FOR loop, categorize the ICS creation as either non taxed or taxed for the <br>ICS going into EC or DCP accounts. The result of this FOR loop is a list of lists, with the first list <br>being the nontaxed/taxed EC ICS values, and the second list being the nontaxed/taxed DCP ICS <br>values. These values are then taken out of the lists and stored in temporary variables to be used <br>in the following balance calculations.     <br>"
+             ENDWITH COMMENTED_BY "######################################## <br>4. Calculate the Annual Creation of EC ICS for CAWCD. The logic above converted as much of <br>the preliminary EC ICS creation as it needed to help meet the required DCP contribution, so <br>subtract that value (CAWCDcreationECICSforDCPcontribution) from the preliminary EC ICS <br>creation. Add back in any of the DCP contribution which can be made as EC ICS under the <br>provision previously discussed.     <br>"
+            ENDWITH COMMENTED_BY "The system water is calculated by taking the full DCP contribution for the year and subtracting <br>any simulatneous conversion of EC ICS to DCP contribution<br>            <br>"
+           ENDWITH
+          ENDWITH COMMENTED_BY "########################################<br>3. Categorize the DCP Contribution as either the Excess DCP ICS to ICS Conversion volume (DCP <br>contirbution as EC ICS) or  DCP ICS. By setting the DCP contribution as EC ICS first, it prioritizes <br>putting ICS into the EC ICS account. <br><br>This takes as much of the CAWCDcreationECICSforDCPcontribution creation volume as you can <br>and puts it into DCP contribution as EC ICS. The remaining is going to be placed in the DCP ICS <br>account. If there is no ConversionofExcessDCPICStoICSvolume then the contribution will solve as <br>0 acre-ft.     <br>"
+         ENDWITH COMMENTED_BY "########################################<br>2. EC to DCP Conversion (simultaneous creation)   <br>"
+        ENDWITH
+       ENDWITH
       ENDWITH
-     ENDWITH
-    ENDWITH
-   ENDWITH COMMENTED_BY "The following section of code calculates the DCP contribution and takes into account the <br>replinshment incentive and the Conversion of Excess DCP ICS to ICS provision in the DCP <br>exhibit.<br><br>Since the DCP assessment is post contribution, most of these calculations are pretax.<br><br>It does this by the following:<br><br>1. Defining the following key variables: nontaxableECICScreation, <br>CAWCDpreliminaryECICScreation, Conversion of ExcessDCPICStoICSprovision volume (only <br>needed in year 1). <br><br>2. Simultaneous creation. Looking at the remaining DCP contribution, convert as much of the <br>preliminary EC ICS to DCP ICS as needed. This value is stored as the <br>CAWCDcreationECICSforDCPcontribution. As of this point, this variable includes both the DCP <br>contribution as DCP ICS and the potential EC contribution under the Conversion of Excess <br>DCP ICS to ICS provision (III.E.3, bottom of page 6 of the DCP exhibit).<br><br>3. Categorize the DCP contrbution. This part splits the DCP contribution into either the <br>contribution being made as EC ICS (only an issue in year 1, III.E.3) or DCP ICS. After this is <br>done, calculate the system water needed to finish the DCP contribution.<br><br>4. Calculate the Annual EC ICS creation for CAWCD. This is a pretax value.<br><br>5. Calculate the post tax values for both EC ICS creation and DCP ICS. This part takes into <br>account the replenishment incentive (whether the creation gets taxed or not)<br><br><br>########################################<br>1. Definition of key variables               <br>"
-  ENDWITH COMMENTED_BY "CAWCD BiNat ICS Balance <br>"
+     ENDWITH COMMENTED_BY "The following section of code calculates the DCP contribution and takes into account the <br>replinshment incentive and the Conversion of Excess DCP ICS to ICS provision in the DCP <br>exhibit.<br><br>Since the DCP assessment is post contribution, most of these calculations are pretax.<br><br>It does this by the following:<br><br>1. Defining the following key variables: nontaxableECICScreation, <br>CAWCDpreliminaryECICScreation, Conversion of ExcessDCPICStoICSprovision volume (only <br>needed in year 1). <br><br>2. Simultaneous creation. Looking at the remaining DCP contribution, convert as much of the <br>preliminary EC ICS to DCP ICS as needed. This value is stored as the <br>CAWCDcreationECICSforDCPcontribution. As of this point, this variable includes both the DCP <br>contribution as DCP ICS and the potential EC contribution under the Conversion of Excess <br>DCP ICS to ICS provision (III.E.3, bottom of page 6 of the DCP exhibit).<br><br>3. Categorize the DCP contrbution. This part splits the DCP contribution into either the <br>contribution being made as EC ICS (only an issue in year 1, III.E.3) or DCP ICS. After this is <br>done, calculate the system water needed to finish the DCP contribution.<br><br>4. Calculate the Annual EC ICS creation for CAWCD. This is a pretax value.<br><br>5. Calculate the post tax values for both EC ICS creation and DCP ICS. This part takes into <br>account the replenishment incentive (whether the creation gets taxed or not)<br><br><br>########################################<br>1. Definition of key variables               <br>"
+    ENDWITH COMMENTED_BY "CAWCD BiNat ICS Balance <br>"
+   ENDWITH
+  ENDWITH
  ENDWITH COMMENTED_BY "CAWCD SysEff ICS Balance <br>";
 
     END
@@ -11445,7 +11457,7 @@ BEGIN
 
       WITH NUMERIC MWD_SysEffICS_Brock = $ "ICS Credits.SystemEfficiencyICS_Brock_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
   WITH NUMERIC MWD_SysEffICS_YDP = $ "ICS Credits.SystemEfficiencyICS_YDP_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_YDP_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-   WITH NUMERIC MWD_SysEffICS = $ "ICS Credits.SystemEfficiencyICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationSysEff_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_YDP_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+   WITH NUMERIC MWD_SysEffICS = $ "ICS Credits.SystemEfficiencyICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationSysEff_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
     WITH NUMERIC MWD_BiNatICS = $ "ICS Credits.BiNationalICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryBiNat_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
      WITH NUMERIC ConversionofExistingECICSforDCPcontribution = $ "ICS Credits.AnnualConversionPreviousECtoDCP_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
       WITH NUMERIC MWDnontaxeableICScreation = $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
@@ -11528,7 +11540,7 @@ BEGIN
 
       WITH NUMERIC SysEffBrock = $ "ICS Credits.SystemEfficiencyICS_Brock_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
   WITH NUMERIC SysEffYDP = $ "ICS Credits.SystemEfficiencyICS_YDP_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_YDP_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-   WITH NUMERIC SysEff = $ "ICS Credits.SystemEfficiencyICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationSysEff_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_YDP_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+   WITH NUMERIC SysEff = $ "ICS Credits.SystemEfficiencyICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationSysEff_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
     WITH NUMERIC BiNat = $ "ICS Credits.BiNationalICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryBiNat_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
      WITH NUMERIC Imported = $ "ICS Credits.AnnualCreationImp_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryImp_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
       WITH NUMERIC Tributary = $ "ICS Credits.AnnualCreationTrib_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryTrib_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
@@ -14305,32 +14317,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0d63d82c-98a0-447b-9f3e-65f76a21b615}";
+    UUID "{fec6d254-ea24-49de-bfc2-33456a88e1fc}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0d2e0c34-075c-411b-985e-9cc3985bf9e4}";
+    UUID "{cb75a5b8-6f09-4789-adf9-66ddf1044d49}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{eb1d3e70-87f7-4bc2-8ac4-59a64767cd93}";
+    UUID "{840143b6-9531-4f30-8246-3fabd77bb540}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7d0790fb-ce99-48a8-8a97-8a8cc5ea1049}";
+    UUID "{821716e2-1bc4-48dc-90d2-c640d0e94f39}";
 ;
 
   END
-  UUID "{c2f319af-39e3-4e9b-8f92-8e7f38b3b2ca}";;
+  UUID "{8933471c-e32c-4a55-941c-81a5f1750915}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14341,11 +14353,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0fd355cd-12b5-4244-a32d-a8b1cbc124a6}";
+    UUID "{08617642-d3aa-4aaa-b269-0a6186251941}";
 ;
 
   END
-  UUID "{bd3a3780-a3c1-4fbd-8acb-82a707831ddf}";;
+  UUID "{71556e7d-9fcc-4f60-989a-a4f8847277ea}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14356,11 +14368,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{b230e823-2c96-46d5-a1f5-c2bbdd4c9465}";
+    UUID "{43aaca0d-bc19-4bb7-880e-1a2e993173c5}";
 ;
 
   END
-  UUID "{490e9686-8367-4de4-9139-6bdc580e3d73}";;
+  UUID "{703e55ec-5677-4151-8120-b881bc29c209}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14371,11 +14383,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{3c45b643-8c47-478a-abb0-41904798bf44}";
+    UUID "{bc451c9a-fc6b-42af-b8b2-0230a104da26}";
 ;
 
   END
-  UUID "{84206a31-8f2e-41ca-aa1f-48d01d4c8dd8}";;
+  UUID "{5b63ba20-11a4-48b8-bc31-e0954e7260bb}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
