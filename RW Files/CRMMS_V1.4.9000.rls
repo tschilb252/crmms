@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.2.2 Patch
-# Created 15:04 July 22, 2021
+# Created 14:44 July 27, 2021
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -12004,7 +12004,7 @@ BEGIN
  THEN
   $ "ICS Credits.SystemEfficiencyICS_Brock_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"]
  ELSE
-  $ "ICS Credits.Brock Delivery Constraints" ["TOTAL", "Max Delivery"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"]
+  "Min"( $ "ICS Credits.Brock Delivery Constraints" ["TOTAL", "Max Delivery"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.SystemEfficiencyICS_Brock_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] )
  ENDIF
  ELSEIF_COND ( entity == "MWD" )
  ELSEIF_CLAUSE ( $ "ICS Credits.SystemEfficiencyICS_Brock_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] )
@@ -14317,32 +14317,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{fec6d254-ea24-49de-bfc2-33456a88e1fc}";
+    UUID "{6b71a81c-347c-4cfe-a168-e9ec83a51a8e}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{cb75a5b8-6f09-4789-adf9-66ddf1044d49}";
+    UUID "{2513a1d5-04b8-471e-8283-f0cc75ef941a}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{840143b6-9531-4f30-8246-3fabd77bb540}";
+    UUID "{3512600e-3d7f-4b8f-9b49-bbc40cb18290}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{821716e2-1bc4-48dc-90d2-c640d0e94f39}";
+    UUID "{cf4f221d-7055-4699-84da-1139aee5f02b}";
 ;
 
   END
-  UUID "{8933471c-e32c-4a55-941c-81a5f1750915}";;
+  UUID "{8d1da488-a190-419d-938a-65ca34c07d27}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14353,11 +14353,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{08617642-d3aa-4aaa-b269-0a6186251941}";
+    UUID "{8f640764-71ba-4a8d-a659-ec91767c551e}";
 ;
 
   END
-  UUID "{71556e7d-9fcc-4f60-989a-a4f8847277ea}";;
+  UUID "{7d2a2384-2a6d-4bb0-aa7f-276bceaf6b49}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14368,11 +14368,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{43aaca0d-bc19-4bb7-880e-1a2e993173c5}";
+    UUID "{c2923fea-ce3a-42a7-9321-24e026ed5beb}";
 ;
 
   END
-  UUID "{703e55ec-5677-4151-8120-b881bc29c209}";;
+  UUID "{8a7e4df1-a67c-4b38-a043-f2232ee32314}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14383,11 +14383,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{bc451c9a-fc6b-42af-b8b2-0230a104da26}";
+    UUID "{604671b6-d643-478d-b252-7c3373e171a0}";
 ;
 
   END
-  UUID "{5b63ba20-11a4-48b8-bc31-e0954e7260bb}";;
+  UUID "{e4c3deb5-9cef-4dc5-b98f-1c4ff9cacb65}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
