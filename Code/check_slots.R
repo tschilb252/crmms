@@ -7,7 +7,7 @@
 # library(yaml)
 library(RWcheck)
 
-check_mtom_output <- function(scenarios,
+check_crmms_output <- function(scenarios,
                               yaml_rule_files,
                               scenario_dir,
                               output_dir,
