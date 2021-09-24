@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.3.1 Patch
-# Created 14:42 September 23, 2021
+# Created 16:20 September 24, 2021
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -8175,6 +8175,7 @@ BEGIN
     END
     UUID "{2a691ba0-1d22-4888-a1a2-22c854c18a03}";;
 
+    BREAKPOINT AFTER_EXEC TRUE;
     FUNCTION       "SpringFlowA-JVolumeUpdate" (  )
     RETURN_TYPE    NUMERIC;
     SCALE_UNITS    "";
@@ -8182,12 +8183,17 @@ BEGIN
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG FALSE;
-    NOTES          "DEVELOPMENT NOTES<br>CKF, 20210923: Removed March from the Jan-Feb period of simulated uncertainty when the April-July volume forecast volume is calculated as the average volume for that period multiplied by the ratio of the current year's forecast volume from the current month through April to the average for the same period. This is done to incorporate some uncertainty and ensure operations were sufficiently conservative should the forecast change. This created an issue when we CRMMS rules did the first pass (WHAM) to solve the Max probable 24MS. A conservative estimation of releases in March can make FG not release enough in April to make the May 1 target. In the future we might revisit how both model simulate uncertainty in the FG forecast, if CRSS should be brought more into line with what is done in CRSS at Lake Powell. Also if CRMMS should simulate this uncertainty at all<br>";
+    NOTES          "DEVELOPMENT NOTES<br><br>CKF, 20210924: In the wet hydrology classification have the spring volume calculation use the forecast, but for all other classifications use the conservative estimate. The observed hydrological forecast uncertainty using empircal data from 2011 and 2017 indicate that the RFC models based on snowpack are more accurate during wet hydrologic classification years. Greater uncertainty exists in the dry-moderately wet years.<br><br>CKF, 20210923: Removed March from the Jan-Feb period of simulated uncertainty when the April-July volume forecast volume is calculated as the average volume for that period multiplied by the ratio of the current year's forecast volume from the current month through April to the average for the same period. This is done to incorporate some uncertainty and ensure operations were sufficiently conservative should the forecast change. This created an issue when we CRMMS rules did the first pass (WHAM) to solve the Max probable 24MS. A conservative estimation of releases in March can make FG not release enough in April to make the May 1 target. In the future we might revisit how both model simulate uncertainty in the FG forecast, if CRSS should be brought more into line with what is done in CRSS at Lake Powell. Also if CRMMS should simulate this uncertainty at all<br>";
     BEGIN
 
-      IF ( "MonthIs"( { "January" , "February" } ) )
+      IF ( "MonthIs"( { "January" , "February" , "March" } ) )
  THEN
-  ( ( "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) / "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) ) * "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) ) COMMENTED_BY "CF/HP: This is to incorporate some uncertainty and ensure operations are <br>sufficiently conservative should the forecast change. During Jan-Feb, the April-J<br>uly volume forecast is calculated as the average volume for that period <br>multiplied by the ratio of the current year's forecast volume from the current <br>month through April to the average for the same period. <br>"
+  IF ( "MonthIs"( { "March" } ) AND $ "KNN_MTOM.BaseFlowHClass" [@"t - 1"] != 4.00000000 )
+  THEN
+   ( ( "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) / "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) ) * "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) ) COMMENTED_BY "CF/HP: This is to incorporate some uncertainty and ensure operations are <br>sufficiently conservative should the forecast change. During Jan-Feb, the April-J<br>uly volume forecast is calculated as the average volume for that period <br>multiplied by the ratio of the current year's forecast volume from the current <br>month through April to the average for the same period. <br>"
+  ELSE
+   "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) COMMENTED_BY "In the wet hydrology classification have the spring volume calculation use the <br>forecast  <br>"
+  ENDIF COMMENTED_BY "CF:<br>"
  ELSE
   "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) COMMENTED_BY "Otherwise, use the April through July forecast and/or actual flows"
  ENDIF;
@@ -8195,6 +8201,7 @@ BEGIN
     END
     UUID "{a2adea20-7d12-45a9-a08e-4e43104dd205}";;
 
+    BREAKPOINT AFTER_EXEC TRUE;
     FUNCTION       "BaseFlowA-JVolumeUpdate" (  )
     RETURN_TYPE    NUMERIC;
     SCALE_UNITS    "";
@@ -8202,12 +8209,17 @@ BEGIN
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG FALSE;
-    NOTES          "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br>MC, 20160913: I don't see how March or May targets are reflected in this function, are they considered elsewhere? That inline comment precedes this documentation.<br>MC, 20170503: August used the same calculation as April-July so I removed its separate IF conditional and just let it calculate under the final ELSE; changed the position of the denominators in the calculations to better reflect how the factor is being calculated as a ratio of average unregulated flows for different periods (not sure it's any clearer, though)";
+    NOTES          "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br><br>CKF, 20210924: Had not previously made same change as in SpringFlowA-JVolume but move it in now: Removed March from the Jan-Feb period of simulated uncertainty when the April-July volume forecast volume is calculated as the average volume for that period multiplied by the ratio of the current year's forecast volume from the current month through April to the average for the same period. This is done to incorporate some uncertainty and ensure operations were sufficiently conservative should the forecast change. This created an issue when we CRMMS rules did the first pass (WHAM) to solve the Max probable 24MS. A conservative estimation of releases in March can make FG not release enough in April to make the May 1 target. In the future we might revisit how both model simulate uncertainty in the FG forecast, if CRSS should be brought more into line with what is done in CRSS at Lake Powell. Also if CRMMS should simulate this uncertainty at all --- Only do this in the wet hydrology classification have the spring volume calculation use the forecast, but for all other classifications use the conservative estimate. The observed hydrological forecast uncertainty using empircal data from 2011 and 2017 indicate that the RFC models based on snowpack are more accurate during wet hydrologic classification years. Greater uncertainty exists in the dry-moderately wet years.<br><br>MC, 20160913: I don't see how March or May targets are reflected in this function, are they considered elsewhere? That inline comment precedes this documentation.<br>MC, 20170503: August used the same calculation as April-July so I removed its separate IF conditional and just let it calculate under the final ELSE; changed the position of the denominators in the calculations to better reflect how the factor is being calculated as a ratio of average unregulated flows for different periods (not sure it's any clearer, though)";
     BEGIN
 
       IF ( "MonthIs"( { "January" , "February" , "March" } ) )
  THEN
-  ( "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) * ( "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) / "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) ) ) COMMENTED_BY "January through April flows change depending on actual inflow, the forecasted unreg inflow and meeting March or May 1 elevation target.<br>Forecast volume is calculated as the sum of the current year's monthly forecast flows from the current month through April multiplied by the <br>ratio of the average April-July flow to the average flow for the current period."
+  IF ( "MonthIs"( { "March" } ) AND $ "KNN_MTOM.BaseFlowHClass" [@"t - 1"] != 4.00000000 )
+  THEN
+   ( "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) * ( "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) / "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) ) ) COMMENTED_BY "CF/HP: This is to incorporate some uncertainty and ensure operations are <br>sufficiently conservative should the forecast change. During Jan-Feb, the April-J<br>uly volume forecast is calculated as the average volume for that period <br>multiplied by the ratio of the current year's forecast volume from the current <br>month through April to the average for the same period. <br>"
+  ELSE
+   "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) COMMENTED_BY "In the wet hydrology classification have the spring volume calculation use the <br>forecast  <br>"
+  ENDIF COMMENTED_BY ""
  ELSE
   IF ( "MonthIs"( { "September" , "October" , "November" , "December" } ) )
   THEN
@@ -14317,32 +14329,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0f5a1715-7394-411d-921b-74da6ab08ad6}";
+    UUID "{e0c4ebdd-f03a-415f-88b4-e5e3e82d6ad6}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{6ffdbca5-2a25-4392-a0a5-401cfbc3fd12}";
+    UUID "{35276407-db36-4c93-be16-69c82daf423d}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{86251d05-7ffb-4c6d-a8c9-e2454cdaa41b}";
+    UUID "{b1539f0c-b615-434e-bca5-9412dcf658ec}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{bd182e1e-e6ef-46fc-a823-a0119dc794c3}";
+    UUID "{38ae6e93-8f56-4ac8-a40d-2dacd9393f98}";
 ;
 
   END
-  UUID "{f614263c-bff5-4a6e-8d2d-abf02e4f1a72}";;
+  UUID "{36589b65-99c2-423e-91ef-fdcc5514efb8}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14353,11 +14365,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{29b54865-88db-4894-a8b0-79abed708d49}";
+    UUID "{a50d4d8f-dbf3-4e71-816d-3befacbe76fa}";
 ;
 
   END
-  UUID "{33d35a07-1f82-4f4b-9176-fbb6667f4ebe}";;
+  UUID "{0319256f-006b-42c2-b25e-ec8c2b9531bb}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14368,11 +14380,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{02abd337-d458-42d2-9811-2c983cf121af}";
+    UUID "{abc5c957-2d7c-4eb9-8abb-4f27ef9a549b}";
 ;
 
   END
-  UUID "{544345d4-a9df-4a83-9dce-0a631c182f13}";;
+  UUID "{14a0550e-4819-43fa-8271-e04f87c043b2}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14383,11 +14395,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{aa64d23e-562b-4df0-968c-5cc142d8a3ca}";
+    UUID "{ac93a411-8ab5-431e-ab4f-143af3fc473b}";
 ;
 
   END
-  UUID "{2d6d1750-2781-4438-a7da-245158169cf8}";;
+  UUID "{257966af-1832-41cf-9fb5-08eb77c131ef}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
