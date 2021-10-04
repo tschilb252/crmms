@@ -1,4 +1,5 @@
 ## Cloud plot for 24-MS and CRMMS-ESP range
+# figures used on CRMMS projections webpage
 rm(list=ls())
 
 # libraries (use install_libs.R script to help install these)
@@ -6,8 +7,8 @@ library(readxl)
 library(tidyverse)
 library(lubridate)
 library(zoo)
-library(rhdb) # install with: remotes::install_github("BoulderCodeHub/rhdb", ref = 'main')
-library(crssplot) # install with: remotes::install_github('rabutler-usbr/crssplot', ref = 'main')
+library(rhdb)
+library(crssplot)
 
 ### --- inputs
 
@@ -20,28 +21,28 @@ max_mrid <- 3163
 # Directories & Data
 crmms_dir = Sys.getenv('CRMMS_DIR')
 data_dir = file.path(crmms_dir, 'Output Data' )
-files = 'CRMMS_EnsembleOutput.xlsm'
+data_fl = 'CRMMS_EnsembleOutput.xlsm'
 
 
 ### --- Process Data
 
 # 24MS SDIs / slots
-slots = c('Powell.Pool Elevation', 'Mead.Pool Elevation')
 sdis <- c("Mead.Pool Elevation" = 1930, "Powell.Pool Elevation" = 1928)
+slots <- names(sdis)
 
 ## ESP - Read in slots/runs
-dfi = NULL
 setwd(data_dir)
-for (i in 1:length(files)){
-  dfj <- NULL
-  for (j in 1:length(slots)) {
-    dfj = read_excel(files[i], sheet = slots[j], skip = 2)[,1:39] %>% na.omit()
-    dfi = rbind.data.frame(dfi, cbind.data.frame(run = run_date[i], slot = slots[j], dfj))
-  }
+dfi <- NULL
+for (j in 1:length(slots)) {
+  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:39] %>% na.omit()
+  dfi = rbind.data.frame(dfi, 
+                         cbind.data.frame(run = run_date, slot = slots[j], 
+                                          dfj))
 }
 
 # reorg ESP data - needs updating to new number of traces
-colnames(dfi)[7:41] <- paste0('ESP ', 1981:2015)
+esp_traces = paste('ESP', 1981:2015)
+colnames(dfi)[7:41] <- esp_traces
 colnames(dfi)[3] <- "Date"
 df_full = dfi %>% 
   mutate(Date = ceiling_date(Date + month(1), "month") - days(1)) %>%
@@ -51,8 +52,9 @@ df_full = dfi %>%
   dplyr::select(-Trace1, -Trace2, -Trace3)
 
 # get end date, trace info
+hist_nMons = 7 # keep 7 months before start date
 end_date = format(ym(run_date) + months(23), "%Y-%m")
-histStart_date = format(ym(run_date) - months(7), "%Y-%m")
+histStart_date = format(ym(run_date) - months(hist_nMons), "%Y-%m") 
 mrid_to_trace <- c("24MS Min", "24MS Max", "24MS Most")
 names(mrid_to_trace) <- c(min_mrid, max_mrid, most_mrid)
 
@@ -77,7 +79,7 @@ df_hdb <- df_hdb %>%
   ) %>%
   select(-sdi, -mrid)
 
-## historical data from hdb
+## get historical data from hdb
 df_hist <- bind_rows(
   hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", histStart_date, run_date),
   hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", histStart_date, run_date)
@@ -93,7 +95,7 @@ df_hist <- df_hist %>%
   ) %>%
   select(-sdi, -mrid) %>% na.omit()
 
-# add to 24MS df
+# add historical data to 24MS df
 df_hdb = rbind(df_hdb, df_hist)
 
 # # save HDB data if needed
@@ -102,31 +104,32 @@ df_hdb = rbind(df_hdb, df_hist)
 #   saveRDS(df_hdb, fl)
 # }
 
-# cloud inputs
+# cloud inputs - naming
 cloud_name = 'CRMMS-ESP Projections Range'
 cloud_model = 'CRMMS' 
 
 # cloud stats from CRMMS-ESP
 df_stat = df_full %>%
-  pivot_longer(cols = paste0('ESP ', 1981:2015), names_to = 'Trace') %>%
+  pivot_longer(cols = esp_traces, names_to = 'Trace') %>%
   group_by(run, slot, Date) %>%
   summarise(cloud.max = max(value),
             cloud.min = min(value)) %>%
   mutate(Cloud = factor(cloud_name), Date= as.yearmon(Date)) 
 
 # ESP traces for figs
-tracesAdd = paste0('ESP ', 1981:2015)
-esptrace_linetype = 'solid' #'dashed'
 df_24MS = df_full %>% 
-  select(all_of(c(colnames(df_full)[1:6], tracesAdd))) %>%
-  pivot_longer(cols = all_of(tracesAdd), names_to = 'Trace') %>%
+  select(all_of(c(colnames(df_full)[1:6], esp_traces))) %>%
+  pivot_longer(cols = all_of(esp_traces), names_to = 'Trace') %>%
   # add in the 24MS data
   bind_rows(df_hdb) %>%
   mutate(Cloud = factor(cloud_name))
 
 # connect historical and initial conditions
-df_init = df_24MS %>% filter(Date == run_date) %>% select(-value, -Date) %>% distinct()
-df_hist2 = df_hist %>% filter(Date == max(Date)) %>%
+df_init = df_24MS %>% 
+  filter(Date == run_date) %>% 
+  select(-value, -Date) %>% distinct()
+df_hist2 = df_hist %>% 
+  filter(Date == max(Date)) %>%
   select(slot, Date, value)
 df_initAdd = left_join(df_init, df_hist2, by = 'slot')
 df_24MS <- rbind(df_24MS, df_initAdd)
@@ -142,7 +145,7 @@ lab_names <- c("24-Month Study Minimum Probable",
                rep(esp_label, 35))
 
 names(lab_names) <- c("24MS Min", "24MS Max", "24MS Most", "Historical", 
-                      paste("ESP", 1981:2015))
+                      esp_traces)
 nn <- lab_names[1:5]
 
 # Min, Max, Most, ESP is order of these colors, size, linetype
