@@ -1,15 +1,12 @@
 ## Cloud plot for 24-MS and CRMMS-ESP range
 rm(list=ls())
 
-# compare CRMMS ensemble mode results from July
+# libraries (use install_libs.R script to help install these)
 library(readxl)
 library(tidyverse)
-library(patchwork)
 library(lubridate)
-library(CRSSIO)
 library(zoo)
 library(rhdb) # install with: remotes::install_github("BoulderCodeHub/rhdb", ref = 'main')
-library(RWDataPlyr)
 library(crssplot) # install with: remotes::install_github('rabutler-usbr/crssplot', ref = 'main')
 
 ### --- inputs
@@ -23,18 +20,8 @@ max_mrid <- 3163
 # Directories & Data
 crmms_dir = Sys.getenv('CRMMS_DIR')
 data_dir = file.path(crmms_dir, 'Output Data' )
-files = c('CRMMS_EnsembleOutput.xlsm') 
+files = 'CRMMS_EnsembleOutput.xlsm'
 
-# CRMMS-ESP Results - UPDATE files/dirs/months!!
-# fig_dir = file.path('C:/Users/sabaker/Projects/Models/Projection Analyses/figures', 
-#                     paste0(run_date))
-# dir.create(fig_dir, showWarning = F) # create fig_dir if doesnt exist
-
-
-
-# cloud inputs
-cloud_name = 'CRMMS-ESP Projections Range'
-cloud_model = 'CRMMS' 
 
 ### --- Process Data
 
@@ -110,10 +97,14 @@ df_hist <- df_hist %>%
 df_hdb = rbind(df_hdb, df_hist)
 
 # # save HDB data if needed
-# fl = file.path('data', paste0(run_date, '_24MS.rds'))
+# fl = file.path(paste0(run_date, '_24MS.rds'))
 # if (!file.exists(fl)) {
 #   saveRDS(df_hdb, fl)
 # }
+
+# cloud inputs
+cloud_name = 'CRMMS-ESP Projections Range'
+cloud_model = 'CRMMS' 
 
 # cloud stats from CRMMS-ESP
 df_stat = df_full %>%
@@ -150,7 +141,8 @@ lab_names <- c("24-Month Study Minimum Probable",
                "Historical",
                rep(esp_label, 35))
 
-names(lab_names) <- c("24MS Min", "24MS Max", "24MS Most", "Historical", paste("ESP", 1981:2015))
+names(lab_names) <- c("24MS Min", "24MS Max", "24MS Most", "Historical", 
+                      paste("ESP", 1981:2015))
 nn <- lab_names[1:5]
 
 # Min, Max, Most, ESP is order of these colors, size, linetype
@@ -171,8 +163,11 @@ df_24MS_m = df_24MS %>% filter(slot == 'Mead.Pool Elevation') %>%
   mutate(trace_labels = lab_names[Trace])
 
 # powell tier for figures
-Timestep = matrix(seq.Date(as.Date('2007-10-1'), as.Date('2026-09-1'), 'months')-1,byrow = T, ncol = 12)
-Timestep = as.Date(as.vector(t(cbind(Timestep[,1], Timestep))), origin = '1970-01-01')[2:length(Timestep)]
+Timestep = matrix(seq.Date(as.Date('2007-10-1'), 
+                           as.Date('2026-09-1'), 'months') - 1,
+                  byrow = T, ncol = 12)
+Timestep = as.Date(as.vector(t(cbind(Timestep[,1], Timestep))), 
+                   origin = '1970-01-01')[2:length(Timestep)]
 powell_line = data.frame(
   Timestep = as.POSIXct(Timestep),
   Eq_elev = rep(c(3636, 3639, 3642, 3643, 3645, 3646, 3648, 3649, 3651, 3652, 
@@ -363,5 +358,5 @@ gg <-
 
 crssplot:::add_logo_vertical(gg, .87, .01, .97, .12)
 
-ggsave(file.path(data_dir, "crmmsCloud_mead_.png"), 
+ggsave(file.path(data_dir, "crmmsCloud_mead.png"), 
        width = 11, height = 8)
