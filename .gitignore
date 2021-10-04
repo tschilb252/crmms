@@ -19,6 +19,9 @@ MTOM_Testbed_*.rsm
 #excel backup files
 *~$*
 
+# png files
+*.png
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
