@@ -34,15 +34,15 @@ slots <- names(sdis)
 setwd(data_dir)
 dfi <- NULL
 for (j in 1:length(slots)) {
-  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:39] %>% na.omit()
+  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:34] %>% na.omit()
   dfi = rbind.data.frame(dfi, 
                          cbind.data.frame(run = run_date, slot = slots[j], 
                                           dfj))
 }
 
 # reorg ESP data - needs updating to new number of traces
-esp_traces = paste('ESP', 1981:2015)
-colnames(dfi)[7:41] <- esp_traces
+esp_traces = paste('ESP', 1991:2020)
+colnames(dfi)[7:36] <- esp_traces
 colnames(dfi)[3] <- "Date"
 df_full = dfi %>% 
   mutate(Date = ceiling_date(Date + month(1), "month") - days(1)) %>%
