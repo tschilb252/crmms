@@ -1,8 +1,10 @@
+## Not Necessary to run anymore with renv!!
+
+
 ## Packages used in the CRMMS repository 
 #  This process can sometimes produce errors depending on the version of 
 #  packages that you have installed. If one of the packages fails to install,
 #  try restarting R: Session -> Restart R (in Rstudio) 
-
 listOfPackages <- c("remotes", "RWDataPlyr", "tidyverse", "lubridate", "RWcheck",
                     "readxl", "zoo", "rhdb", "CRSSIO", "CoRiverNF", "crssplot")
 
