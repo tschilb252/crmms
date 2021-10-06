@@ -6,18 +6,18 @@ ruleset/
 sct/
 SupportingData/
 temp/
-
+RW Files/
 
 # Ignore RiverSMART folders
 Hydrology/
 Working/
 ScenarioSet/
 Scenario/
+
 # ignore RiverSMART backup files and RS files
 *.rsm
 *.bak.rsm
 # riverware 
-model/riverwareObjects/
 # ignore other backup files of zipped rules and models
 *.bak.gz
 *.bak
