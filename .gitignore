@@ -49,7 +49,6 @@ Icon
 # RStudio Folder
 .RData
 .Rhistory
-**.Rproj
 .Rproj.user
 
 !RW Files*

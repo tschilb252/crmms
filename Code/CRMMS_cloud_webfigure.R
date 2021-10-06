@@ -1,8 +1,13 @@
-## Cloud plot for 24-MS and CRMMS-ESP range
-# figures used on CRMMS projections webpage
+# ============================================================================
+# Cloud plot for 24-MS and CRMMS-ESP Results
+#   Figures for 2-Year Probabilistic Projections webpage 
+#   
+#   Steps: Open CRMMS.Rproj; Read messages (run renv::restore() if prompted to);
+#          Update Inputs (run_date, MRIDs for min/most/max); Run script
+# ==============================================================================
 rm(list=ls())
 
-# libraries (use install_libs.R script to help install these)
+# libraries (when opening Rproj)
 library(readxl)
 library(tidyverse)
 library(lubridate)
@@ -10,55 +15,56 @@ library(zoo)
 library(rhdb)
 library(crssplot)
 
-### --- inputs
+### --- Inputs
 
-# 24-MS MRIDs & Date - UPDATE!
+## 24-MS MRIDs & Date - UPDATE!
 run_date = c('2021-09')
 most_mrid <- 3161 
 min_mrid <- 3162
 max_mrid <- 3163
 
-# Directories & Data
-crmms_dir = Sys.getenv('CRMMS_DIR')
-data_dir = file.path(crmms_dir, 'Output Data' )
+## Directories & Data
+# Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
+data_dir = 'Output Data'  # path from current CRMMS directory
 data_fl = 'CRMMS_EnsembleOutput.xlsm'
 
 
 ### --- Process Data
 
-# 24MS SDIs / slots
+## SDIs / slots / 24MS trace info
 sdis <- c("Mead.Pool Elevation" = 1930, "Powell.Pool Elevation" = 1928)
 slots <- names(sdis)
+mrid_to_trace <- c("24MS Min", "24MS Max", "24MS Most")
+names(mrid_to_trace) <- c(min_mrid, max_mrid, most_mrid)
 
-## ESP - Read in slots/runs
+## CRMMS-ESP - Read in slots
 setwd(data_dir)
 dfi <- NULL
 for (j in 1:length(slots)) {
-  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:39] %>% na.omit()
+  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:34] %>% na.omit()
   dfi = rbind.data.frame(dfi, 
                          cbind.data.frame(run = run_date, slot = slots[j], 
                                           dfj))
 }
 
-# reorg ESP data - needs updating to new number of traces
-esp_traces = paste('ESP', 1981:2015)
-colnames(dfi)[7:41] <- esp_traces
+## Reorg ESP data
+esp_traces = paste('ESP', 1991:2020)
+colnames(dfi)[7:36] <- esp_traces
 colnames(dfi)[3] <- "Date"
 df_full = dfi %>% 
   mutate(Date = ceiling_date(Date + month(1), "month") - days(1)) %>%
+  # keep first 24 months of data
   filter(Date < min(Date) + months(24)) %>%
   mutate(Date = as.yearmon(Date)) %>%
   # drop the min/most/max columns from CRMMS-Ensemble Mode
   dplyr::select(-Trace1, -Trace2, -Trace3)
 
-# get end date, trace info
+## Historical data info / end date
 hist_nMons = 7 # keep 7 months before start date
 end_date = format(ym(run_date) + months(23), "%Y-%m")
 histStart_date = format(ym(run_date) - months(hist_nMons), "%Y-%m") 
-mrid_to_trace <- c("24MS Min", "24MS Max", "24MS Most")
-names(mrid_to_trace) <- c(min_mrid, max_mrid, most_mrid)
 
-# get 24-MS data from hdb - no vpn needed
+## Read 24-MS data from hdb - no vpn needed
 df_hdb <- bind_rows(
   hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", run_date, end_date, most_mrid),
   hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, most_mrid),
@@ -68,47 +74,44 @@ df_hdb <- bind_rows(
   hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, max_mrid)
 )
 
-# reorg 24-MS data
+## Reorg 24-MS data
 df_hdb <- df_hdb %>%
   mutate(slot = names(sdis)[match(sdi, sdis)],
          run = run_date,
          Trace = mrid_to_trace[as.character(mrid)]) %>%
   rename(Date = time_step) %>%
-  mutate(
-    Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))
-  ) %>%
+  mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
   select(-sdi, -mrid)
 
-## get historical data from hdb
+## Read historical data from hdb
 df_hist <- bind_rows(
   hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", histStart_date, run_date),
   hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", histStart_date, run_date)
 )
-# reorg 24-MS data
+
+## Reorg histrical data
 df_hist <- df_hist %>%
   mutate(slot = names(sdis)[match(sdi, sdis)],
          run = run_date,
          Trace = 'Historical') %>%
   rename(Date = time_step) %>%
-  mutate(
-    Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))
-  ) %>%
+  mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
   select(-sdi, -mrid) %>% na.omit()
 
-# add historical data to 24MS df
+## Add historical data to 24MS df
 df_hdb = rbind(df_hdb, df_hist)
 
-# # save HDB data if needed
+# ## Save HDB data if needed
 # fl = file.path(paste0(run_date, '_24MS.rds'))
 # if (!file.exists(fl)) {
 #   saveRDS(df_hdb, fl)
 # }
 
-# cloud inputs - naming
+## Cloud inputs - naming
 cloud_name = 'CRMMS-ESP Projections Range'
 cloud_model = 'CRMMS' 
 
-# cloud stats from CRMMS-ESP
+## Cloud stats from CRMMS-ESP
 df_stat = df_full %>%
   pivot_longer(cols = esp_traces, names_to = 'Trace') %>%
   group_by(run, slot, Date) %>%
@@ -116,15 +119,15 @@ df_stat = df_full %>%
             cloud.min = min(value)) %>%
   mutate(Cloud = factor(cloud_name), Date= as.yearmon(Date)) 
 
-# ESP traces for figs
+## ESP traces for figs
 df_24MS = df_full %>% 
-  select(all_of(c(colnames(df_full)[1:6], esp_traces))) %>%
+  select(c("slot", "Date", all_of(esp_traces))) %>%
   pivot_longer(cols = all_of(esp_traces), names_to = 'Trace') %>%
   # add in the 24MS data
   bind_rows(df_hdb) %>%
-  mutate(Cloud = factor(cloud_name))
+  mutate(Cloud = factor(cloud_name)) 
 
-# connect historical and initial conditions
+## Connect historical data and initial conditions
 df_init = df_24MS %>% 
   filter(Date == run_date) %>% 
   select(-value, -Date) %>% distinct()
@@ -135,7 +138,8 @@ df_initAdd = left_join(df_init, df_hist2, by = 'slot')
 df_24MS <- rbind(df_24MS, df_initAdd)
 
 
-###----------------- PLOTTING
+### ----------------- PLOTTING
+
 ## naming for figures
 esp_label <- "CRMMS-ESP Projections \n(35 projections)"
 lab_names <- c("24-Month Study Minimum Probable", 
@@ -148,7 +152,7 @@ names(lab_names) <- c("24MS Min", "24MS Max", "24MS Most", "Historical",
                       esp_traces)
 nn <- lab_names[1:5]
 
-# Min, Max, Most, ESP is order of these colors, size, linetype
+## Min, Max, Most, ESP is order of these colors, size, linetype
 custom_colors <- c('#DA3139', '#104E8B', '#26AE44', 'grey20', 'grey43')
 custom_size <- c(rep(1.2, 3), 1, 0.5)
 custom_lt <- c(rep(2, 3), 1, 1)
@@ -157,7 +161,7 @@ names(custom_colors) <- names(custom_size) <- names(custom_lt) <-
   names(custom_alpha) <- nn
 cloud_color <- 'grey85'
 
-# filter data for res plots
+## Filter data for res plots
 df_stat_p = df_stat %>% filter(slot == 'Powell.Pool Elevation')
 df_stat_m = df_stat %>% filter(slot == 'Mead.Pool Elevation')
 df_24MS_p = df_24MS %>% filter(slot == 'Powell.Pool Elevation') %>%
@@ -165,7 +169,7 @@ df_24MS_p = df_24MS %>% filter(slot == 'Powell.Pool Elevation') %>%
 df_24MS_m = df_24MS %>% filter(slot == 'Mead.Pool Elevation') %>%
   mutate(trace_labels = lab_names[Trace])
 
-# powell tier for figures
+## Powell tier for figures
 Timestep = matrix(seq.Date(as.Date('2007-10-1'), 
                            as.Date('2026-09-1'), 'months') - 1,
                   byrow = T, ncol = 12)
@@ -181,7 +185,7 @@ powell_line = data.frame(
   stringsAsFactors = FALSE) %>%
   mutate(Cloud = factor(cloud_name), Timestep = as.yearmon(Timestep)) 
 
-# Powell --------------------
+## Powell --------------------
 p_breaks <- seq(3350, 3725, 25)
 p_breaks2 <- seq(3350, 3725, 5)
 yy <- NULL #c(3400, 3675) # NULL for default ylim
@@ -268,12 +272,12 @@ gg <-
     plot.subtitle = element_text(hjust = 0.5, size = 13)
   )
 
-crssplot:::add_logo_vertical(gg, .87, .01, .97, .12)
+crssplot:::add_logo_vertical(gg, .87, .01, .97, .12) # add usbr logo
 
-ggsave(file.path(data_dir, "crmmsCloud_powell.png"), 
+ggsave("crmmsCloud_powell.png", 
        width = 11, height = 8)
 
-# Mead -------------------------
+## Mead -------------------------
 m_breaks <- seq(900, 1250, 25)
 m_breaks2 <- seq(900, 1250, 5)
 yy <- c(1000, 1150) # NULL for default ylimit
@@ -359,7 +363,7 @@ gg <-
     plot.subtitle = element_text(hjust = 0.5, size = 13)
   )
 
-crssplot:::add_logo_vertical(gg, .87, .01, .97, .12)
+crssplot:::add_logo_vertical(gg, .87, .01, .97, .12) # add usbr logo
 
-ggsave(file.path(data_dir, "crmmsCloud_mead.png"), 
+ggsave("crmmsCloud_mead.png", 
        width = 11, height = 8)
