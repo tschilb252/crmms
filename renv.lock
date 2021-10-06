@@ -97,10 +97,10 @@
     },
     "Rcpp": {
       "Package": "Rcpp",
-      "Version": "1.0.6",
+      "Version": "1.0.7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "dbb5e436998a7eba5a9d682060533338"
+      "Hash": "dab19adae4440ae55aa8a9d238b246bb"
     },
     "askpass": {
       "Package": "askpass",
@@ -627,10 +627,10 @@
     },
     "processx": {
       "Package": "processx",
-      "Version": "3.4.1",
+      "Version": "3.5.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3fcec01e55910997ae663883cc66a989"
+      "Hash": "0cbca2bc4d16525d009c4dbba156b37c"
     },
     "progress": {
       "Package": "progress",
@@ -926,10 +926,10 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.14",
+      "Version": "0.26",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "60e146e3aba37a547e12306dc3da77a6"
+      "Hash": "a270216f7ffda25e53298293046d1d05"
     },
     "xml2": {
       "Package": "xml2",
