@@ -1,8 +1,8 @@
 # RiverWare_Ruleset 8.3.1 Patch
-# Created 11:55 November 5, 2021
+# Created 14:14 November 5, 2021
 # 
 RULESET
-NAME "CRMMS Ruleset";
+NAME "CRMMS Ruleset 1";
 AGENDA_ORDER ASCENDING;
 DESCRIPTION "";
 PRECISION   8;
@@ -4668,10 +4668,10 @@ BEGIN
     UUID "{ad06f8d1-9152-457d-bd20-cb2228db89fe}";;
 
     RULE                 "Havasu Rule Curve";
-    DESCRIPTION          "DESCRIPTION: In any month except the Start Timestep, set the Havasu outflow such that the reservoir pool elevation target is met. For testbed hindcasts, this rule executes in the Start Timestep to solve for outflow which is not input using the slot HavasuOutflow.BHOPSParkerOutflow.<br><br>SLOTS SET: Havasu.Outflow";
+    DESCRIPTION          "DESCRIPTION: In any month except the Start Timestep, set the Havasu outflow such that the reservoir pool elevation target is met. The outflow is contrained by the max and min releases for Havasu and then by the inactive and live capacityl For testbed hindcasts, this rule executes in the Start Timestep to solve for outflow which is not input using the slot HavasuOutflow.BHOPSParkerOutflow.<br><br>SLOTS SET: Havasu.Outflow";
     ACTIVE               TRUE;
     RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) >= 1.00000000 AND ( ( ( @"t" > @"Start Timestep" AND $ "MTOMRunType.RunType" [] == 0.00000000 ) COMMENTED_BY "Operational MTOM Mode  <br>" ) OR ( ( ( $ "MTOMRunType.RunType" [] == 1.00000000 OR $ "MTOMRunType.RunType" [] == 2.00000000 ) AND @"t" >= @"Start Timestep" ) OR ( "Is24MonthStudy"(  ) AND @"t" > @"Start Timestep + 1" ) COMMENTED_BY "24 MS mode<br>" ) COMMENTED_BY "For testbed hindcasts or dev testing tool, this rule solves for Havasu.Outflow in Start Timestep  <br>" );
-    NOTES                "AUTHOR, DATE: Unknown<br>Unknown Commenter, Unknown Date: This rule could just as easily use a target elevation rather than a storage. It would probably be safer to do so.<br><br>S.Baker 06/20/2018: Added execution constraint to solve this rule at start timestep for Testbed simulations.<br>SB 07/08/2019: Updated constraints to have Run Type not equal to 0 (allows for no dependence on BHOPS during development testing). <br>A. Pivarnik, 20200706: There was no change to this rule in the integration effort. The rule in 24 MS and MTOM were the same. Added execution constraing to fire in 24 MS mode<br>A. Pivarnik, 20200731: Adjusted eecution constraints to fire correctly depending on model run type";
+    NOTES                "AUTHOR, DATE: Unknown<br>Unknown Commenter, Unknown Date: This rule could just as easily use a target elevation rather than a storage. It would probably be safer to do so.<br><br>S.Baker 06/20/2018: Added execution constraint to solve this rule at start timestep for Testbed simulations.<br>SB 07/08/2019: Updated constraints to have Run Type not equal to 0 (allows for no dependence on BHOPS during development testing). <br>A. Pivarnik, 20200706: There was no change to this rule in the integration effort. The rule in 24 MS and MTOM were the same. Added execution constraing to fire in 24 MS mode<br>A. Pivarnik, 20200731: Adjusted execution constraints to fire correctly depending on model run type<br>S. Baker, 20211104: adjusted the storage input in function to ensure the releases are not negative.";
     BEGIN
 
       $ "Havasu.Outflow" [] := "SolveOutflow"( % "Havasu", $ "Havasu.Inflow" [], "ComputeStorageAtGivenOutflowConstrained"( % "Havasu", "ComputeOutflowAtRuleCurveStorage"( % "Havasu" ) ), $ "Havasu.Storage" [@"t - 1"], @"t" );
@@ -4692,10 +4692,10 @@ BEGIN
     UUID "{33b3442f-e3fe-4cc1-bf0d-3e91221f5a39}";;
 
     RULE                 "Mohave Rule Curve";
-    DESCRIPTION          "DESCRIPTION: Set the Outflow from Mohave to what is necesary to hit the Mohave Target Storages. This rule passes the inflow necessary to meet downstream demands and preserve the target storage for Mohave.<br><br>SLOTS SET: Mohave.Outflow<br><br><br><br>";
+    DESCRIPTION          "DESCRIPTION: Set the Outflow from Mohave to what is necesary to hit the Mohave Target Storages. This rule passes the inflow necessary to meet downstream demands and preserve the target storage for Mohave.The outflow is contrained by the max and min releases for Mohave and then by the inactive and live capacityl <br><br>SLOTS SET: Mohave.Outflow<br><br><br><br>";
     ACTIVE               TRUE;
     RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) >= 1.00000000;
-    NOTES                "AUTHOR, DATE: Unknown<br>Unknown Commenter, Unknow Date: This rule could just as easily use a target elevation rather than a storage. It would probably be safer to do so.<br><br>A. Pivarnik 20200706: There was no change to this rule in the integration effort. The rule in 24 MS and MTOM were the same";
+    NOTES                "AUTHOR, DATE: Unknown<br>Unknown Commenter, Unknow Date: This rule could just as easily use a target elevation rather than a storage. It would probably be safer to do so.<br><br>A. Pivarnik 20200706: There was no change to this rule in the integration effort. The rule in 24 MS and MTOM were the same<br>S. Baker, 20211104: adjusted the storage input in function to ensure the releases are not negative.";
     BEGIN
 
       $ "Mohave.Outflow" [] := "SolveOutflow"( % "Mohave", $ "Mohave.Inflow" [], "ComputeStorageAtGivenOutflowConstrained"( % "Mohave", "ComputeOutflowAtRuleCurveStorage"( % "Mohave" ) ), $ "Mohave.Storage" [@"t - 1"], @"t" );
@@ -14073,32 +14073,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{a82e4104-fa14-44c1-ac58-82d168273832}";
+    UUID "{e428ac83-b850-4dff-9551-25ae3fad1a54}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{4f507419-cf08-417c-9b20-024934c1e1f6}";
+    UUID "{f77e9941-86fa-42f5-bce3-45f53d17e1b5}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{dee10bae-89b9-4116-84a9-b3930d57358d}";
+    UUID "{ffbce9af-710b-4ba0-a9bd-c3dcec24338c}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7f29ff34-8f38-4ff9-84aa-53e3ee4cd0de}";
+    UUID "{99703eba-caa0-4c6f-8843-98e9bead60ef}";
 ;
 
   END
-  UUID "{af2e1b11-6387-4d9b-bf16-885c18589ae1}";;
+  UUID "{54f8177e-d678-4d2f-b1ac-55e0751a0afc}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14109,11 +14109,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{57f8d3fe-9036-4cfe-83d9-851862e547d4}";
+    UUID "{1fb1641c-8a11-4240-bec0-ac1238648036}";
 ;
 
   END
-  UUID "{d83c3a01-de72-49bb-82c1-1f4da258abcc}";;
+  UUID "{6915dccc-20a3-4cfc-af16-c880e865e92e}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14124,11 +14124,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{48486159-8c5b-4c73-957f-9ee1920feace}";
+    UUID "{cca32714-218a-4588-b15e-1fa2c587977f}";
 ;
 
   END
-  UUID "{f2f5c7e8-6e96-4a9f-a608-d4d00b4ad6ea}";;
+  UUID "{1488db2d-8b81-4f87-9597-ad119d877a21}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14139,11 +14139,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{eb8d3b0b-34f9-488e-bb32-96d1762c626d}";
+    UUID "{87605894-1fca-488c-9520-03b4dcdbd803}";
 ;
 
   END
-  UUID "{7fccdd82-9666-47ee-bd90-5de047c47249}";;
+  UUID "{f5601409-3103-4a4b-9dd2-edf92a0be923}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
