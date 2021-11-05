@@ -13,7 +13,7 @@ dev_scen_nm <- c("ModelDev,RulesDev", "Dev")
 slots_default <- c(
   apply(expand.grid(
     c('Powell', 'Mead', 'FlamingGorge', 'BlueMesa','Navajo', 'Fontenelle', 
-      'Crystal','MorrowPoint','TaylorPark'),
+      'Crystal','MorrowPoint','TaylorPark', 'Mohave', 'Havasu'),
     c('Outflow', 'Inflow','Storage','Pool Elevation')),   # slots
     1, paste, collapse = "."),
   "PowellData.ReleaseTier", "Shortage.Shortage Flag")
