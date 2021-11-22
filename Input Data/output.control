@@ -263,6 +263,9 @@ ICS Credits.AnnualCreationEC_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualCreationEC_IID: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualCreationEC_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualCreationEC_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationSysEff_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationSysEff_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationSysEff_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualCreationImp_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualCreationTrib_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualCreationDCP_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
@@ -280,6 +283,7 @@ ICS Credits.AnnualDeliveryEC_GRIC: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualDeliveryEC_MVIDD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
 ICS Credits.AnnualDeliveryEC_WM: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
 ICS Credits.AnnualDeliverySysEff_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliverySysEff_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualICSDelivery_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
 
 ICS Credits.AnnualDeliveryBiNat_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
