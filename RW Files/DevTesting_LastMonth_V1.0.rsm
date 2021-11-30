@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CADSWES, University of Colorado, http://cadswes.colorado.edu/
+RiverSMART 8.3.1
+Document created on Wed Nov 3 11:19:13 2021
+Document created by saba3704
+-->
+<Study uuid="{4cbeefc3-df67-4f78-b8a2-0f28165e21ca}" mode="fullstudy">
+<version patch="1" major="8" minor="3"><type>RiverSMART</type>
+</version>
+<pluginList><plugin patch="0" major="1" minor="0"><type>CSV Combiner</type>
+</plugin>
+<plugin patch="0" major="1" minor="1"><type>GPAT Graphs</type>
+</plugin>
+<plugin patch="0" major="1" minor="1"><type>Hydrology Simulator</type>
+</plugin>
+<plugin patch="0" major="1" minor="1"><type>R Plugin</type>
+</plugin>
+<plugin patch="0" major="1" minor="0"><type>RDF Annualizer</type>
+</plugin>
+<plugin patch="0" major="1" minor="0"><type>RDF To Excel</type>
+</plugin>
+<plugin patch="0" major="1" minor="1"><type>RiverWare</type>
+</plugin>
+<plugin patch="0" major="1" minor="1"><type>RiverWare DMI</type>
+</plugin>
+<plugin patch="0" major="1" minor="0"><type>RiverWare DMI Sequence</type>
+</plugin>
+<plugin patch="0" major="1" minor="2"><type>RiverWare MRM</type>
+</plugin>
+<plugin patch="0" major="1" minor="1"><type>RiverWare Model</type>
+</plugin>
+<plugin patch="0" major="1" minor="0"><type>RiverWare Policy</type>
+</plugin>
+<plugin patch="0" major="1" minor="0"><type>RiverWare Run Range</type>
+</plugin>
+<plugin patch="0" major="1" minor="1"><type>Spatial Disagg</type>
+</plugin>
+<plugin patch="0" major="1" minor="1"><type>Temporal Disagg</type>
+</plugin>
+</pluginList>
+<fileInfo><createdOn>Wed Nov 3 11:19:13 2021</createdOn>
+<createdBy>saba3704</createdBy>
+</fileInfo>
+<name></name>
+<studyDirPath>$CRMMS_DIR</studyDirPath>
+<diagEnabled>1</diagEnabled>
+<archive remErr="0" arch="0" time="sim" remArch="0"></archive>
+<notify stop="0"><afterEach flag="0"></afterEach>
+<afterOk flag="0"></afterOk>
+<afterErr flag="0"></afterErr>
+<afterAll flag="0"></afterAll>
+</notify>
+<scene><fontSize>14</fontSize>
+<fontColor>#ff0000</fontColor>
+</scene>
+<graph numNode="9" eventCnt="6" textCnt="3" fileCnt="0"><eventNode type="RiverWare" nodeNum="0"><scenePos y="2922.5" x="2339.5"></scenePos>
+<eventConfig><uuid>{ebc0cd54-8561-47bd-a5e2-5799c704b6c9}</uuid>
+<name>RiverWare</name>
+<placeholder>0</placeholder>
+<scope>event</scope>
+<config><rwProc><rwExec showUi="1">C:/Program Files/CADSWES/RiverWare 8.3.1/riverware.exe</rwExec>
+<userCmd cmdFlag="0" cmdLoc="modelload"><cmdText></cmdText>
+</userCmd>
+</rwProc>
+</config>
+</eventConfig>
+</eventNode>
+<eventNode type="RiverWare Policy" nodeNum="1"><scenePos y="2873.5" x="2184.5"></scenePos>
+<eventConfig><uuid>{96a2efd7-d0b1-47d4-bc99-7dc3ccf94557}</uuid>
+<name>Rules1.6_dev</name>
+<placeholder>0</placeholder>
+<scope>event</scope>
+<config><ParamDat><RplPolicy><RplSetFile>$CRMMS_DIR/RW Files/CRMMS_V1.6_9000.rls</RplSetFile>
+</RplPolicy>
+</ParamDat>
+</config>
+</eventConfig>
+</eventNode>
+<eventNode type="RiverWare MRM" nodeNum="2"><scenePos y="3038.5" x="2265.5"></scenePos>
+<eventConfig><uuid>{26185c39-b957-4dd5-84ab-92f924124ecb}</uuid>
+<name>MRM_RFCfcst</name>
+<placeholder>0</placeholder>
+<scope>event</scope>
+<config><mrmConfigName>Run_CBRFC_Ensemble_Fcst_RFC</mrmConfigName>
+<mrmSaveModel policy="afterall" flag="0"></mrmSaveModel>
+</config>
+</eventConfig>
+</eventNode>
+<eventNode type="RiverWare Model" nodeNum="3"><scenePos y="2780.5" x="2332.5"></scenePos>
+<eventConfig><uuid>{7b22174c-ec35-4b7c-afe9-0db65f72a25c}</uuid>
+<name>Offial_mdl</name>
+<placeholder>0</placeholder>
+<scope>event</scope>
+<config><ParamDat>
+<ModelParams>
+<ModelFile>$CRMMS_DIR/RW Files/CRMMS_V1.9.202110_ESP.mdl</ModelFile>
+</ModelParams>
+</ParamDat>
+</config>
+</eventConfig>
+</eventNode>
+<eventNode type="RiverWare Policy" nodeNum="4"><scenePos y="2794.5" x="2185.5"></scenePos>
+<eventConfig><uuid>{b6e59ecd-67c4-41b6-b03d-1fea81e5fdc6}</uuid>
+<name>Rules1.6</name>
+<placeholder>0</placeholder>
+<scope>event</scope>
+<config><ParamDat><RplPolicy><RplSetFile>$CRMMS_DIR/RW Files/CRMMS_V1.6.rls</RplSetFile>
+</RplPolicy>
+</ParamDat>
+</config>
+</eventConfig>
+</eventNode>
+<textNode nodeNum="5"><scenePos y="2790" x="2526"></scenePos>
+<text>**The model RFC MRM needs to be update to run this study!
+Make sure to open the MRM toggle on the 'load from file' 
+button in the policy tab and resave the model.</text>
+<fontSize>8</fontSize>
+<fontColor>#ff0000</fontColor>
+</textNode>
+<textNode nodeNum="6"><scenePos y="2688" x="2171"></scenePos>
+<text>Models &amp; Rulesets</text>
+<fontSize>14</fontSize>
+<fontColor>#000000</fontColor>
+</textNode>
+<textNode nodeNum="7"><scenePos y="2719" x="2173"></scenePos>
+<text>Development model/rules are compared against a baseline model/rules. 
+Overwrite the model/rule files in these events so you dont have to 
+regenerate/hide scenarios. </text>
+<fontSize>8</fontSize>
+<fontColor>#808080</fontColor>
+</textNode>
+<eventNode type="RiverWare Model" nodeNum="8"><scenePos y="2778.5" x="2427.5"></scenePos>
+<eventConfig><uuid>{bef4dae0-6805-4d10-a696-7dbc794a6a0d}</uuid>
+<name>Dev_mdl</name>
+<placeholder>0</placeholder>
+<scope>event</scope>
+<config><ParamDat>
+<ModelParams>
+<ModelFile>$CRMMS_DIR/RW Files/CRMMS_V1.9.202110_ESP.mdl</ModelFile>
+</ModelParams>
+</ParamDat>
+</config>
+</eventConfig>
+</eventNode>
+<nodeLink to="0" from="1"><file type="RW Policy Configuration"><uuid>{611b53d7-162d-4cbd-970a-7afcba36fbc6}</uuid>
+<fileName>_StudyEventOutput_.xml</fileName>
+</file>
+</nodeLink>
+<nodeLink to="0" from="2"><file type="RW MRM Configuration"><uuid>{7e6cfad1-0c3a-42c0-a326-232ecf9136a2}</uuid>
+<fileName>_StudyEventOutput_.xml</fileName>
+</file>
+</nodeLink>
+<nodeLink to="0" from="3"><file type="RW Model Configuration"><uuid>{dc18d46e-bbdc-4045-8bc3-57c9b7d7a1fd}</uuid>
+<fileName>_StudyEventOutput_.xml</fileName>
+</file>
+</nodeLink>
+<nodeLink to="0" from="4"><file type="RW Policy Configuration"><uuid>{5fd3b484-238a-4c89-afff-a4cfb5c3c25b}</uuid>
+<fileName>_StudyEventOutput_.xml</fileName>
+</file>
+</nodeLink>
+<nodeLink to="0" from="8"><file type="RW Model Configuration"><uuid>{d3f247e5-0ecb-48dd-b420-9f27f7301029}</uuid>
+<fileName>_StudyEventOutput_.xml</fileName>
+</file>
+</nodeLink>
+</graph>
+<eventPlaceMod></eventPlaceMod>
+<eventIntMod></eventIntMod>
+<eventExtMod></eventExtMod>
+<scenarioMgr><scenarioList timestamp="1635879523"><nameList sepChar=","><type>MRM Config</type>
+<type>Model</type>
+<type>Policy</type>
+</nameList>
+<inactiveList></inactiveList>
+<view>ascending</view>
+<customView><typeList></typeList>
+<sortKeyList></sortKeyList>
+</customView>
+<generateView><typeList><type>MRM Config</type>
+<type>Model</type>
+<type>Policy</type>
+</typeList>
+</generateView>
+<simulateView><typeList><type>MRM Config</type>
+<type>Model</type>
+<type>Policy</type>
+</typeList>
+<hiddenList></hiddenList>
+</simulateView>
+<postProcView><typeList><type>MRM Config</type>
+<type>Model</type>
+<type>Policy</type>
+</typeList>
+<hiddenList></hiddenList>
+</postProcView>
+<postProcFileList></postProcFileList>
+<scenarioSetView><typeList><type>MRM Config</type>
+<type>Model</type>
+<type>Policy</type>
+</typeList>
+</scenarioSetView>
+<scenario><uuid>{8e496c7f-71d9-475e-a1b4-7d9c197e30f8}</uuid>
+<name>MRM_RFCfcst,OctOff_mdl,Rules1.6</name>
+<config>
+<input type="Policy" name="Rules1.6" uuid="{b6e59ecd-67c4-41b6-b03d-1fea81e5fdc6}">
+<rulesetPath>$CRMMS_DIR/RW Files/CRMMS_V1.6.rls</rulesetPath>
+</input>
+<input type="MRM Config" name="MRM_RFCfcst" uuid="{26185c39-b957-4dd5-84ab-92f924124ecb}">
+<configName>Run_CBRFC_Ensemble_Fcst_RFC</configName>
+<saveModel policy="afterall" flag="0"/>
+</input>
+<input type="Model" name="OctOff_mdl" uuid="{7b22174c-ec35-4b7c-afe9-0db65f72a25c}">
+<modelPath>$CRMMS_DIR/RW Files/CRMMS_V1.9.202110_ESP.mdl</modelPath>
+</input>
+</config>
+<simState><state>runOk</state>
+<dateTime>Tue Nov 2 12:01:31 2021</dateTime>
+<activityList><activity name="Simulate Scenario"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:08 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__RwProcess_saba3704.log</logFile>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Execute RiverWare"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:08 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/RwBatch.log</logFile>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Execute Distrib MRM Controller"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:13 2021</dateTime>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Init Distrib MRM Controller"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:13 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__RemoteMgr_saba3704.log</logFile>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Traces 1 - 2"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:54 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__000_saba3704.log</logFile>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Traces 3 - 4"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:59 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__001_saba3704.log</logFile>
+<sortKey>1</sortKey>
+</activity>
+<activity name="Traces 5 - 6"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:41 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__002_saba3704.log</logFile>
+<sortKey>2</sortKey>
+</activity>
+<activity name="Traces 7 - 8"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:12 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__003_saba3704.log</logFile>
+<sortKey>3</sortKey>
+</activity>
+<activity name="Traces 9 - 10"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:44 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__004_saba3704.log</logFile>
+<sortKey>4</sortKey>
+</activity>
+<activity name="Traces 11 - 12"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:55 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__005_saba3704.log</logFile>
+<sortKey>5</sortKey>
+</activity>
+<activity name="Traces 13 - 14"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:42 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__006_saba3704.log</logFile>
+<sortKey>6</sortKey>
+</activity>
+<activity name="Traces 15 - 16"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:06 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__007_saba3704.log</logFile>
+<sortKey>7</sortKey>
+</activity>
+<activity name="Traces 17 - 18"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:59 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__008_saba3704.log</logFile>
+<sortKey>8</sortKey>
+</activity>
+<activity name="Traces 19 - 20"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:45 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__009_saba3704.log</logFile>
+<sortKey>9</sortKey>
+</activity>
+<activity name="Traces 21 - 22"><state>perfOk</state>
+<dateTime>Tue Nov 2 11:59:39 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__010_saba3704.log</logFile>
+<sortKey>10</sortKey>
+</activity>
+<activity name="Traces 23 - 24"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:39 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__011_saba3704.log</logFile>
+<sortKey>11</sortKey>
+</activity>
+<activity name="Traces 25 - 26"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:01:16 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__012_saba3704.log</logFile>
+<sortKey>12</sortKey>
+</activity>
+<activity name="Traces 27 - 27"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:17 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__013_saba3704.log</logFile>
+<sortKey>13</sortKey>
+</activity>
+<activity name="Traces 28 - 28"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:23 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__014_saba3704.log</logFile>
+<sortKey>14</sortKey>
+</activity>
+<activity name="Traces 29 - 29"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:43 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__015_saba3704.log</logFile>
+<sortKey>15</sortKey>
+</activity>
+<activity name="Traces 30 - 30"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:56 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__016_saba3704.log</logFile>
+<sortKey>16</sortKey>
+</activity>
+<activity name="Traces 31 - 31"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:10 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__017_saba3704.log</logFile>
+<sortKey>17</sortKey>
+</activity>
+<activity name="Traces 32 - 32"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:01:02 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__018_saba3704.log</logFile>
+<sortKey>18</sortKey>
+</activity>
+<activity name="Traces 33 - 33"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:00:36 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6/rw__019_saba3704.log</logFile>
+<sortKey>19</sortKey>
+</activity>
+</activityList>
+</simState>
+<postProcState></postProcState>
+</scenario>
+<scenario><uuid>{9820b017-7041-4a66-88b2-bf35270d1aa5}</uuid>
+<name>MRM_RFCfcst,OctOff_mdl,Rules1.6_dev</name>
+<config>
+<input type="Policy" name="Rules1.6_dev" uuid="{96a2efd7-d0b1-47d4-bc99-7dc3ccf94557}">
+<rulesetPath>$CRMMS_DIR/RW Files/CRMMS_V1.6_9000.rls</rulesetPath>
+</input>
+<input type="MRM Config" name="MRM_RFCfcst" uuid="{26185c39-b957-4dd5-84ab-92f924124ecb}">
+<configName>Run_CBRFC_Ensemble_Fcst_RFC</configName>
+<saveModel policy="afterall" flag="0"/>
+</input>
+<input type="Model" name="OctOff_mdl" uuid="{7b22174c-ec35-4b7c-afe9-0db65f72a25c}">
+<modelPath>$CRMMS_DIR/RW Files/CRMMS_V1.9.202110_ESP.mdl</modelPath>
+</input>
+</config>
+<simState><state>runOk</state>
+<dateTime>Tue Nov 2 12:04:44 2021</dateTime>
+<activityList><activity name="Simulate Scenario"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:02:45 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__RwProcess_saba3704.log</logFile>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Execute RiverWare"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:02:45 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/RwBatch.log</logFile>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Execute Distrib MRM Controller"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:02:50 2021</dateTime>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Init Distrib MRM Controller"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:02:50 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__RemoteMgr_saba3704.log</logFile>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Traces 1 - 2"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:35 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__000_saba3704.log</logFile>
+<sortKey>0</sortKey>
+</activity>
+<activity name="Traces 3 - 4"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:23 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__001_saba3704.log</logFile>
+<sortKey>1</sortKey>
+</activity>
+<activity name="Traces 5 - 6"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:46 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__002_saba3704.log</logFile>
+<sortKey>2</sortKey>
+</activity>
+<activity name="Traces 7 - 8"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:20 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__003_saba3704.log</logFile>
+<sortKey>3</sortKey>
+</activity>
+<activity name="Traces 9 - 10"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:25 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__004_saba3704.log</logFile>
+<sortKey>4</sortKey>
+</activity>
+<activity name="Traces 11 - 12"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:15 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__005_saba3704.log</logFile>
+<sortKey>5</sortKey>
+</activity>
+<activity name="Traces 13 - 14"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:16 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__006_saba3704.log</logFile>
+<sortKey>6</sortKey>
+</activity>
+<activity name="Traces 15 - 16"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:31 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__007_saba3704.log</logFile>
+<sortKey>7</sortKey>
+</activity>
+<activity name="Traces 17 - 18"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:04:16 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__008_saba3704.log</logFile>
+<sortKey>8</sortKey>
+</activity>
+<activity name="Traces 19 - 20"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:48 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__009_saba3704.log</logFile>
+<sortKey>9</sortKey>
+</activity>
+<activity name="Traces 21 - 22"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:04:09 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__010_saba3704.log</logFile>
+<sortKey>10</sortKey>
+</activity>
+<activity name="Traces 23 - 24"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:18 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__011_saba3704.log</logFile>
+<sortKey>11</sortKey>
+</activity>
+<activity name="Traces 25 - 26"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:04:29 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__012_saba3704.log</logFile>
+<sortKey>12</sortKey>
+</activity>
+<activity name="Traces 27 - 27"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:53 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__013_saba3704.log</logFile>
+<sortKey>13</sortKey>
+</activity>
+<activity name="Traces 28 - 28"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:04:26 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__014_saba3704.log</logFile>
+<sortKey>14</sortKey>
+</activity>
+<activity name="Traces 29 - 29"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:11 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__015_saba3704.log</logFile>
+<sortKey>15</sortKey>
+</activity>
+<activity name="Traces 30 - 30"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:29 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__016_saba3704.log</logFile>
+<sortKey>16</sortKey>
+</activity>
+<activity name="Traces 31 - 31"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:04:13 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__017_saba3704.log</logFile>
+<sortKey>17</sortKey>
+</activity>
+<activity name="Traces 32 - 32"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:04:03 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__018_saba3704.log</logFile>
+<sortKey>18</sortKey>
+</activity>
+<activity name="Traces 33 - 33"><state>perfOk</state>
+<dateTime>Tue Nov 2 12:03:34 2021</dateTime>
+<logFile>C:/Users/saba3704/Documents/crmms/Working/RiverWare2/MRM_RFCfcst_OctOff_mdl_Rules1.6_dev/rw__019_saba3704.log</logFile>
+<sortKey>19</sortKey>
+</activity>
+</activityList>
+</simState>
+<postProcState></postProcState>
+</scenario>
+</scenarioList>
+</scenarioMgr>
+<scenarioSetMgr><scenarioSet uniqueId="{8e7cf55c-561c-48a2-9ed3-ae0f711d1420}" name="devScenarios"></scenarioSet>
+<scenarioSet uniqueId="{a07e459d-cfca-4108-a9a8-bdf7f1313c7a}" name="baseScenarios"></scenarioSet>
+<scenarioSet uniqueId="{a0a10981-89d6-45ec-b45f-09cc756f908e}" name="allScenarios"></scenarioSet>
+</scenarioSetMgr>
+</Study>
