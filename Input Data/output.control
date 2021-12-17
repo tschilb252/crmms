@@ -1,8 +1,4 @@
-#Slots for RDF output
-# Sample: Mead.Inflow: file = $CRMMS_DIR/Output Data/res.rdf  
-# Pattern: OBJ.SLOT: file = $CRSS_DIR/rdfOutput/TWS.rdf  
-#CF: Reformatting the file paths to use / rather than \
-#CF: Renaming the file .control rather than .controlfile.txt
+#CRMMS Slots for RDF output
 
 ## Res ##
 BlueMesa.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -175,7 +171,6 @@ Surplus.AnnualSurplusFlag: file = $CRMMS_DIR/rdfOutput/flags.rdf
 Surplus.AnnualSurplusTypeFlag: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.ReleaseTier: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.UpperElevBalBranch: file = $CRMMS_DIR/rdfOutput/flags.rdf
-
 FloodControlOutput.Flood Control Flag: file = $CRMMS_DIR/rdfOutput/monthlyflags.rdf
 Surplus.Flood Control Surplus Flag: file = $CRMMS_DIR/rdfOutput/monthlyflags.rdf
 PowellData.ControllingEqualizationCondition: file = $CRMMS_DIR/rdfOutput/flags.rdf
@@ -197,89 +192,149 @@ CoordinatedOperationsFlagsForFreqTbl.Step3ShortageFlag: file = $CRMMS_DIR/rdfOut
 CoordinatedOperationsFlagsForFreqTbl.UpperBalancingAbove823: file = $CRMMS_DIR/rdfOutput/flags.rdf
 CoordinatedOperationsFlagsForFreqTbl.UpperBalancingAt823: file = $CRMMS_DIR/rdfOutput/flags.rdf
 CoordinatedOperationsFlagsForFreqTbl.UpperBalancingBelow823: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.LB DCP BWSCP: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.LB DCP BWSCP Check: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.DCPBWSCP1110: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.DCPBWSCP1090: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.DCPBWSCP1075: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.DCPBWSCP1050: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.DCPBWSCP1045: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.DCPBWSCP1040: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.DCPBWSCP1035: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.DCPBWSCP1030: file = $CRMMS_DIR/rdfOutput/flags.rdf
+DCP BWSCP Flags.DCPBWSCP1025: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
 PowellData.ActualAnnualReleaseVolume: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.TargetAnnualReleaseVolume: file = $CRMMS_DIR/rdfOutput/flags.rdf
-
 PowellToMeadData.CarryoverVolume: file = $CRMMS_DIR/rdfOutput/flags.rdf
 AnnualWaterUse.California_PreliminaryAdjustedApportionment: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
-ICS Credits.SacWYType: file = $CRMMS_DIR/rdfOutput/flags.rdf: file = $CRMMS_DIR/rdfOutput/annualflags.rdf
+ICS Credits.SacWYType: file = $CRMMS_DIR/rdfOutput/flags.rdf: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
 ## LB Use and ICS ##
-AnnualWaterUse.AzTotalAnnual: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-AnnualWaterUse.California_FinalAdjustedApportionment: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-AnnualWaterUse.NvTotalAnnual: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico_CU_Forecast1.MexicoSched: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.MexicoAdjustedSched: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico_CU_Forecast1.MexicoTJ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico_CU_Forecast1.MexicoExcess: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.MexicoAdjustedSched: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico_CU_Forecast1.MexicoTJ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico_CU_Forecast1.MexicoBypass: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico_CU_Forecast1.MexicoBypass: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico_CU_Forecast1.MexicoExcess: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-AnnualWaterUse.Arizona_Apportionment: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-AnnualWaterUse.California_Apportionment: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-AnnualWaterUse.Nevada_Apportionment: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.TotalICS_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.Bank_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.ExtraordinaryConservationICS_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.BiNationalICS_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.DCPICS_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationDCP_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryDCP_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationTrib_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryTrib_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.SystemEfficiencyICS_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationImp_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryImp_NV: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.TotalICS_CA: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.TotalICS_IID: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.TotalICS_MWD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.Bank_CA: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.ExtraordinaryConservationICS_MWD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryEC_MWD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationEC_MWD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.DCPICS_CA: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.DCPICS_MWD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationDCP_MWD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryDCP_MWD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryDCP_Coachella: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.SystemEfficiencyICS_CA: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryBiNat_MWD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.BiNationalICS_MWD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.TotalICS_IID: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationEC_IID: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.ExtraordinaryConservationICS_IID: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.BiNationalICS_IID: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryBiNat_IID: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.TotalICS_AZ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.TotalICS_CAWCD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.Bank_AZ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.Bank_CAWCD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationEC_CAWCD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryEC_CAWCD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.SystemEfficiencyICS_AZ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryEC_CRIT: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationEC_CRIT: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationEC_GRIC: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryEC_GRIC: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationEC_MVIDD: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.BiNationalICS_AZ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationEC_AZ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryEC_AZ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.DCPICS_AZ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualCreationDCP_AZ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-ICS Credits.AnnualDeliveryDCP_AZ: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.Mexico Water Reserve Balance: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.AnnualCreationMexicoWaterReserve: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.AnnualDeliveryMexicoWaterReserve: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.AnnualCreationMXRecoverableWaterSavings: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.AnnualDeliveryMXRecoverableWaterSavings: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.Mexico Recoverable Water Savings Balance: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.Total Combined MX Savings and Reserve: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
-Mexico Shortage and Surplus.AnnualBWSCP_SysWater: file = $CRMMS_DIR/rdfOutput/LBuse.rdf
+AnnualWaterUse.AzTotalAnnual: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.California_PreliminaryAdjustedApportionment: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.California_FinalAdjustedApportionment: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.NvTotalAnnual: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.Arizona_Apportionment: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.California_Apportionment: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.Nevada_Apportionment: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.AZ_BasicApportionment: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.CA_BasicApportionment: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.AzTotalAnnual: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+AnnualWaterUse.CaTotalAnnual: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+
+Mexico_CU_Forecast1.MexicoSched: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico Shortage and Surplus.MexicoAdjustedSched: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico_CU_Forecast1.MexicoTJ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico_CU_Forecast1.MexicoExcess: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico_CU_Forecast1.MexicoTJ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico_CU_Forecast1.MexicoBypass: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico_CU_Forecast1.MexicoBypass: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico_CU_Forecast1.MexicoExcess: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico Shortage and Surplus.Mexico Water Reserve Balance: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico Shortage and Surplus.AnnualCreationMexicoWaterReserve: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico Shortage and Surplus.AnnualDeliveryMexicoWaterReserve: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico Shortage and Surplus.AnnualCreationMXRecoverableWaterSavings: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico Shortage and Surplus.AnnualDeliveryMXRecoverableWaterSavings: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico Shortage and Surplus.Mexico Recoverable Water Savings Balance: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico Shortage and Surplus.Total Combined MX Savings and Reserve: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+Mexico Shortage and Surplus.AnnualBWSCP_SysWater: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+
+## Remaining DCP after ICS Conversion ##
+ICS Credits.AnnualRemainingDCPContribution_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualSimultaneousCreationDCPICS_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualSysWaterforDCP_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualRemainingDCPContribution_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualSimultaneousCreationDCPICS_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualSysWaterforDCP_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualRemainingDCPContribution_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualSimultaneousCreationDCPICS_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualSysWaterforDCP_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+
+## ICS Creation##
+ICS Credits.AnnualCreationEC_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualCreationEC_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationEC_WM: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationEC_MVIDD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationEC_GRIC: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationEC_CRIT: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationEC_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualCreationEC_IID: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationEC_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationEC_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationSysEff_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationSysEff_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationSysEff_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationImp_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationTrib_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationDCP_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationDCP_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualCreationDCP_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+
+## ICS Delivery ##
+ICS Credits.AnnualDeliveryBiNat_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualDeliveryDCP_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualDeliveryDCP_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_CRIT: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_GRIC: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_MVIDD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_WM: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliverySysEff_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliverySysEff_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualICSDelivery_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+
+ICS Credits.AnnualDeliveryBiNat_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryBiNat_IID: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryBiNat_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryDCP_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryDCP_Coachella: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryDCP_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_IID: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliverySysEff_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliverySysEff_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualICSDelivery_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+
+ICS Credits.AnnualDeliveryBiNat_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryDCP_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryEC_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliverySysEff_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryImp_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualICSDelivery_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.AnnualDeliveryTrib_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualNevadaStoredOffstream: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+
+ICS Credits.Bank_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.Bank_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.Bank_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.Bank_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.TotalICS_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.TotalICS_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.TotalICS_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.TotalICS_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.TotalICS_IID: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.TotalICS_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.DCPICS_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.DCPICS_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.DCPICS_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.DCPICS_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.BiNationalICS_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.BiNationalICS_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.BiNationalICS_IID: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.BiNationalICS_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.BiNationalICS_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.ExtraordinaryConservationICS_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.ExtraordinaryConservationICS_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.ExtraordinaryConservationICS_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.ExtraordinaryConservationICS_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
+ICS Credits.ExtraordinaryConservationICS_IID: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.SystemEfficiencyICS_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.SystemEfficiencyICS_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.SystemEfficiencyICS_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 
 
 ## EIS Annual ##
