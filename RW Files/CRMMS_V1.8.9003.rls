@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.3.1 Patch
-# Created 08:22 January 3, 2022
+# Created 10:41 January 5, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -8719,7 +8719,7 @@ BEGIN
  THEN
   0.00000000 "acre-ft"
  ELSE
-  "ElevationToStorage"( % "Navajo", 6063.00000000 ) - "ElevationToStorage"( % "Navajo", 6050.00000000 )
+  "ElevationToStorage"( % "Navajo", 6063.00000000 "ft" ) - "ElevationToStorage"( % "Navajo", 6050.00000000 "ft" )
  ENDIF COMMENTED_BY "In the event that an additional Spring Peak Release of water available to 6,050 ft. on Navajo is <br>requested, the flag NavajoData.Add6050SPRToAvailWater = 1, then the volume of water <br>between 6,063 and 6,050 is added to the Spring Peak Release. The approximate volume of that <br>water is 160.87 KAF. TP 8/4/2014" DO
   WITH NUMERIC releaseLevel = IF ( "IsInput"( $ "NavajoData.ReleaseLevel", "Dec31ofYear"( date ) ) )
   THEN
@@ -14122,32 +14122,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7c48a31e-6535-4816-a217-a57cb57ef11e}";
+    UUID "{8707ab1a-0dec-429d-8399-d74b656dc63f}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{8b70c0ee-26be-4750-a114-f81338f61f31}";
+    UUID "{8f4b251a-7bba-4ca4-a151-37330d023f3f}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{09724965-c344-4e2c-a40b-86d791dc71d3}";
+    UUID "{b0dc6d76-f9a1-465e-bf40-eee70b579dc4}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{25049ba9-e999-44f7-aba4-c9f341601a75}";
+    UUID "{22aefee5-3a06-44ee-a114-43e015dfab08}";
 ;
 
   END
-  UUID "{49f4245b-96f0-473d-90b1-984247790606}";;
+  UUID "{23a8db45-85d1-431c-98ab-8008b06e47dc}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14158,11 +14158,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{92c8873a-de99-411d-a164-b991fa974de4}";
+    UUID "{4919ac84-46f3-434b-8e96-48b4abd61f0f}";
 ;
 
   END
-  UUID "{4b61660f-5c9d-4b16-9ee9-e4eacb19aca6}";;
+  UUID "{ef1779d7-bc90-4cb1-9fdf-aaf3d658f6b8}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14173,11 +14173,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{01d3c6b0-b7e3-43cf-845d-dcbd5f446a56}";
+    UUID "{a8a97f6d-9b26-489d-a436-73172914d861}";
 ;
 
   END
-  UUID "{e42773ea-c370-416a-80bd-4ab003b2fa32}";;
+  UUID "{2a3b0e3b-406b-4f82-8e51-144ce9a9de7a}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14188,11 +14188,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{63a503f5-06ed-42c4-8e45-a1edbd0c3ae0}";
+    UUID "{65f9db28-f4d3-4196-8e91-0e5f1921bffd}";
 ;
 
   END
-  UUID "{c73a9407-3036-4aed-805b-2495198d5f42}";;
+  UUID "{0a99c814-c088-47f2-85ec-c71f850d70c5}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
