@@ -1,6 +1,6 @@
 # ============================================================================
 # Compare Last official CRMMS-ESP run 
-#   Powell and Mead Pool Elevation Analysis: 
+#   Powell and Mead Pool Elevation Analysis 
 #
 # ============================================================================
 library(tidyverse)
@@ -11,21 +11,6 @@ library(RWDataPlyr)
 # source tier functions
 source(file.path(Sys.getenv('CRMMS_DIR'), 'Code', 'add_MeadPowell_tiers.R'))
 
-## Inputs - control file
-# source("C:/Users/sabaker/Projects/CRB States Modeling/1030_Review_Modeling/scripts/0_control.R")
-# setwd(dir_base)
-
-# # Inputs - slots and associated rdfs
-# slots = c(
-#   'Powell.Pool Elevation', 'Powell.Storage','Powell.Outflow', 
-#   'Mead.Pool Elevation', 'Mead.Storage', 'Mead.Outflow'
-# )
-# rdfs = rep('res.rdf', length(slots))
-# output_dir = getwd()
-# scenarios <- c("MRM_RFCfcst,MdlBase,RlsBase", "MRM_RFCfcst,MdlDev,RlsDev")
-# scenario_dir <- "C:/Users/saba3704/Documents/crmms/Scenario/"
-# # names(scenarios) = c("Official", "Dev")
-
 cloudFig_slots <- function(scenarios, 
                            scen_names = NA, 
                            slots,
@@ -35,7 +20,7 @@ cloudFig_slots <- function(scenarios,
   
   # set up 
   rdfs = rep(rdf, length(slots))
-  if (is.na(scen_names)) {
+  if (is.na(scen_names[1])) {
     names(scenarios) = scenarios
   } else if (length(scen_names) != length(scenarios)) {
     stop('number of scenarios and scenario names must be equal')
@@ -160,7 +145,7 @@ cloudFig_slots <- function(scenarios,
     if (grepl('Pool Elevation', slot_i)) {
       gg <- gg +
         scale_y_continuous(
-          labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks)
+          labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2)
       
     }
     
