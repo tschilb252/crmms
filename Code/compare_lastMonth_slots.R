@@ -33,7 +33,7 @@ summarize_slot_difs <- function(scenarios,
   scen_res <- rw_scen_aggregate(
     scenarios,
     agg = rwa1,
-    scen_dir = 'Scenario'
+    scen_dir = scenario_dir
   )
   
   df_i <- data.table::as.data.table(scen_res)  %>% 
