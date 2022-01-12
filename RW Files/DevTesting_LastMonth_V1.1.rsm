@@ -2,7 +2,7 @@
 <!--
 CADSWES, University of Colorado, http://cadswes.colorado.edu/
 RiverSMART 8.3.1
-Document created on Tue Jan 11 11:21:58 2022
+Document created on Wed Jan 12 13:55:25 2022
 Document created by saba3704
 -->
 <Study uuid="{b8456248-b484-48a8-b8e4-400b54293d12}" mode="fullstudy">
@@ -39,7 +39,7 @@ Document created by saba3704
 <plugin major="1" patch="0" minor="1"><type>Temporal Disagg</type>
 </plugin>
 </pluginList>
-<fileInfo><createdOn>Tue Jan 11 11:21:58 2022</createdOn>
+<fileInfo><createdOn>Wed Jan 12 13:55:25 2022</createdOn>
 <createdBy>saba3704</createdBy>
 </fileInfo>
 <name></name>
@@ -196,6 +196,22 @@ regenerate/hide scenarios. </text>
 <config><rFile>$CRMMS_DIR/Code/compare_lastMonth_slots.R</rFile>
 <rFunc>summarize_slot_difs</rFunc>
 <passby>namepass</passby>
+<funcArg><kind>userdefined</kind>
+<type>character</type>
+<predefarg>scenarionames</predefarg>
+<name>slots</name>
+<desc>list of slots (must be in the single rdf specified in inputs)</desc>
+<value>'Powell.Outflow', 'Powell.Pool Elevation', 'Powell.Storage', 'Mead.Outflow', 'Mead.Pool Elevation', 'Mead.Storage'</value>
+<logical>false</logical>
+</funcArg>
+<funcArg><kind>userdefined</kind>
+<type>character</type>
+<predefarg>scenarionames</predefarg>
+<name>rdf</name>
+<desc>rdf that contains all slots</desc>
+<value>'res.rdf'</value>
+<logical>false</logical>
+</funcArg>
 <funcArg><kind>predefined</kind>
 <type>character</type>
 <predefarg>scenarionames</predefarg>
@@ -218,22 +234,6 @@ regenerate/hide scenarios. </text>
 <name>output_dir</name>
 <desc></desc>
 <value></value>
-<logical>false</logical>
-</funcArg>
-<funcArg><kind>userdefined</kind>
-<type>character</type>
-<predefarg>scenarionames</predefarg>
-<name>slots</name>
-<desc>list of slots (must be in the single rdf specified in inputs)</desc>
-<value>'Powell.Outflow', 'Powell.Pool Elevation', 'Powell.Storage', 'Mead.Outflow', 'Mead.Pool Elevation', 'Mead.Storage'</value>
-<logical>false</logical>
-</funcArg>
-<funcArg><kind>userdefined</kind>
-<type>character</type>
-<predefarg>scenarionames</predefarg>
-<name>rdfs</name>
-<desc>rdf that contains all slots</desc>
-<value>'res.rdf'</value>
 <logical>false</logical>
 </funcArg>
 <scenSetsUsed>true</scenSetsUsed>
@@ -294,22 +294,6 @@ regenerate/hide scenarios. </text>
 <config><rFile>$CRMMS_DIR/Code/compare_lastMonth_cloudFigs.R</rFile>
 <rFunc>cloudFig_slots</rFunc>
 <passby>namepass</passby>
-<funcArg><kind>predefined</kind>
-<type>character</type>
-<predefarg>scenarionames</predefarg>
-<name>scenarios</name>
-<desc></desc>
-<value></value>
-<logical>false</logical>
-</funcArg>
-<funcArg><kind>userdefined</kind>
-<type>character</type>
-<predefarg>scenarionames</predefarg>
-<name>scen_names</name>
-<desc>names of scenarios for plotting, defaul NA</desc>
-<value>"Official", "Dev"</value>
-<logical>false</logical>
-</funcArg>
 <funcArg><kind>userdefined</kind>
 <type>character</type>
 <predefarg>scenarionames</predefarg>
@@ -324,6 +308,22 @@ regenerate/hide scenarios. </text>
 <name>rdf</name>
 <desc>rdf file containing all slots</desc>
 <value>"res.rdf"</value>
+<logical>false</logical>
+</funcArg>
+<funcArg><kind>predefined</kind>
+<type>character</type>
+<predefarg>scenarionames</predefarg>
+<name>scenarios</name>
+<desc></desc>
+<value></value>
+<logical>false</logical>
+</funcArg>
+<funcArg><kind>userdefined</kind>
+<type>character</type>
+<predefarg>scenarionames</predefarg>
+<name>scen_names</name>
+<desc>names of scenarios for plotting, defaul NA</desc>
+<value>"Official", "Dev"</value>
 <logical>false</logical>
 </funcArg>
 <funcArg><kind>predefined</kind>
@@ -371,7 +371,7 @@ regenerate/hide scenarios. </text>
 <eventPlaceMod></eventPlaceMod>
 <eventIntMod></eventIntMod>
 <eventExtMod></eventExtMod>
-<scenarioMgr><scenarioList timestamp="1641926960"><nameList sepChar=","><type>MRM Config</type>
+<scenarioMgr><scenarioList timestamp="1642005824"><nameList sepChar=","><type>MRM Config</type>
 <type>Model</type>
 <type>Policy</type>
 </nameList>

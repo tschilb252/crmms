@@ -6,20 +6,20 @@ library(RWDataPlyr)
 
 # slots = c("TaylorPark.Storage",'Powell.Outflow', 'Powell.Pool Elevation', 'Powell.Storage',
 #           'Mead.Outflow', 'Mead.Pool Elevation', 'Mead.Storage')
-# rdfs = rep('res.rdf', length(slots))
+# rdf = rep('res.rdf', length(slots))
 # output_dir = getwd()
 
 summarize_slot_difs <- function(scenarios,
                                 scenario_dir,
                                 output_dir,
                                 slots,
-                                rdfs) {
+                                rdf) {
   
   names(scenarios) = c("Official", "Dev")
   
   # slots/agg to read
   rwa1 <- rwd_agg(data.frame(
-    file = rdfs,
+    file = rdf,
     slot = slots, 
     period = rep("asis", length(slots)),
     summary = rep(NA, length(slots)),
@@ -29,7 +29,7 @@ summarize_slot_difs <- function(scenarios,
     stringsAsFactors = FALSE
   ))
   
-  # read/process RDFs
+  # read/process rdf
   scen_res <- rw_scen_aggregate(
     scenarios,
     agg = rwa1,
@@ -77,5 +77,7 @@ summarize_slot_difs <- function(scenarios,
     }
   }
   close(log_fl)
+  
+  write.csv(check_difs, paste0(output_dir, "\\slot_diffs.csv"))
 }
 
