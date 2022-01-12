@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.3.4 Patch
-# Created 16:47 January 6, 2022
+# Created 08:24 January 12, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset 1";
@@ -3767,12 +3767,12 @@ BEGIN
     DESCRIPTION          "DESCRIPTION: Sets the NIIPDiversions Requested slot, the SanJuanBelowNavajo.TotalDiversion Slot, and NIIP.Fractional Return Flow Slot values based on user input.  The Fractional Inflow values will at some point need to be changed in the future to the value that would be the fractional return flow. This rule fires so that the input values in the NavajoData.NIIPAnnualRequest and NavajoData.SJDownstreamDiversions slots  are assigned if input is provided for those two slots. <br><br>SLOTS SET: SanJuanBelowNavajo.Total Diversion; NavajoIndianIrrigationProjectNIIP.Fractional Return Flow; NavajoIndianIrrigationProjectNIIP.Diversion; Azotea Tunnel.Diversion<br><br>";
     ACTIVE               TRUE;
     RULE_EXEC_CONSTRAINT ( "GetRunCycleIndex"(  ) == 1.00000000 AND @"t" == @"Start Timestep" );
-    NOTES                "AUTHOR, DATE: TP, 8/5/2012 (?)<br>APivarnik 20200706: Added execution constraint for rule to fire only in MTOM mode. No other changes made to rule in the integration effort<br>APivarnik 20200827: Removed execution constraint for rule to fire only in MTOM mode";
+    NOTES                "20211229, CF: Disable statement setting $ &quot;SanJuanBelowNavajo.Total Diversion&quot;. This diversion is included in the unregulated above Powell forecast. Not sure how it go in the model. SB could not confirm any values in $ &quot;NavajoData.SJDownstreamDepletions&quot;<br><br>AUTHOR, DATE: TP, 8/5/2012 (?)<br>APivarnik 20200706: Added execution constraint for rule to fire only in MTOM mode. No other changes made to rule in the integration effort<br>APivarnik 20200827: Removed execution constraint for rule to fire only in MTOM mode";
     BEGIN
 
     DESCRIPTION          "Set the Diversions for the NIIP and Azotea Tunnel to the Diversion Requests so that the <br>appropriate water is allowed to be diverted.  For the Azotea Tunnel diversion make sure a <br>minimum flow is left in the Upper San Juan River above Navajo. ";
       FOREACH (DATETIME date IN "GetDates"( @"Start Timestep", @"Finish Timestep", "1 Months" )) DO
-            IF_STATEMENT (IsNaN $ "SanJuanBelowNavajo.Total Diversion" [date]) THEN
+          INACTIVE      IF_STATEMENT (IsNaN $ "SanJuanBelowNavajo.Total Diversion" [date]) THEN
             $ "SanJuanBelowNavajo.Total Diversion" [date] := $ "NavajoData.SJDownstreamDepletions" [date, 0.00000000];
 
       END_IF_STATEMENT;
@@ -8835,7 +8835,7 @@ BEGIN
  THEN
   0.00000000 "acre-ft"
  ELSE
-  "ElevationToStorage"( % "Navajo", 6063.00000000 ) - "ElevationToStorage"( % "Navajo", 6050.00000000 )
+  "ElevationToStorage"( % "Navajo", 6063.00000000 "ft" ) - "ElevationToStorage"( % "Navajo", 6050.00000000 "ft" )
  ENDIF COMMENTED_BY "In the event that an additional Spring Peak Release of water available to 6,050 ft. on Navajo is <br>requested, the flag NavajoData.Add6050SPRToAvailWater = 1, then the volume of water <br>between 6,063 and 6,050 is added to the Spring Peak Release. The approximate volume of that <br>water is 160.87 KAF. TP 8/4/2014" DO
   WITH NUMERIC releaseLevel = IF ( "IsInput"( $ "NavajoData.ReleaseLevel", "Dec31ofYear"( date ) ) )
   THEN
@@ -14276,32 +14276,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0db7f33e-83b9-4b6b-8da9-49580eb23749}";
+    UUID "{d1695b20-23ae-482e-a701-9f87256c9a00}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7deeb9fe-6e3f-4a2d-a596-a1b04c25742f}";
+    UUID "{b5983845-7e61-4943-a4aa-d7db1fc905ef}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{87002fcd-f7c5-48b9-aba8-a45cbf0c6b02}";
+    UUID "{9b43c6a5-a882-4814-958e-63e6a4629481}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{c3fe39a3-c8ad-4c4f-98b2-157196bdaedf}";
+    UUID "{287abbba-b361-40f5-b287-2a94e1ec617d}";
 ;
 
   END
-  UUID "{0c3a73d3-cf14-43a1-a79a-7b19c1a658bb}";;
+  UUID "{9b73866f-9aae-4eb6-a939-ce5a81150606}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14312,11 +14312,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{31bf31b3-80f2-495f-b20d-df3ee174fd24}";
+    UUID "{7cc60c72-98f6-462f-8022-5e88e6f68c1b}";
 ;
 
   END
-  UUID "{b717caaa-5793-4c05-99b8-ac56563639ca}";;
+  UUID "{b160a7bb-0054-4955-90e9-7ee714ef25df}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14327,11 +14327,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{4a224707-2506-4bea-b0c2-4662aa12dc44}";
+    UUID "{ab8f5535-40fd-4b06-b5af-9b65fc7c99e6}";
 ;
 
   END
-  UUID "{72ce1301-5327-4474-9898-c61e06429d0d}";;
+  UUID "{99ae129b-3325-48a1-a1c4-45e527ef397b}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14342,11 +14342,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{f6fd4a2b-c0fd-4e97-a0f9-35df6e8d0079}";
+    UUID "{24874c1d-a30e-4845-8bc6-7ed95b454d3b}";
 ;
 
   END
-  UUID "{c78aacb0-0d01-4384-9d17-ec48c807d33c}";;
+  UUID "{74e9307e-ff74-4bf0-8a75-f976cb5faf0d}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
