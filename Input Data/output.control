@@ -9,6 +9,7 @@ BlueMesa.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 BlueMesa.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 BlueMesa.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 BlueMesa.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+BlueMesa.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 MorrowPoint.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 MorrowPoint.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -18,6 +19,7 @@ MorrowPoint.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 MorrowPoint.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 MorrowPoint.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 MorrowPoint.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+MorrowPoint.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 Crystal.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 Crystal.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -27,6 +29,7 @@ Crystal.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 Crystal.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 Crystal.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 Crystal.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+Crystal.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 FlamingGorge.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 FlamingGorge.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -36,6 +39,7 @@ FlamingGorge.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 FlamingGorge.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 FlamingGorge.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 FlamingGorge.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+FlamingGorge.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 Fontenelle.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 Fontenelle.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -45,6 +49,7 @@ Fontenelle.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 Fontenelle.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 Fontenelle.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 Fontenelle.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+Fontenelle.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 Havasu.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 Havasu.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -54,6 +59,7 @@ Havasu.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 Havasu.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 Havasu.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 Havasu.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+Havasu.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 Mead.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 Mead.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -63,6 +69,7 @@ Mead.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 Mead.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 Mead.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 Mead.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+Mead.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 Mohave.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 Mohave.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -72,6 +79,7 @@ Mohave.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 Mohave.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 Mohave.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 Mohave.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+Mohave.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 MorrowPoint.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 MorrowPoint.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -81,6 +89,7 @@ MorrowPoint.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 MorrowPoint.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 MorrowPoint.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 MorrowPoint.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+MorrowPoint.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 Powell.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 Powell.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -105,6 +114,7 @@ Navajo.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 Navajo.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 Navajo.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 Navajo.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+Navajo.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 TaylorPark.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 TaylorPark.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -113,12 +123,14 @@ TaylorPark.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 TaylorPark.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 TaylorPark.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 TaylorPark.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
+TaylorPark.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 Vallecito.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 Vallecito.Inflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 Vallecito.Pool Elevation: file = $CRMMS_DIR/rdfOutput/res.rdf
 Vallecito.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 Vallecito.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
+Vallecito.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 
 ## Diversions ##
@@ -208,6 +220,15 @@ PowellData.ActualAnnualReleaseVolume: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.TargetAnnualReleaseVolume: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellToMeadData.CarryoverVolume: file = $CRMMS_DIR/rdfOutput/flags.rdf
 AnnualWaterUse.California_PreliminaryAdjustedApportionment: file = $CRMMS_DIR/rdfOutput/flags.rdf
+
+MeadData.MSCPViolation: file = $CRMMS_DIR/rdfOutput/flags.rdf
+MeadData.MeadBelow950_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
+MeadData.MeadBelow895_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
+MeadData.MeadBelow1025_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
+MeadData.MeadBelow1045_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
+MeadData.MeadBelow1050_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
+MeadData.MeadBelow1030_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
+MeadData.MeadBelow1020_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
 ICS Credits.SacWYType: file = $CRMMS_DIR/rdfOutput/flags.rdf: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
