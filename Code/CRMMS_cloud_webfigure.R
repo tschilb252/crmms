@@ -18,10 +18,10 @@ library(crssplot)
 ### --- Inputs
 
 ## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2021-09')
-most_mrid <- 3161 
-min_mrid <- 3162
-max_mrid <- 3163
+run_date = c('2022-01')
+most_mrid <- 3173 
+min_mrid <- 3174
+max_mrid <- 3175
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -137,11 +137,20 @@ df_hist2 = df_hist %>%
 df_initAdd = left_join(df_init, df_hist2, by = 'slot')
 df_24MS <- rbind(df_24MS, df_initAdd)
 
+# add historical to the fill data too
+df_stat <- bind_rows(
+  df_stat,
+  df_hist2 %>% 
+    mutate('cloud.min' = value) %>% 
+    rename('cloud.max' = value) %>% 
+    mutate(run = run_date, Cloud = cloud_name)
+)
+
 
 ### ----------------- PLOTTING
 
 ## naming for figures
-esp_label <- "CRMMS-ESP Projections \n(35 projections)"
+esp_label <- "CRMMS-ESP Projections \n(30 projections)"
 lab_names <- c("24-Month Study Minimum Probable", 
                "24-Month Study Maximum Probable", 
                "24-Month Study Most Probable",
@@ -201,7 +210,7 @@ gg <-
             aes(x = Date, y = value, color = trace_labels, 
                 alpha = trace_labels, group = Trace,
                 linetype = trace_labels, size = trace_labels)) +
-
+  
   scale_color_manual(values = custom_colors) +
   scale_linetype_manual(values = custom_lt) +
   scale_size_manual(values = custom_size) +
@@ -242,22 +251,22 @@ gg <-
     aes(x = Timestep, y=Eq_elev), 
     colour = "black", linetype = 1
   ) +
-    annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-             y=3670, label="Equalization Tier (ET)", angle=00, size=3, hjust = 0) +
-    annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-             y=3620, label="Upper Elevation Balancing Tier\n(3,575' to ET)", 
-             angle=00, size=3, hjust = 0) +
-    annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-             y=3544, label="Mid-Elevation Release Tier\n(3,525' to 3,575')", 
-             angle=00, size=3, hjust = 0) +
-    annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-             y=3510, label="Lower Elevation Balancing Tier\n(<3,525')", 
-             angle=00, size=3, hjust = 0) +
-    annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-             y=3477, label="Minimum Power Pool\n(3,490')", 
-             angle=00, size=3, hjust = 0) +
-    theme_bw(base_size = 14) +
-    guides(alpha = 'none',
+  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
+           y=3670, label="Equalization Tier (ET)", angle=00, size=3, hjust = 0) +
+  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
+           y=3620, label="Upper Elevation Balancing Tier\n(3,575' to ET)", 
+           angle=00, size=3, hjust = 0) +
+  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
+           y=3544, label="Mid-Elevation Release Tier\n(3,525' to 3,575')", 
+           angle=00, size=3, hjust = 0) +
+  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
+           y=3510, label="Lower Elevation Balancing Tier\n(<3,525')", 
+           angle=00, size=3, hjust = 0) +
+  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
+           y=3477, label="Minimum Power Pool\n(3,490')", 
+           angle=00, size=3, hjust = 0) +
+  theme_bw(base_size = 14) +
+  guides(alpha = 'none',
          color = guide_legend(nrow = 3, order = 1),
          linetype = guide_legend(nrow = 3, order = 1),
          size = guide_legend(nrow = 3, order = 1),
@@ -293,7 +302,7 @@ gg <-
             aes(x = Date, y = value, color = trace_labels, 
                 alpha = trace_labels, group = Trace,
                 linetype = trace_labels, size = trace_labels)) +
-
+  
   scale_color_manual(values = custom_colors) +
   scale_linetype_manual(values = custom_lt) +
   scale_size_manual(values = custom_size) +
