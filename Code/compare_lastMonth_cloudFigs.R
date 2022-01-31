@@ -116,6 +116,7 @@ cloudFig_slots <- function(scenarios,
                   aes(x = Date, ymin = CRMMSESP.min, ymax = CRMMSESP.max, fill = Cloud), 
                   alpha = 0.3) +
       scale_x_yearmon(expand = c(0,0), breaks = as.vector(xbreaks$Date),
+                      minor_breaks = unique(df_crmmsCloud$Date),
                       limits = c(min(df_crmmsCloud$Date), max(df_crmmsCloud$Date))) +
       scale_y_continuous(labels = scales::comma) +
       labs(

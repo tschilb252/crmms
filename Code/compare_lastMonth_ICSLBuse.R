@@ -210,7 +210,8 @@ LBuseICS_compare <- function(scenarios,
     geom_point(size = 2, position=position_dodge(0.8)) +
     scale_y_continuous(labels = scales::comma) +
     labs(x = NULL, y = 'Annual ICS Amount\n[Creation - Delivery]\n(kaf)') +
-    theme(legend.position="top") +
+    theme(legend.position="top",
+          axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
     facet_grid(State ~ Year, scales = 'free_y')
   print(g2)
   
