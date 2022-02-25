@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.3.4 Patch
-# Created 15:29 February 18, 2022
+# Created 10:54 February 25, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset 1";
@@ -697,7 +697,7 @@ BEGIN
             WITH_STATEMENT (NUMERIC AnnualAdjustedDivRequested = ( MWDDivRequested + ( totalDeliveryMWDICS - totalCreationECICS - DCPreductionMWD - DeliveryToDate + IIDAdjustment ) COMMENTED_BY "Increase the MWD depletion amount by the total delivery less any over delivery that might be <br>occuring in a given scenario, or decrease the delivery if any creation of water for a given <br>scenario. TP 12/22/2017  <br>" )) DO
             WITH_STATEMENT (LIST newMWDDivDepList = FOR ( DATETIME date IN @"t" TO @"24:00:00 December Max DayOfMonth, Current Year" ) WITH LIST result = {  } DO
   WITH NUMERIC MaximumMonthlyDiv = $ "MWDDiversionData.MWDCanal_DailyCapacity" [] * "GetDaysInMonth"( date ) DO
-   WITH NUMERIC newMWDDivAmount = WITH NUMERIC monthPercent = "FlowToVolume"( $ "MWDDiversion:MWD.Diversion Requested" [date], date ) / "SumFlowsToVolume"( $ "MWDDiversion:MWD.Diversion Requested", @"24:00:00 January Max DayOfMonth, Current Year", @"24:00:00 December Max DayOfMonth, Current Year" ) DO
+   WITH NUMERIC newMWDDivAmount = WITH NUMERIC monthPercent = "FlowToVolume"( $ "MWDDiversion:MWD.Diversion Requested" [date], date ) / "SumFlowsToVolume"( $ "MWDDiversion:MWD.Diversion Requested", @"t", @"24:00:00 December Max DayOfMonth, Current Year" ) DO
     WITH NUMERIC MWDAdjustedDiv = AnnualAdjustedDivRequested * monthPercent DO
      "Min"( MaximumMonthlyDiv, MWDAdjustedDiv )
     ENDWITH
@@ -1442,7 +1442,7 @@ BEGIN
     NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: unknown<br><br>S.Baker, 20200309: Add description. Added SetNegativeToZero() to replace Max(0 &quot;acre-ft&quot;, xxxx). Added function IsMeadAboveDCPRecoveryElevation() to replace frequently used boolean. <br><br><br>S. Baker, 20200311: Add function IsDomesticOrQuantifiedOrFloodControl() & IsDomesticSurplus() to replace Or statement to improve readability. Replace OR statement with & IsLBorDCPconditionChanged().<br>APivarnik, 20200501: Moved Above Hoover trigger set assignment to this rule. Moved from SNWP Demand Variability Rule (deleted)<br>A. Pivarnik, 20200713: Integration effort. This rule is written differently than in the 24 MS. It is more complex but covers the same rule logic as the 24 MS rule. A with/if statement were added to only check ICS Creation based on bank capacity in MTOM runs. Added StartYearDCP contribution function call to take into account not ending in the same tier as projected in the August 24 MS of the previous year. Removed ISMRM from RC4 execution constraint";
     BEGIN
 
-    DESCRIPTION          "This rule sets the preliminary EC ICS creation for SNWA. Preliminary ICS creation has the <br>potential to be reduced  if the EC ICS creation volume is needed to meet their DCP obligation <br>in a given year. This simultaneous conversion of EC ICS to DCP ICS happens in the NV <br>accounting rule.<br><br>Preliminary ICS creation in the minimum of the following variables:<br>1) ICS put request<br>2) Max allowable state creation<br>3) Available bank space<br><br>NOTE: If AnnualPutTake <0> is positive then SNWA is creation ICS.<br><br>See the SNWA ICS Put Take function and its comments to see how this is calculated.<br>";
+    DESCRIPTION          "This rule sets the preliminary EC ICS creation for SNWA. Preliminary ICS creation has the <br>potential to be reduced  if the EC ICS creation volume is needed to meet their DCP obligation <br>in a given year. This simultaneous conversion of EC ICS to DCP ICS happens in the NV <br>accounting rule.<br><br>Preliminary ICS creation is the minimum of the following variables:<br>1) ICS put request<br>2) Max allowable state creation<br>3) Available bank space<br><br>NOTE: If AnnualPutTake <0> is positive then SNWA is creating ICS.<br><br>See the SNWA ICS Put Take function and its comments to see how this is calculated.<br>";
       WITH_STATEMENT (LIST AnnualRequestedPutTake = "SNWA ICS Put Take"(  )) DO
           DESCRIPTION          "#1 ABOVE <br>";
       WITH_STATEMENT (NUMERIC ICSPutRequest = "SetNegativeToZero"( GET @INDEX 0.00000000 FROM AnnualRequestedPutTake )) DO
@@ -1486,19 +1486,6 @@ BEGIN
 
       END_WITH_STATEMENT;
 
-    DESCRIPTION          "There is no demand variabiity logic in the 24 MS. This is MTOM only <br>";
-      $ "LowerBasinDemandVariability.AbvHooverTriggerSet" [@"24:00:00 December Max DayOfMonth, Current Year"] := IF ( "MeadPumpingDemandVariabilityFactor"( @"24:00:00 December Max DayOfMonth, Current Year" ) == 1.00000000 )
- THEN
-  0.00000000
- ELSE
-  IF ( "MeadPumpingDemandVariabilityFactor"( @"24:00:00 December Max DayOfMonth, Current Year" ) == 0.95000000 )
-  THEN
-   1.00000000
-  ELSE
-   - 1.00000000
-  ENDIF
- ENDIF;
-
     END
     UUID "{5d5e351e-06c4-4fc7-995b-88253e582c4a}";;
 
@@ -1509,7 +1496,7 @@ BEGIN
     NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br><br>TP, 20171218: In domestic surplus, reduce the ICS Delivery by the amount of Domestic surplus entitlement for MWD. Make sure the amount of Delivery taken is within the MWD ICS bank or below the Maximum Take that MWD can have.<br>AP, 20191921: Updated for DCP. Added constraint for max available ICS limited based on recovery elevation for DCP.<br>S.Baker, 20200309: Updated and edited description. Added WITH statement for SacWY_Take. Added SetNegativeToZero() to replace Max(0 &quot;acre-ft&quot;, xxxx). Added function IsMeadAboveDCPRecoveryElevation() to replace frequently used boolean. <br>S. Baker, 20200311: Add function IsDomesticOrQuantifiedOrFloodControl() & IsDomesticSurplus() to replace Or statement to improve readability. Replace OR statement with & IsLBorDCPconditionChanged(). <br>GCAA, 20200330: Updated rule to constrain MWD's ICS delivery by the normal operational maximum (1.2 maf) in non-surplus years and annual canal capacity (1.25 maf) if in surplus years<br>A.Pivarnik, 20200423: Replace sum of MWD div requested with sim of Forecast use Reset annual and returns<br>A.Pivarnik, 20200511: Added TJ div into full ditch converyance calculation<br>A.Pivarnik, 20200713: Integration effort. Added Is24MonthStudy function call to the first if statement. This way the ruleset always uses the default values when in 24 MS mode. Replaced default value for 3 types of MWD ICS delivery with an ICS default slot for MWD. Removed ISMRM from RC4 execution constraint<br>";
     BEGIN
 
-    DESCRIPTION          "This rule sets the preliminary ICS creation for MWD. Preliminary ICS creation has the potential to <br>be reduced if the EC ICS creation volume is needed to meet their DCP obligation in a given year. <br>This simultaneous conversion of EC ICS to DCP ICS happens in the CA accounting rule.<br><br>If the model is in 24 MS mode, ESP deterministic mode, OR the MRM run is simulating year one <br>AND the start timestep is April-December, use the default values calculated by hand.<br><br>Note: ICS demand variability is turned off by April of the start year because it is assumed that we <br>have a good idea whats happening in real time, such that the default values would give the most <br>accurate results when simulating the model.       <br>";
+    DESCRIPTION          "This rule sets the preliminary ICS creation for MWD. Preliminary ICS creation has the potential to <br>be reduced if the EC ICS creation volume is needed to meet their DCP obligation in a given year. <br>This simultaneous conversion of EC ICS to DCP ICS happens in the CA accounting rule.<br><br>If the model is in 24 MS mode, ESP deterministic mode, OR the MRM run is simulating year one <br>AND the start timestep is April-December, use the default values from the most probable 24 MS.<br><br>Note: ICS demand variability is turned off by April of the start year because it is assumed that we <br>have a good idea whats happening in real time, such that the default values would give the most <br>accurate results when simulating the model.        <br>";
       IF_STATEMENT (NOT "MWD Demand Variability"(  )) THEN
           DESCRIPTION          "If April-December in start year or not a MRM run, use the default value passed from the 24 MS <br>";
       $ "ICSProjectionData.AnnualCreationEC_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICSProjectionData.AnnualCreationEC_MWD_Default" [@"24:00:00 December Max DayOfMonth, Current Year"];
@@ -1524,7 +1511,7 @@ BEGIN
     WITH NUMERIC BankSpace = WITH NUMERIC ECCreationSpace = "SetNegativeToZero"( "MWD Max Bank"(  ) - $ "ICS Credits.Bank_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualCreationBiNat_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] ) DO
      "NonTaxedECICS"( ECCreationSpace, $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) + "TaxedECICS"( ECCreationSpace, $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) / "SystemTaxAdjustment_DCP"(  )
     ENDWITH DO
-     "MinItem"( { SACWYTypeICSPut , BankSpace COMMENTED_BY "Bank space <br>" , MaxECICSAnnualCreation COMMENTED_BY "Maximum Creation of MWD ICS <br>" , "SetNegativeToZero"( $ "ForecastUse.MWDResetAnnualFC" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "California_CU_Forecast1.MWDReturns" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "AnnualWaterUse.MWDMinimumAnnualDelivery" [] ) COMMENTED_BY "#4 ABOVE<br><br>Difference between Diversion Requests and Minimum Required MWD Delivery  <br>" } )
+     "MinItem"( { SACWYTypeICSPut , BankSpace , MaxECICSAnnualCreation , "SetNegativeToZero"( $ "ForecastUse.MWDResetAnnualFC" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "California_CU_Forecast1.MWDReturns" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "AnnualWaterUse.MWDMinimumAnnualDelivery" [] ) COMMENTED_BY "#4 ABOVE<br>" } )
     ENDWITH COMMENTED_BY "#3 ABOVE <br>"
    ENDWITH COMMENTED_BY "#2 ABOVE <br>"
   ENDWITH COMMENTED_BY "Calculate the preliminary ICS creation for MWD in ESP mode<br><br>Preliminary ICS creation is the minimum of the following variables:<br>1) ICS put requested by MWD based on SAC WY Type<br>2) Max allowable EC ICS creation in CA less any creation by other entities in a given year<br>3) Bank Space<br>4) Difference between the diversion requests and minimum required delivery <br><br><br>#1 ABOVE <br>"
@@ -1542,7 +1529,7 @@ BEGIN
     NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br><br>S.Baker, 20200309: Updated and edited description.<br>S.Baker, 20200310: Removed Min() inside MinItem() to reduce redundancy. Added function IsMeadAboveDCPRecoveryElevation() to replace frequently used boolean. <br>S.Baker, 20200311: Add function IsDomesticOrQuantifiedOrFloodControl() to replace Or statement to improve readability. Replace OR statement with & IsLBorDCPconditionChanged().<br>A.Pivarnik, 20200416: Removed execution constraint which cause rule to fire in RC 4 if the model is in domestic surplus <br>A.Pivarnik, 20200713: Integration effort. Added if statement and Is24MSStudy Function call to use the default delivery + any other delivery determined by functions in outyears for 24 MS mode. Renamed rule from AZ to CAP ICS Creation and Delivery. Added ICS creation logic for MTOM to check against bank space, max creation or default value. This is part of the AZ ICS/Accounting overhaul. Removed ISMRM from RC4 execution constraint<br>";
     BEGIN
 
-    DESCRIPTION          "This rule sets the preliminary annual EC ICS creation for CAP. The preliminary value in this rule <br>can be reduced if the EC ICS creation volume is needed to meet their DCP obligation in a given <br>year. This conversion of EC ICS to DCP ICS happens in the AZ accounting rule later on in the <br>ruleset. <br><br>Preliminary EC ICS creation is the minimum of the foloowing variables:<br>1) ICS put request<br>2) Max allowable state creation less other non CAP users<br>3) Available bank space <br>";
+    DESCRIPTION          "This rule sets the preliminary annual EC ICS creation for CAP. The preliminary value in this rule <br>can be reduced if the EC ICS creation volume is needed to meet their DCP obligation in a given <br>year. This conversion of EC ICS to DCP ICS happens in the AZ accounting rule later on in the <br>ruleset. <br><br>Preliminary EC ICS creation is the minimum of the following variables:<br>1) ICS put request<br>2) Max allowable state creation less other non CAP users<br>3) Available bank space  <br>";
       IF_STATEMENT (( "Is24MonthStudy"(  ) OR NOT "IsMRM"(  ) ) COMMENTED_BY "Use the default value in 24 MS mode or deterministic ESP mode. Otherwise go into the logic below <br>for the CRMMS ESP run.    <br>") THEN
             $ "ICSProjectionData.AnnualCreationEC_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICSProjectionData.AnnualCreationEC_CAWCD_Default" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
@@ -1591,7 +1578,7 @@ BEGIN
     NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: unknown<br><br>S.Baker, 20200309: Add description. Added SetNegativeToZero() to replace Max(0 &quot;acre-ft&quot;, xxxx). Added function IsMeadAboveDCPRecoveryElevation() to replace frequently used boolean. <br><br><br>S. Baker, 20200311: Add function IsDomesticOrQuantifiedOrFloodControl() & IsDomesticSurplus() to replace Or statement to improve readability. Replace OR statement with & IsLBorDCPconditionChanged().<br>APivarnik, 20200501: Moved Above Hoover trigger set assignment to this rule. Moved from SNWP Demand Variability Rule (deleted)<br>A. Pivarnik, 20200713: Integration effort. This rule is written differently than in the 24 MS. It is more complex but covers the same rule logic as the 24 MS rule. A with/if statement were added to only check ICS Creation based on bank capacity in MTOM runs. Added StartYearDCP contribution function call to take into account not ending in the same tier as projected in the August 24 MS of the previous year. Removed ISMRM from RC4 execution constraint";
     BEGIN
 
-    DESCRIPTION          "This rule sets the preliminary ICS delivery for SNWA. Preliminary ICS delivery has the <br>potential to be reduced further due to the DCP when Lake Mead is below elevation 1,045 ft. <br>The potential DCP reduction and the sorting of ICS delivery into indvidual accounts occurs in <br>the NV ICS delivery rule later on in the ruleset.  <br><br>Preliminary ICS delivery is the minimum of the following variables:<br>1) ICS take requested by SNWA<br>2) Amount of ICS water available for MWD to deliver<br>3) Max ICS delivery volume for the state of NV in any given year  <br><br>NOTE: If AnnualPutTake <0> is negative then SNWA is taking delivery of ICS .  <br><br>See the SNWA ICS Put Take Function and its comments to see how this value is calculated.    <br>";
+    DESCRIPTION          "This rule sets the preliminary ICS delivery for SNWA. Preliminary ICS delivery has the <br>potential to be reduced further due to the DCP when Lake Mead is below elevation 1,045 ft. <br>The limitation of ICS delivery due to DCP constraints and the sorting of ICS delivery into <br>indvidual accounts occurs in the Final NV ICS delivery rule later on in the ruleset.  <br><br>Preliminary ICS delivery is the minimum of the following variables:<br>1) ICS take requested by SNWA<br>2) Amount of ICS water available for SNWA to deliver<br>3) Max ICS delivery volume for the state of NV in any given year  <br><br>NOTE: If AnnualPutTake <0> is negative then SNWA is taking delivery of ICS .  <br><br>See the SNWA ICS Put Take Function and its comments to see how this value is calculated.        <br>";
       WITH_STATEMENT (LIST AnnualRequestedPutTake = "SNWA ICS Put Take"(  )) DO
           DESCRIPTION          "#1 ABOVE <br>";
       WITH_STATEMENT (NUMERIC ICSTakeRequest = IF ( "IsDomesticSurplus"(  ) )
@@ -1646,13 +1633,13 @@ BEGIN
     NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br><br>TP, 20171218: In domestic surplus, reduce the ICS Delivery by the amount of Domestic surplus entitlement for MWD. Make sure the amount of Delivery taken is within the MWD ICS bank or below the Maximum Take that MWD can have.<br>AP, 20191921: Updated for DCP. Added constraint for max available ICS limited based on recovery elevation for DCP.<br>S.Baker, 20200309: Updated and edited description. Added WITH statement for SacWY_Take. Added SetNegativeToZero() to replace Max(0 &quot;acre-ft&quot;, xxxx). Added function IsMeadAboveDCPRecoveryElevation() to replace frequently used boolean. <br>S. Baker, 20200311: Add function IsDomesticOrQuantifiedOrFloodControl() & IsDomesticSurplus() to replace Or statement to improve readability. Replace OR statement with & IsLBorDCPconditionChanged(). <br>GCAA, 20200330: Updated rule to constrain MWD's ICS delivery by the normal operational maximum (1.2 maf) in non-surplus years and annual canal capacity (1.25 maf) if in surplus years<br>A.Pivarnik, 20200423: Replace sum of MWD div requested with sim of Forecast use Reset annual and returns<br>A.Pivarnik, 20200511: Added TJ div into full ditch converyance calculation<br>A.Pivarnik, 20200713: Integration effort. Added Is24MonthStudy function call to the first if statement. This way the ruleset always uses the default values when in 24 MS mode. Replaced default value for 3 types of MWD ICS delivery with an ICS default slot for MWD. Removed ISMRM from RC4 execution constraint<br>";
     BEGIN
 
-    DESCRIPTION          "This rule sets the preliminary ICS delivery for MWD. Preliminary ICS delivery has the potential <br>to be reduced further due to the DCP when Lake Mead is below elevation 1,045 ft. The <br>potential DCP reduction and the sorting of ICS delivery into indvidual accounts occurs in the <br>CA ICS delivery rule later on in the ruleset.  <br><br>If the model is in 24 MS mode, ESP deterministic mode, OR the MRM run is simulating year one <br>AND the start timestep is April-December, use the default values calculated by hand.<br><br>Note: ICS demand variability is turned off by April of the start year because it is assumed that <br>we have a good idea whats happening in real time, such that the default values would give <br>the most accurate results when simulating the model.     <br>";
+    DESCRIPTION          "This rule sets the preliminary ICS delivery for MWD. Preliminary ICS delivery has the potential <br>to be reduced further due to the DCP when Lake Mead is below elevation 1,045 ft. The <br>limitation of ICS delivery due to DCP constraints and the sorting of ICS delivery into indvidual <br>accounts occurs in the Final CA ICS delivery rule later on in the ruleset.  <br><br>If the model is in 24 MS mode, ESP deterministic mode, OR the MRM run is simulating year one <br>AND the start timestep is April-December, use the default values from the 24 MS..<br><br>Note: ICS demand variability is turned off by April of the start year because it is assumed that <br>we have a good idea whats happening in real time, such that the default values would give <br>the most accurate results when simulating the model.       <br>";
       IF_STATEMENT (NOT "MWD Demand Variability"(  )) THEN
           DESCRIPTION          "Use the default value <br>";
       $ "ICSProjectionData.AnnualICSDelivery_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICSProjectionData.AnnualICSDelivery_MWD_Default" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
       ELSE
-          DESCRIPTION          "Calculate the preliminary ICS delivery for MWD in ESP mode. <br><br>Preliminary ICS delivery is the minimum of the following variables:<br>1) ICS take requested by MWD<br>2) Available canal space at full ditch conveyance <br>3) Amount of ICS water available for MWD to deliver<br>4) Max ICS delivery volume left in CA for MWD based on the state volume less other users<br><br><br>#1 ABOVE     <br>";
+          DESCRIPTION          "Calculate the preliminary ICS delivery for MWD in ESP mode. <br><br>Preliminary ICS delivery is the minimum of the following variables:<br>1) ICS take requested by MWD<br>2) Available canal space at full ditch conveyance <br>3) Amount of ICS water available for MWD to deliver<br>4) Max ICS delivery volume left in CA for MWD based on the max state ICS delivery less other <br>user ICS delivery<br><br><br>#1 ABOVE      <br>";
       WITH_STATEMENT (NUMERIC SACWYTypeICSTake = WITH NUMERIC TakeRequest = $ "ICS Credits.MWDICS_AnnualRequestedPutTake" [NaNToZero ( $ "ICS Credits.SacWYType" [@"24:00:00 December Max DayOfMonth, Current Year"] ) - 1.00000000, "Take Step 1"] DO
   IF ( "IsDomesticSurplus"(  ) COMMENTED_BY "In domestic surplus, reduce the ICS Delivery by the amount of domestic surplus entitlement for MWD.  <br>" )
   THEN
@@ -1676,7 +1663,7 @@ BEGIN
   $ "ICS Credits.TotalICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.DCPICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"]
  ENDIF COMMENTED_BY "Available ICS Water <br><br>Total available ICS for delivery limited by DCP recovery elevation. EC ICS creation and delivery <br>are mutually exclusive (either create or deliver, not both).  <br>") DO
           DESCRIPTION          "#4 ABOVE <br>";
-      WITH_STATEMENT (NUMERIC MaxStateDeliveryAvailable = ( $ "ICS Credits.MeadBankParameters" ["California", "Max Delivery"] - ( $ "ICS Credits.AnnualDeliveryBiNat_IID" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.AnnualDeliveryEC_IID" [@"24:00:00 December Max DayOfMonth, Current Year"] ) ) COMMENTED_BY "Available ICS delivery amount left for MWD based on other user delivery in CA <br>") DO
+      WITH_STATEMENT (NUMERIC MaxStateDeliveryAvailable = ( $ "ICS Credits.MeadBankParameters" ["California", "Max Delivery"] - ( $ "ICS Credits.AnnualDeliveryBiNat_IID" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.AnnualDeliveryEC_IID" [@"24:00:00 December Max DayOfMonth, Current Year"] ) ) COMMENTED_BY "Available ICS delivery amount left for MWD based on other user ICS delivery in CA  <br>") DO
             $ "ICSProjectionData.AnnualICSDelivery_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] := "MinItem"( { SACWYTypeICSTake , FullDitchConveyance , AvailableICSWater , MaxStateDeliveryAvailable } ) COMMENTED_BY "This calculates the delivery as the minimum of the SACWYType, MWD at full ditch conveyance, <br>available ICS water, or the max state delivery allowed  <br>";
 
       END_WITH_STATEMENT;
@@ -1699,7 +1686,7 @@ BEGIN
     NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br><br>S.Baker, 20200309: Updated and edited description.<br>S.Baker, 20200310: Removed Min() inside MinItem() to reduce redundancy. Added function IsMeadAboveDCPRecoveryElevation() to replace frequently used boolean. <br>S.Baker, 20200311: Add function IsDomesticOrQuantifiedOrFloodControl() to replace Or statement to improve readability. Replace OR statement with & IsLBorDCPconditionChanged().<br>A.Pivarnik, 20200416: Removed execution constraint which cause rule to fire in RC 4 if the model is in domestic surplus <br>A.Pivarnik, 20200713: Integration effort. Added if statement and Is24MSStudy Function call to use the default delivery + any other delivery determined by functions in outyears for 24 MS mode. Renamed rule from AZ to CAP ICS Creation and Delivery. Added ICS creation logic for MTOM to check against bank space, max creation or default value. This is part of the AZ ICS/Accounting overhaul. Removed ISMRM from RC4 execution constraint<br>";
     BEGIN
 
-    DESCRIPTION          "This rule sets the preliminary ICS delivery for CAP. ICS delivery has the potential to be reduced <br>further due to the DCP when Lake Mead is below elevation 1,045 ft. The potential DCP reduction <br>and the sorting of ICS delivery into indvidual accounts occurs in the AZ ICS delivery rule later on <br>in the ruleset.    <br>";
+    DESCRIPTION          "This rule sets the preliminary ICS delivery for CAP. ICS delivery has the potential to be reduced <br>further due to the DCP when Lake Mead is below elevation 1,045 ft. The limitation of ICS delivery <br>due to DCP constraints and the sorting of ICS delivery into indvidual accounts occurs in the Final <br>AZ ICS delivery rule later on in the ruleset.   <br>";
       WITH_STATEMENT (NUMERIC outyearICSdelivery = IF ( "IsStartYear"(  ) )
  THEN
   0.00000000 "acre-ft"
@@ -1711,7 +1698,7 @@ BEGIN
             $ "ICSProjectionData.AnnualICSDelivery_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICSProjectionData.AnnualICSDelivery_CAWCD_Default" [@"24:00:00 December Max DayOfMonth, Current Year"] + outyearICSdelivery;
 
       ELSE
-          DESCRIPTION          "Calculate the preliminary ICS delivery for CAP in ESP mode.<br><br>Preliminary ICS delivery is the minimum of the following variables:<br>1) ICS take requested by CAP<br>2) The available ICS delivery volume left in AZ for CAP based on state volume less other users<br>3) Amount of ICS water available for them to deliver<br>4) Available canal space to reach full ditch conveyance <br><br><br># 1 ABOVE     <br>";
+          DESCRIPTION          "Calculate the preliminary ICS delivery for CAP in ESP mode.<br><br>Preliminary ICS delivery is the minimum of the following variables:<br>1) ICS take requested by CAP<br>2) The available ICS delivery volume left in AZ for CAP based on state max ICS delivery less <br>other user ICS delivery<br>3) Amount of ICS water available for them to deliver<br>4) Available canal space to reach full ditch conveyance <br><br><br># 1 ABOVE      <br>";
       WITH_STATEMENT (NUMERIC ICSTakeRequest = ( $ "ICSProjectionData.AnnualICSDelivery_CAWCD_Default" [@"24:00:00 December Max DayOfMonth, Current Year"] + outyearICSdelivery ) COMMENTED_BY "Determine Annual ICS delivery volume using default value from 24 MS and outyear delivery <br>(calculated above) <br>") DO
           DESCRIPTION          "#2 ABOVE <br>";
       WITH_STATEMENT (NUMERIC MaxStateDeliveryAvailable = WITH NUMERIC NonCAPICSDelivery = ( $ "ICS Credits.AnnualDeliveryEC_CRIT" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.AnnualDeliveryEC_GRIC" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.AnnualDeliveryEC_MVIDD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.AnnualDeliveryEC_WM" [@"24:00:00 December Max DayOfMonth, Current Year"] ) COMMENTED_BY "Sum of non CAP ICS delivery for AZ. All inputs from 24MS, no delivery logic for other entities as <br>of 1/28/20 <br>" DO
@@ -14306,32 +14293,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{cef2d0a8-3f22-4862-ac24-8f975323d18a}";
+    UUID "{528ff097-c2a3-406d-bb27-3fb256ababcd}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0d64a370-93a5-4cdb-b240-72f239ed5484}";
+    UUID "{7d656262-a019-4fc8-8f70-b8f51a4e06fa}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{21981a44-117c-45b5-969c-3e68c2ee7f75}";
+    UUID "{c59f6c7b-0bba-496c-b6b9-806a54b5d706}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{6d968aa7-b9fa-4503-8dbe-3f3bcf0ac48e}";
+    UUID "{1418168b-856a-434b-a0b5-6fdf61b2cc65}";
 ;
 
   END
-  UUID "{908917e4-080d-4021-9e5d-0d0862ee3e07}";;
+  UUID "{c257f32b-9bea-454a-8f0e-cd61cc4a0348}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14342,11 +14329,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{8b3499ae-2a79-477c-a424-bb2a458a483c}";
+    UUID "{84bca1e1-ce23-4930-8ff6-72c4cdaeb0d4}";
 ;
 
   END
-  UUID "{e1fece3e-3e29-4d31-9ba9-cb15f839c752}";;
+  UUID "{fbcae813-4719-4af3-8fe5-7e3d3c6d31e4}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14357,11 +14344,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{49c669d2-bed2-4d95-9409-0f04688b7b64}";
+    UUID "{e931f775-c0db-4c00-b2ff-eb8d9dee2889}";
 ;
 
   END
-  UUID "{766a22a1-045a-48ee-9f95-cc7dfe7bc448}";;
+  UUID "{a2734130-30ce-4155-85a7-642f0e17943f}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14372,11 +14359,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{31d2810e-cbcb-4909-92dc-c028ca124eee}";
+    UUID "{fae65612-3dff-43af-b118-24046b4ade43}";
 ;
 
   END
-  UUID "{fb6b49e8-a3e9-440a-b6a5-442248eba86a}";;
+  UUID "{a443f571-e77d-4026-beeb-afab94d52904}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
