@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.3.4 Patch
-# Created 10:54 February 25, 2022
+# Created 13:48 February 25, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset 1";
@@ -1453,7 +1453,7 @@ BEGIN
  THEN
   1000000.00000000 "acre-ft" COMMENTED_BY "Extremely high value so this option can never be chosen in the min statement below<br>"
  ELSE
-  WITH NUMERIC ECCreationSpace = $ "ICS Credits.MeadBankParameters" ["Nevada", "Max Capacity"] - ( $ "ICS Credits.Bank_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.TributaryICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.ImportedICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] ) DO
+  WITH NUMERIC ECCreationSpace = "SetNegativeToZero"( $ "ICS Credits.MeadBankParameters" ["Nevada", "Max Capacity"] - ( $ "ICS Credits.Bank_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.TributaryICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.ImportedICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] ) ) DO
    "NonTaxedECICS"( ECCreationSpace, $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) + "TaxedECICS"( ECCreationSpace, $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) / "SystemTaxAdjustment_DCP"(  )
   ENDWITH COMMENTED_BY "Only check ICS creation based on bank capacity in ESP modes   <br>"
  ENDIF) DO
@@ -14293,32 +14293,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{528ff097-c2a3-406d-bb27-3fb256ababcd}";
+    UUID "{a1923046-3a88-4dfa-9018-da86fcf5f9ec}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7d656262-a019-4fc8-8f70-b8f51a4e06fa}";
+    UUID "{205324db-d475-4b0b-817d-7e836e8b4b86}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{c59f6c7b-0bba-496c-b6b9-806a54b5d706}";
+    UUID "{6aee5747-ae23-4275-ad94-eec2603da80b}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{1418168b-856a-434b-a0b5-6fdf61b2cc65}";
+    UUID "{017b94f6-a72d-4d51-a57d-157191507ec8}";
 ;
 
   END
-  UUID "{c257f32b-9bea-454a-8f0e-cd61cc4a0348}";;
+  UUID "{eac6191b-165a-4a14-b07a-292bcb61e4e1}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14329,11 +14329,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{84bca1e1-ce23-4930-8ff6-72c4cdaeb0d4}";
+    UUID "{533c4bf3-baba-48d3-96ea-5da188271888}";
 ;
 
   END
-  UUID "{fbcae813-4719-4af3-8fe5-7e3d3c6d31e4}";;
+  UUID "{5e115646-fe1b-4baf-9490-f008e1f4548b}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14344,11 +14344,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{e931f775-c0db-4c00-b2ff-eb8d9dee2889}";
+    UUID "{cd172f7f-c922-4edb-a829-a8d57dc9f13c}";
 ;
 
   END
-  UUID "{a2734130-30ce-4155-85a7-642f0e17943f}";;
+  UUID "{374971b6-d448-41ab-b7eb-eb6dc59685bf}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14359,11 +14359,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{fae65612-3dff-43af-b118-24046b4ade43}";
+    UUID "{173d554f-25ed-44b0-8304-029e1ffa2780}";
 ;
 
   END
-  UUID "{a443f571-e77d-4026-beeb-afab94d52904}";;
+  UUID "{cf4664a4-cd1d-4c95-80eb-d467f7234e85}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
