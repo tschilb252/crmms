@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.3.4 Patch
-# Created 13:48 February 25, 2022
+# Created 07:17 March 2, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset 1";
@@ -5192,7 +5192,7 @@ BEGIN
 
             $ "AnnualWaterUse.NvTotalMonthlyActual" [date] := $ "Nevada_CU_Actual.SNWP" [date] + $ "Nevada_CU_Actual.FtMohaveNv" [date] + $ "Nevada_CU_Actual.BigBend" [date] + $ "Nevada_CU_Actual.SCE" [date] + $ "Nevada_CU_Actual.LMNRA Mohave" [date];
 
-            $ "AnnualWaterUse.CaNoMWDTotalMonthlyActual" [date] := $ "California_CU_Actual.CaPumpersAbvImp" [date] + $ "California_CU_Actual.Chemehuevi" [date] + $ "California_CU_Actual.Coachella" [date] + $ "California_CU_Actual.CRIRCa" [date] + $ "California_CU_Actual.FtMohaveCa" [date] + $ "California_CU_Actual.IID" [date] + $ "California_CU_Actual.Needles" [date] + $ "California_CU_Actual.CaPumpersDvsToPkr" [date] + $ "California_CU_Actual.PaloVerde" [date] + $ "California_CU_Actual.Ranch5" [date] + $ "California_CU_Actual.SaltonSea" [date] + $ "California_CU_Actual.Winterhaven" [date] + $ "California_CU_Actual.YumaIsland" [date] + $ "California_CU_Actual.YumaProject" [date];
+            $ "AnnualWaterUse.CaNoMWDTotalMonthlyActual" [date] := $ "California_CU_Actual.CaPumpersAbvImp" [date] + $ "California_CU_Actual.Chemehuevi" [date] + $ "California_CU_Actual.Coachella" [date] + $ "California_CU_Actual.CRIRCa" [date] + $ "California_CU_Actual.FtMohaveCa" [date] + $ "California_CU_Actual.IID" [date] + $ "California_CU_Actual.Needles" [date] + $ "California_CU_Actual.CaPumpersDvsToPkr" [date] + $ "California_CU_Actual.PaloVerde" [date] + $ "California_CU_Actual.FYIR_Ranches" [date] + $ "California_CU_Actual.SaltonSea" [date] + $ "California_CU_Actual.Winterhaven" [date] + $ "California_CU_Actual.YumaIsland" [date] + $ "California_CU_Actual.YumaProject" [date];
 
       ENDFOREACH;
 
@@ -5460,11 +5460,11 @@ BEGIN
   "VolumeToFlow"( $ "California_CU_Schedules.YumaProject" [date], date )
  ENDIF;
 
-            $ "AAC:Ranch5.Diversion Requested" [date] := IF ( date < @"Start Timestep" )
+            $ "AAC:FYIR_Ranches.Diversion Requested" [date] := IF ( date < @"Start Timestep" )
  THEN
-  "VolumeToFlow"( $ "California_CU_Actual.Ranch5" [date], date )
+  "VolumeToFlow"( $ "California_CU_Actual.FYIR_Ranches" [date], date )
  ELSE
-  "VolumeToFlow"( $ "California_CU_Schedules.Ranch5" [date], date )
+  "VolumeToFlow"( $ "California_CU_Schedules.FYIR_Ranches" [date], date )
  ENDIF;
 
             $ "GilaAndYumaUsers:CocopahIndRes.Diversion Requested" [date] := IF ( date < @"Start Timestep" )
@@ -8252,45 +8252,55 @@ BEGIN
     FUNCTION       "SpringFlowA-JVolumeUpdate" (  )
     RETURN_TYPE    NUMERIC;
     SCALE_UNITS    "";
-    DESCRIPTION    "Arguements: None<br><br>Description: Calculates the April - July unregulated inflow volume (A-J Volume) to Flaming Gorge. This volume is used for determining the percentage of exceedance of the historical inflows. <br><br>Returns: The unregulated inflow volume used to set springflow operations <br><br><br>";
+    DESCRIPTION    "Arguements: None<br><br>Description: Calculates the April - July unregulated inflow volume (A-J Volume) to Flaming Gorge. This volume is used for determining the percentage of exceedance of the historical inflows. <br><br>During Jan-Mar, the Apr-Jul volume forecast is calculated as the average volume for that period multiplied by the ratio of the current year's forecast @t-Apr volume to the average volume for the same period. Operators recognize there is uncertainty in the forecast and use a scaled average inflow volume to ensurse operations are sufficiently conservative to achieve the May 1 ULDE should the forecast decrease. <br><br>During a wet March the forecast is not scaled so as to ensure there is sufficent time to make releases to meet the May 1 ULDE. HP: The observed hydrological forecast uncertainty using empirical data from 2011 and 2017 indicate that the RFC models based on snowpack are more accurate during wet hydrologic classification years. Greater uncertainty exists in the dry-moderately wet years.  <br><br>Returns: The unregulated inflow volume used to set springflow operations <br><br><br>";
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG FALSE;
-    NOTES          "DEVELOPMENT NOTES<br><br>CF, 20210410: Updated to not base March on a scaled average during wet years. HP: The observed hydrological forecast uncertainty using empirical data from 2011 and 2017 indicate that the RFC models based on snowpack are more accurate during wet hydrologic classification years. Greater uncertainty exists in the dry-moderately wet years. <br>";
+    NOTES          "DEVELOPMENT NOTES<br><br>CF, 20220301: Replaced a call of HClass[t-1] with AprJulPercentExceedance(), a statement which calculates logic used in the Percent Exceedance rule. IN a March start you don't have a HClass[@t-1] <br><br>CF, 20210410: Updated to not base March on a scaled average during wet years. HP: The observed hydrological forecast uncertainty using empirical data from 2011 and 2017 indicate that the RFC models based on snowpack are more accurate during wet hydrologic classification years. Greater uncertainty exists in the dry-moderately wet years. <br>";
     BEGIN
 
       IF ( "MonthIs"( { "January" , "February" , "March" } ) )
  THEN
-  IF ( "MonthIs"( { "March" } ) AND ( $ "KNN_MTOM.BaseFlowHClass" [@"t - 1"] == 4.00000000 ) COMMENTED_BY "Proposed change to direct calculation of HClass from Unregulated <br>" )
+  IF ( "MonthIs"( { "March" } ) AND IF ( @"t" == "RunStartDate"(  ) )
   THEN
-   "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) COMMENTED_BY "CF: During a wet March the forecast is not scaled so as to ensure there is <br>sufficent time to make releases to meet the May 1 ULDE. HP: The observed <br>hydrological forecast uncertainty using empirical data from 2011 and 2017 <br>indicate that the RFC models based on snowpack are more accurate during wet <br>hydrologic classification years. Greater uncertainty exists in the dry-moderately <br>wet years.  <br>"
+   ( "AprJulPercentExceedance"(  ) <= 0.10000000 ) COMMENTED_BY "March start you don't have a HClass[@t-1]  <br>"
   ELSE
-   ( ( "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) / "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) ) * "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) ) COMMENTED_BY "CF: During a wet March the forecast is not scaled so as to ensure there is <br>sufficent time to make releases to meet the May 1 ULDE. HP: The observed <br>hydrological forecast uncertainty using empirical data from 2011 and 2017 <br>indicate that the RFC models based on snowpack are more accurate during wet <br>hydrologic classification years. Greater uncertainty exists in the dry-moderately <br>wet years.  <br>"
+   $ "KNN_MTOM.BaseFlowHClass" [@"t - 1"] == 4.00000000
+  ENDIF )
+  THEN
+   "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) COMMENTED_BY "During a wet March the forecast is not scaled so as to ensure there is sufficent <br>time to make releases to meet the May 1 ULDE. <br>"
+  ELSE
+   ( ( "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) / "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) ) * "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) ) COMMENTED_BY "Forecast scaled by average to reflect greater uncertainty which exists in the dry-m<br>oderately wet years.     <br>"
   ENDIF COMMENTED_BY "CF:<br>"
  ELSE
   "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) COMMENTED_BY "Otherwise, use the April through July forecast and/or actual flows"
  ENDIF;
 
     END
-    UUID "{a2adea20-7d12-45a9-a08e-4e43104dd205}";;
+    UUID "{569b7dff-429b-4bd8-8950-4c3f169a6501}";;
 
     FUNCTION       "BaseFlowA-JVolumeUpdate" (  )
     RETURN_TYPE    NUMERIC;
     SCALE_UNITS    "";
-    DESCRIPTION    "Arguements: None<br><br>Description: Calculates the April - July unregulated inflow volume (A-J Volume) to Flaming Gorge. This volume is used for determining the percentage of exceedance of the historical inflows. <br><br>Returns: The unregulated inflow volume used to set baseflow operations <br><br>";
+    DESCRIPTION    "Arguements: None<br><br>Description: Calculates the April - July unregulated inflow volume (A-J Volume) to Flaming Gorge. This volume is used for determining the percentage of exceedance of the historical inflows. <br><br>During Jan-Mar, the Apr-Jul volume forecast is calculated as the average volume for that period multiplied by the ratio of the current year's forecast @t-Apr volume to the average volume for the same period. Operators recognize there is uncertainty in the forecast and use a scaled average inflow volume to ensurse operations are sufficiently conservative to achieve the May 1 ULDE should the forecast decrease. <br><br>During a wet March the forecast is not scaled so as to ensure there is sufficent time to make releases to meet the May 1 ULDE. HP: The observed hydrological forecast uncertainty using empirical data from 2011 and 2017 indicate that the RFC models based on snowpack are more accurate during wet hydrologic classification years. Greater uncertainty exists in the dry-moderately wet years.  <br><br>Returns: The unregulated inflow volume used to set baseflow operations <br><br>";
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG FALSE;
-    NOTES          "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br><br>CF, 20210410: Updated to not base March on a scaled average during wet years. HP: The observed hydrological forecast uncertainty using empirical data from 2011 and 2017 indicate that the RFC models based on snowpack are more accurate during wet hydrologic classification years. Greater uncertainty exists in the dry-moderately wet years. <br><br>MC, 20160913: I don't see how March or May targets are reflected in this function, are they considered elsewhere? That inline comment precedes this documentation.<br>MC, 20170503: August used the same calculation as April-July so I removed its separate IF conditional and just let it calculate under the final ELSE; changed the position of the denominators in the calculations to better reflect how the factor is being calculated as a ratio of average unregulated flows for different periods (not sure it's any clearer, though)";
+    NOTES          "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br><br>CF, 20220301: Replaced a call of HClass[t-1] with AprJulPercentExceedance(), a statement which calculates logic used in the Percent Exceedance rule. IN a March start you don't have a HClass[@t-1] <br><br>CF, 20210410: Updated to not base March on a scaled average during wet years. HP: The observed hydrological forecast uncertainty using empirical data from 2011 and 2017 indicate that the RFC models based on snowpack are more accurate during wet hydrologic classification years. Greater uncertainty exists in the dry-moderately wet years. <br><br>MC, 20160913: I don't see how March or May targets are reflected in this function, are they considered elsewhere? That inline comment precedes this documentation.<br>MC, 20170503: August used the same calculation as April-July so I removed its separate IF conditional and just let it calculate under the final ELSE; changed the position of the denominators in the calculations to better reflect how the factor is being calculated as a ratio of average unregulated flows for different periods (not sure it's any clearer, though)";
     BEGIN
 
       IF ( "MonthIs"( { "January" , "February" , "March" } ) )
  THEN
-  IF ( "MonthIs"( { "March" } ) AND $ "KNN_MTOM.BaseFlowHClass" [@"t - 1"] == 4.00000000 )
+  IF ( "MonthIs"( { "March" } ) AND IF ( @"t" == "RunStartDate"(  ) )
   THEN
-   "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) COMMENTED_BY "CF: During a wet March the forecast is not scaled so as to ensure there is <br>sufficent time to make releases to meet the May 1 ULDE. HP: The observed <br>hydrological forecast uncertainty using empirical data from 2011 and 2017 <br>indicate that the RFC models based on snowpack are more accurate during wet <br>hydrologic classification years. Greater uncertainty exists in the dry-moderately <br>wet years. <br>"
+   ( "AprJulPercentExceedance"(  ) <= 0.10000000 ) COMMENTED_BY "March start you don't have a HClass[@t-1] <br>"
   ELSE
-   ( "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) * ( "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) / "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) ) ) COMMENTED_BY "CF/HP: During Jan-Mar, the Apr-Jul volume forecast is calculated as the average <br>volume for that period multiplied by the ratio of the ratio of the current year's <br>forecast @t-Apr volume to the average volume for the same period. Operators <br>recognize there is uncertainty in the forecast and use a scaled average inflow <br>volume to ensurse operations are sufficiently conservative to achieve the May 1 <br>ULDE should the forecast decrease. <br>"
+   $ "KNN_MTOM.BaseFlowHClass" [@"t - 1"] == 4.00000000
+  ENDIF )
+  THEN
+   "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) COMMENTED_BY "During a wet March the forecast is not scaled so as to ensure there is sufficent <br>time to make releases to meet the May 1 ULDE.  <br>"
+  ELSE
+   ( "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) * ( "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) / "SumSlot"( $ "KNN_MTOM.FGAverageUnregInflow", @"24:00:00 Current Month Max DayOfMonth, Current Year", @"24:00:00 April Max DayOfMonth, Current Year" ) ) ) COMMENTED_BY "Forecast scaled by average to reflect greater uncertainty which exists in the dry-m<br>oderately wet years. <br>"
   ENDIF COMMENTED_BY ""
  ELSE
   IF ( "MonthIs"( { "September" , "October" , "November" , "December" } ) )
@@ -8302,7 +8312,7 @@ BEGIN
  ENDIF;
 
     END
-    UUID "{67627ffd-9dfc-427c-8af2-9fcdeca2403f}";;
+    UUID "{6f245cb9-1741-4b66-8471-8b8a15d09dd7}";;
 
     FUNCTION       "MakeDailyFlamingGorgeReleaseDateandFlowList_LTSP" ( DATETIME startdate )
     RETURN_TYPE    LIST;
@@ -8498,6 +8508,26 @@ BEGIN
 
     END
     UUID "{aff436d3-f110-40ec-849d-fe86cdec218b}";;
+
+    FUNCTION       "AprJulPercentExceedance" (  )
+    RETURN_TYPE    NUMERIC;
+    SCALE_UNITS    "";
+    DESCRIPTION    "Arguements: None<br><br>Description: Calculates AprJul Percent Exceedance. RPL logic matches that in rule 'Calc Percent Exceedance' except that the rule calls slot &quot;KNN_MTOM.AprJulVolBaseFlow&quot;  which involve forecast adjust to account for the greater uncertainty exists in the dry-moderately wet years.  <br><br>Returns: Exceedance 0-1 ";
+    ACTIVE         TRUE;
+    PRE_EXEC_DIAG  FALSE;
+    POST_EXEC_DIAG FALSE;
+    NOTES          "CF, 20220301: Created to replace call of HClass[t-1] call with a statement which calculates this value with logic used to calculate the Percent Exceedance<br>";
+    BEGIN
+
+      1.00000000 - "PercentRank"( "GetSlotVals"( $ "FlamingGorgeData.AprJulVolAnnual", "GetDate"( "December 31, " CONCAT "GetYearAsString"( "NumberToDate"( $ "KNN_MTOM.FGHydrologicClassificationStartYear" [] ) ) ), IF ( $ "KNN_MTOM.UpdateHistoricRecord" [] == 1.00000000 )
+ THEN
+  @"24:00:00 December Max DayOfMonth, Previous Year" COMMENTED_BY "Use the end of the previous year"
+ ELSE
+  "GetDate"( "December 31, " CONCAT "GetYearAsString"( "NumberToDate"( $ "KNN_MTOM.FGHydrologicClassificationEndYear" [] ) ) ) COMMENTED_BY "Use the end year specified on the KNN_MTOM object"
+ ENDIF ), "SumFlowsToVolume"( $ "FlamingGorgeInflow.Unregulated", @"24:00:00 April Max DayOfMonth, Current Year", @"24:00:00 July Max DayOfMonth, Current Year" ) );
+
+    END
+    UUID "{2e745a12-2aed-42c8-9ec0-38553d39ddf3}";;
 
   END
   UUID "{415c2fa2-80ea-4bcc-a815-430c9b53df93}";;
@@ -14293,32 +14323,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{a1923046-3a88-4dfa-9018-da86fcf5f9ec}";
+    UUID "{f77bd891-c58a-4368-849b-fee0fd0b7692}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{205324db-d475-4b0b-817d-7e836e8b4b86}";
+    UUID "{f18d6581-cfd5-43cf-9244-e2b1f8fbea73}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{6aee5747-ae23-4275-ad94-eec2603da80b}";
+    UUID "{e18b7062-ca4e-4d2c-89ac-5ef39deb440e}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{017b94f6-a72d-4d51-a57d-157191507ec8}";
+    UUID "{4e7581c7-b2e8-427b-a018-bf5ef7b4e71f}";
 ;
 
   END
-  UUID "{eac6191b-165a-4a14-b07a-292bcb61e4e1}";;
+  UUID "{bf88ae1e-0956-43ff-bce3-e32becc3ed87}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14329,11 +14359,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{533c4bf3-baba-48d3-96ea-5da188271888}";
+    UUID "{c6f119ad-d4b6-4cc0-9784-1a7f1042f4ca}";
 ;
 
   END
-  UUID "{5e115646-fe1b-4baf-9490-f008e1f4548b}";;
+  UUID "{f110ca6a-3231-4cd2-a061-d57ba6b06fa7}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14344,11 +14374,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{cd172f7f-c922-4edb-a829-a8d57dc9f13c}";
+    UUID "{06cc2e09-437e-4069-b772-a3adf163a6e9}";
 ;
 
   END
-  UUID "{374971b6-d448-41ab-b7eb-eb6dc59685bf}";;
+  UUID "{6401dd45-49ea-488f-8295-f0c65c465786}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14359,11 +14389,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{173d554f-25ed-44b0-8304-029e1ffa2780}";
+    UUID "{ec6d84dd-acd9-43a4-be73-c0b98b3d481a}";
 ;
 
   END
-  UUID "{cf4664a4-cd1d-4c95-80eb-d467f7234e85}";;
+  UUID "{d7391cb1-631b-48c4-8217-ccab7f351b67}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
