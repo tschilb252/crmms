@@ -18,14 +18,14 @@ library(crssplot)
 ### --- Inputs
 
 ## 24-MS MRIDs - UPDATE!
-most_mrid <- 3177 
-min_mrid <- 3178
-max_mrid <- 3175 # Feb Max Prob. will be used for Mar
+most_mrid <- 3180 
+min_mrid <- 3181
+max_mrid <- 3179 # Feb Max Prob. will be used for Mar
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2022-02')
+most_run_date = c('2022-03')
 min_run_date = most_run_date
-max_run_date = c('2022-01') # Feb Max Prob. will be used for Mar
+max_run_date = c('2022-02') # Feb Max Prob. will be used for Mar
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -47,7 +47,7 @@ names(mrid_to_trace) <- names(mrid_to_runDate) <-
 setwd(data_dir)
 dfi <- NULL
 for (j in 1:length(slots)) {
-  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:34] %>% na.omit()
+  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:34] #%>% na.omit()
   dfi = rbind.data.frame(dfi, 
                          cbind.data.frame(run = most_run_date, slot = slots[j], 
                                           dfj))
@@ -57,6 +57,9 @@ for (j in 1:length(slots)) {
 esp_traces = paste('ESP', 1991:2020)
 colnames(dfi)[7:36] <- esp_traces
 colnames(dfi)[3] <- "Date"
+
+dfi <- dfi[!is.na(dfi$Date),] # remove rows with NA in date
+
 df_full = dfi %>% 
   mutate(Date = ceiling_date(Date + month(1), "month") - days(1)) %>%
   # keep first 24 months of data
@@ -161,18 +164,18 @@ df_stat <- bind_rows(
 
 ## naming for figures
 esp_label <- "CRMMS-ESP Projection \n(30 traces)"
-lab_names <- c(paste(format(ym(min_run_date), "%b %Y"), "24-Month Study Minimum Probable"), 
-               paste(format(ym(max_run_date), "%b %Y"),"24-Month Study Maximum Probable"), 
+lab_names <- c(paste(format(ym(max_run_date), "%b %Y"),"24-Month Study Maximum Probable"), 
                paste(format(ym(most_run_date), "%b %Y"),"24-Month Study Most Probable"),
+               paste(format(ym(min_run_date), "%b %Y"), "24-Month Study Minimum Probable"), 
                "Historical",
                rep(esp_label, 30))
 
-names(lab_names) <- c("24MS Min", "24MS Max", "24MS Most", "Historical", 
+names(lab_names) <- c("24MS Max", "24MS Most", "24MS Min","Historical", 
                       esp_traces)
 nn <- lab_names[1:5]
 
 ## Min, Max, Most, ESP is order of these colors, size, linetype
-custom_colors <- c('#DA3139', '#104E8B', '#26AE44', 'grey20', 'grey43')
+custom_colors <- c('#104E8B', '#26AE44', '#DA3139', 'grey20', 'grey43')
 custom_size <- c(rep(1.2, 3), 1, 0.5)
 custom_lt <- c(rep(2, 3), 1, 1)
 custom_alpha <- c(rep(1, 4), 0.35)
@@ -250,16 +253,16 @@ gg <-
     color = 'black', linetype = 'solid'
   ) +
   geom_hline(yintercept = 3490, color = 'grey20', linetype = 2) +
-  #geom_hline(yintercept = 3490, colour = '#800000', size = 1) +
-  geom_vline(
-    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023", "Dec 2024")), 
-    size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
-    alpha = 0.8
-  ) +
   geom_line(
     data = powell_line, 
     aes(x = Timestep, y=Eq_elev), 
     colour = "black", linetype = 1
+  ) +
+  # EOCY lines are infront of tier lines but behind tier text
+  geom_vline(
+    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023", "Dec 2024")),
+    size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
+    alpha = 0.8
   ) +
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=3670, label="Equalization Tier (ET)", angle=00, size=3, hjust = 0) +
@@ -267,7 +270,7 @@ gg <-
            y=3620, label="Upper Elevation Balancing Tier\n(3,575' to ET)", 
            angle=00, size=3, hjust = 0) +
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
-           y=3544, label="Mid-Elevation Release Tier\n(3,525' to 3,575')", 
+           y=3553, label="Mid-Elevation Release Tier\n(3,525' to 3,575')", 
            angle=00, size=3, hjust = 0) +
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=3510, label="Lower Elevation Balancing Tier\n(<3,525')", 
@@ -341,6 +344,12 @@ gg <-
     colour = 'black', linetype = 'dashed'
   ) +
   geom_hline(yintercept = c(1145, 1075, 1050, 1025), color = "black", linetype = 1) +
+  # EOCY lines are infront of tier lines but behind tier text
+  geom_vline(
+    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023", "Dec 2024")),
+    size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
+    alpha = 0.8
+  ) +
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=1147.5, label="Surplus Condition (>1,145')", angle=00, size=3, hjust = 0) +
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
@@ -353,7 +362,7 @@ gg <-
   #          y=1063, label="Shortage Condition\n(<1,075')", 
   #          angle=00, size=3, hjust = 0) +
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
-           y=1063, label="Level 1 Shortage Condition\n(1,050' to 1,075')",
+           y=1060, label="Level 1 Shortage Condition\n(1,050' to 1,075')",
            angle=00, size=3, hjust = 0) +
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=1037, label="Level 2 Shortage Condition\n(1,025' to 1,050')",
@@ -361,11 +370,6 @@ gg <-
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=1015, label="Level 3 Shortage Condition\n(<1,025')",
            angle=00, size=3, hjust = 0) +
-  geom_vline(
-    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023", "Dec 2024")),
-    size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
-    alpha = 0.8
-  ) +
   theme_bw(base_size = 14) +
   guides(alpha = 'none',
          color = guide_legend(nrow = 3, order = 1),
