@@ -169,18 +169,25 @@ minLab_droa = ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
 ## naming for figures
 esp_label <- "CRMMS-ESP Projection \n(30 traces)"
 lab_names <- c(paste(format(ym(max_run_date), "%B %Y"),
-                     ifelse(maxLab_droa, 'Maximum ', "DROA Maximum"), 
-                     "Probable 24-Month Study"), 
+                     ifelse(maxLab_droa, 'Probable Maximum ', "DROA Probable Maximum"), 
+                     "24-Month Study"), 
                paste(format(ym(most_run_date), "%B %Y"),"Most Probable 24-Month Study"),
                paste(format(ym(min_run_date), "%B %Y"), 
-                     ifelse(minLab_droa, 'Minimum', "DROA Minimum"),
-                     "Probable 24-Month Study"), 
+                     ifelse(minLab_droa, 'Probable Minimum', "DROA Probable Minimum"),
+                     "24-Month Study"), 
                "Historical",
                rep(esp_label, 30))
 
 names(lab_names) <- c("24MS Max", "24MS Most", "24MS Min","Historical", 
                       esp_traces)
 nn <- lab_names[1:5]
+
+# plot subtitle
+mons_run = unique(c(format(ym(max_run_date), "%B"), 
+                  format(ym(min_run_date), "%B"),
+                  format(ym(most_run_date), "%B")))
+subtitle_in = paste(cloud_model, 'Projections from', paste(mons_run, collapse = ' and '),  
+                    format(ym(min_run_date), "%Y"))
 
 ## Min, Max, Most, ESP is order of these colors, size, linetype
 custom_colors <- c('#104E8B', '#26AE44', '#DA3139', 'grey20', 'grey43')
@@ -253,7 +260,7 @@ gg <-
     y = "Pool Elevation (ft)", x = NULL, 
     color = NULL, linetype = NULL, size = NULL, fill = NULL,
     title = 'Lake Powell End-of-Month Elevations',
-    subtitle = paste(cloud_model, 'Projections from', format(ym(most_run_date), "%B %Y"))
+    subtitle = subtitle_in
   ) +
   # tier stuff
   geom_hline(
@@ -308,9 +315,9 @@ ggsave("crmmsCloud_powell.png",
        width = 11, height = 8)
 
 ## Mead -------------------------
-m_breaks <- seq(900, 1250, 25)
+m_breaks <- seq(895, 1250, 15)
 m_breaks2 <- seq(900, 1250, 5)
-yy <- c(1000, 1150) # NULL for default ylimit
+yy <- c(1000, 1105) # NULL for default ylimit
 gg <-
   ggplot(df_stat_m, aes(x = Date, fill = Cloud)) +
   scale_fill_discrete(type = cloud_color) +
@@ -345,7 +352,7 @@ gg <-
        size = NULL,
        fill = NULL,
        title = 'Lake Mead End-of-Month Elevations',
-       subtitle = paste(cloud_model, 'Projections from', format(ym(most_run_date), "%B %Y"))) +
+       subtitle = subtitle_in) +
   # tier stuff
   geom_hline(
     yintercept = c(1110, 1090, 1045), 
@@ -361,7 +368,7 @@ gg <-
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=1147.5, label="Surplus Condition (>1,145')", angle=00, size=3, hjust = 0) +
   annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
-           y=1125, label="Normal Condition\n(1,075' to 1,145')", 
+           y=1084, label="Normal Condition\n(1,075' to 1,145')", 
            angle=00, size=3, hjust = 0) +
   # annotate("text", x = as.yearmon(ym(most_run_date) - months(5)),
   #          y=1083, label="Drought Contingency Plan Contributions\n(<1,090')", 
