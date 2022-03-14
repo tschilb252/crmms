@@ -162,11 +162,19 @@ df_stat <- bind_rows(
 
 ### ----------------- PLOTTING
 
+# labeling 24-MS lines
+maxLab_droa = ifelse(month(ym(max_run_date)) %in% c(1,4,8), T, F)
+minLab_droa = ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
+
 ## naming for figures
 esp_label <- "CRMMS-ESP Projection \n(30 traces)"
-lab_names <- c(paste(format(ym(max_run_date), "%b %Y"),"24-Month Study Maximum Probable"), 
-               paste(format(ym(most_run_date), "%b %Y"),"24-Month Study Most Probable"),
-               paste(format(ym(min_run_date), "%b %Y"), "24-Month Study Minimum Probable"), 
+lab_names <- c(paste(format(ym(max_run_date), "%B %Y"),
+                     ifelse(maxLab_droa, 'Maximum ', "DROA Maximum"), 
+                     "Probable 24-Month Study"), 
+               paste(format(ym(most_run_date), "%B %Y"),"Most Probable 24-Month Study"),
+               paste(format(ym(min_run_date), "%B %Y"), 
+                     ifelse(minLab_droa, 'Minimum', "DROA Minimum"),
+                     "Probable 24-Month Study"), 
                "Historical",
                rep(esp_label, 30))
 
