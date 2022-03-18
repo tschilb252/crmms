@@ -135,13 +135,18 @@ Vallecito.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 ## Diversions ##
 PumpingFromLakeMead:SNWP.Diversion Requested: file = $CRMMS_DIR/rdfOutput/diversion.rdf
+PumpingFromLakeMead.Total Diversion: file = $CRMMS_DIR/rdfOutput/diversion.rdf
+PumpingFromLakeMead.Total Diversion Requested: file = $CRMMS_DIR/rdfOutput/diversion.rdf
+MWDDiversion:MWD.Diversion Requested: file = $CRMMS_DIR/rdfOutput/diversion.rdf
 MWDDiversion.Total Diversion: file = $CRMMS_DIR/rdfOutput/diversion.rdf
+MWDDiversion.Total Diversion Requested: file = $CRMMS_DIR/rdfOutput/diversion.rdf
 CAPDiversion.Total Diversion: file = $CRMMS_DIR/rdfOutput/diversion.rdf
+CAPDiversion.Total Diversion Requested: file = $CRMMS_DIR/rdfOutput/diversion.rdf
+
 TunnelDiversionBelowCrystalForAg.Diversion: file = $CRMMS_DIR/rdfOutput/diversion.rdf
 MexicanTreatyDelivery.Total Diversion: file = $CRMMS_DIR/rdfOutput/diversion.rdf
 NavajoIndianIrrigationProjectNIIP.Diversion: file = $CRMMS_DIR/rdfOutput/diversion.rdf
 Azotea Tunnel.Diversion: file = $CRMMS_DIR/rdfOutput/diversion.rdf
-
 TunnelReturnFlow.Outflow: file = $CRMMS_DIR/rdfOutput/diversion.rdf
 GunnisonBelowCrystal:TunnelDivBelowCrystalForAg.Outflow: file = $CRMMS_DIR/rdfOutput/diversion.rdf
 GunnisonBelowCrystal:TunnelDivBelowCrystalForAg.Diversion: file = $CRMMS_DIR/rdfOutput/diversion.rdf
