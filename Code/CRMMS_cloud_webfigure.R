@@ -3,7 +3,7 @@
 #   Figures for 2-Year Probabilistic Projections webpage 
 #   
 #   Steps: Open CRMMS.Rproj; Read messages (run renv::restore() if prompted to);
-#          Update Inputs (run_date, MRIDs for min/most/max); Run script
+#          Update Inputs (run dates & MRIDs for min/most/max); Run script
 # ==============================================================================
 rm(list=ls())
 
@@ -17,11 +17,15 @@ library(crssplot)
 
 ### --- Inputs
 
-## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2022-01')
-most_mrid <- 3173 
-min_mrid <- 3174
-max_mrid <- 3175
+## 24-MS MRIDs - UPDATE!
+most_mrid <- 3180 
+min_mrid <- 3181
+max_mrid <- 3179 # Feb Max Prob. will be used for Mar
+
+## 24MS Run Date - UPDATE!
+most_run_date = c('2022-03')
+min_run_date = most_run_date
+max_run_date = c('2022-02') # Feb Max Prob. will be used for Mar
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -35,15 +39,17 @@ data_fl = 'CRMMS_EnsembleOutput.xlsm'
 sdis <- c("Mead.Pool Elevation" = 1930, "Powell.Pool Elevation" = 1928)
 slots <- names(sdis)
 mrid_to_trace <- c("24MS Min", "24MS Max", "24MS Most")
-names(mrid_to_trace) <- c(min_mrid, max_mrid, most_mrid)
+mrid_to_runDate <- c(min_run_date, max_run_date, most_run_date)
+names(mrid_to_trace) <- names(mrid_to_runDate) <- 
+  c(min_mrid, max_mrid, most_mrid)
 
 ## CRMMS-ESP - Read in slots
 setwd(data_dir)
 dfi <- NULL
 for (j in 1:length(slots)) {
-  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:34] %>% na.omit()
+  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:34] #%>% na.omit()
   dfi = rbind.data.frame(dfi, 
-                         cbind.data.frame(run = run_date, slot = slots[j], 
+                         cbind.data.frame(run = most_run_date, slot = slots[j], 
                                           dfj))
 }
 
@@ -51,6 +57,9 @@ for (j in 1:length(slots)) {
 esp_traces = paste('ESP', 1991:2020)
 colnames(dfi)[7:36] <- esp_traces
 colnames(dfi)[3] <- "Date"
+
+dfi <- dfi[!is.na(dfi$Date),] # remove rows with NA in date
+
 df_full = dfi %>% 
   mutate(Date = ceiling_date(Date + month(1), "month") - days(1)) %>%
   # keep first 24 months of data
@@ -61,23 +70,24 @@ df_full = dfi %>%
 
 ## Historical data info / end date
 hist_nMons = 7 # keep 7 months before start date
-end_date = format(ym(run_date) + months(23), "%Y-%m")
-histStart_date = format(ym(run_date) - months(hist_nMons), "%Y-%m") 
+end_date = format(ym(most_run_date) + months(23), "%Y-%m")
+histStart_date = format(ym(most_run_date) - months(hist_nMons), "%Y-%m") 
+histEnd_date = format(ym(most_run_date) - months(1), "%Y-%m") 
 
 ## Read 24-MS data from hdb - no vpn needed
 df_hdb <- bind_rows(
-  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", run_date, end_date, most_mrid),
-  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, most_mrid),
-  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", run_date, end_date, min_mrid),
-  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, min_mrid),
-  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", run_date, end_date, max_mrid),
-  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, max_mrid)
+  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", most_run_date, end_date, most_mrid),
+  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", most_run_date, end_date, most_mrid),
+  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", min_run_date, end_date, min_mrid),
+  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", min_run_date, end_date, min_mrid),
+  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", max_run_date, end_date, max_mrid),
+  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", max_run_date, end_date, max_mrid)
 )
 
 ## Reorg 24-MS data
 df_hdb <- df_hdb %>%
   mutate(slot = names(sdis)[match(sdi, sdis)],
-         run = run_date,
+         run = mrid_to_runDate[as.character(mrid)],
          Trace = mrid_to_trace[as.character(mrid)]) %>%
   rename(Date = time_step) %>%
   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
@@ -85,14 +95,14 @@ df_hdb <- df_hdb %>%
 
 ## Read historical data from hdb
 df_hist <- bind_rows(
-  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", histStart_date, run_date),
-  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", histStart_date, run_date)
+  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", histStart_date, histEnd_date),
+  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", histStart_date, histEnd_date)
 )
 
 ## Reorg histrical data
 df_hist <- df_hist %>%
   mutate(slot = names(sdis)[match(sdi, sdis)],
-         run = run_date,
+         run = most_run_date,
          Trace = 'Historical') %>%
   rename(Date = time_step) %>%
   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
@@ -108,28 +118,31 @@ df_hdb = rbind(df_hdb, df_hist)
 # }
 
 ## Cloud inputs - naming
-cloud_name = 'CRMMS-ESP Projections Range'
+cloud_name = 'CRMMS-ESP Projection Range'
 cloud_model = 'CRMMS' 
 
 ## Cloud stats from CRMMS-ESP
 df_stat = df_full %>%
-  pivot_longer(cols = esp_traces, names_to = 'Trace') %>%
+  pivot_longer(cols = all_of(esp_traces), names_to = 'Trace') %>%
   group_by(run, slot, Date) %>%
   summarise(cloud.max = max(value),
             cloud.min = min(value)) %>%
-  mutate(Cloud = factor(cloud_name), Date= as.yearmon(Date)) 
+  mutate(Cloud = factor(cloud_name), 
+         Date= as.yearmon(Date)) 
 
 ## ESP traces for figs
 df_24MS = df_full %>% 
   select(c("slot", "Date", all_of(esp_traces))) %>%
   pivot_longer(cols = all_of(esp_traces), names_to = 'Trace') %>%
+  mutate(run = most_run_date) %>%
   # add in the 24MS data
   bind_rows(df_hdb) %>%
   mutate(Cloud = factor(cloud_name)) 
 
 ## Connect historical data and initial conditions
 df_init = df_24MS %>% 
-  filter(Date == run_date) %>% 
+  # not connecting the max probable to start date for now
+  filter(Date == most_run_date & run == most_run_date) %>% 
   select(-value, -Date) %>% distinct()
 df_hist2 = df_hist %>% 
   filter(Date == max(Date)) %>%
@@ -143,26 +156,41 @@ df_stat <- bind_rows(
   df_hist2 %>% 
     mutate('cloud.min' = value) %>% 
     rename('cloud.max' = value) %>% 
-    mutate(run = run_date, Cloud = cloud_name)
+    mutate(run = most_run_date, Cloud = cloud_name)
 )
 
 
 ### ----------------- PLOTTING
 
-## naming for figures
-esp_label <- "CRMMS-ESP Projections \n(30 projections)"
-lab_names <- c("24-Month Study Minimum Probable", 
-               "24-Month Study Maximum Probable", 
-               "24-Month Study Most Probable",
-               "Historical",
-               rep(esp_label, 35))
+# labeling 24-MS lines
+maxLab_droa = ifelse(month(ym(max_run_date)) %in% c(1,4,8), T, F)
+minLab_droa = ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
 
-names(lab_names) <- c("24MS Min", "24MS Max", "24MS Most", "Historical", 
+## naming for figures
+esp_label <- "CRMMS-ESP Projection \n(30 traces)"
+lab_names <- c(paste(format(ym(max_run_date), "%B %Y"),
+                     ifelse(maxLab_droa, 'Probable Maximum ', "DROA Probable Maximum"), 
+                     "24-Month Study"), 
+               paste(format(ym(most_run_date), "%B %Y"),"Most Probable 24-Month Study"),
+               paste(format(ym(min_run_date), "%B %Y"), 
+                     ifelse(minLab_droa, 'Probable Minimum', "DROA Probable Minimum"),
+                     "24-Month Study"), 
+               "Historical",
+               rep(esp_label, 30))
+
+names(lab_names) <- c("24MS Max", "24MS Most", "24MS Min","Historical", 
                       esp_traces)
 nn <- lab_names[1:5]
 
+# plot subtitle
+mons_run = unique(c(format(ym(max_run_date), "%B"), 
+                  format(ym(min_run_date), "%B"),
+                  format(ym(most_run_date), "%B")))
+subtitle_in = paste(cloud_model, 'Projections from', paste(mons_run, collapse = ' and '),  
+                    format(ym(min_run_date), "%Y"))
+
 ## Min, Max, Most, ESP is order of these colors, size, linetype
-custom_colors <- c('#DA3139', '#104E8B', '#26AE44', 'grey20', 'grey43')
+custom_colors <- c('#104E8B', '#26AE44', '#DA3139', 'grey20', 'grey43')
 custom_size <- c(rep(1.2, 3), 1, 0.5)
 custom_lt <- c(rep(2, 3), 1, 1)
 custom_alpha <- c(rep(1, 4), 0.35)
@@ -232,7 +260,7 @@ gg <-
     y = "Pool Elevation (ft)", x = NULL, 
     color = NULL, linetype = NULL, size = NULL, fill = NULL,
     title = 'Lake Powell End-of-Month Elevations',
-    subtitle = paste(cloud_model, 'Projections from', format(ym(run_date), "%B %Y"))
+    subtitle = subtitle_in
   ) +
   # tier stuff
   geom_hline(
@@ -240,29 +268,29 @@ gg <-
     color = 'black', linetype = 'solid'
   ) +
   geom_hline(yintercept = 3490, color = 'grey20', linetype = 2) +
-  #geom_hline(yintercept = 3490, colour = '#800000', size = 1) +
-  geom_vline(
-    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023")), 
-    size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
-    alpha = 0.8
-  ) +
   geom_line(
     data = powell_line, 
     aes(x = Timestep, y=Eq_elev), 
     colour = "black", linetype = 1
   ) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
+  # EOCY lines are infront of tier lines but behind tier text
+  geom_vline(
+    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023", "Dec 2024")),
+    size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
+    alpha = 0.8
+  ) +
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=3670, label="Equalization Tier (ET)", angle=00, size=3, hjust = 0) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=3620, label="Upper Elevation Balancing Tier\n(3,575' to ET)", 
            angle=00, size=3, hjust = 0) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-           y=3544, label="Mid-Elevation Release Tier\n(3,525' to 3,575')", 
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
+           y=3553, label="Mid-Elevation Release Tier\n(3,525' to 3,575')", 
            angle=00, size=3, hjust = 0) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=3510, label="Lower Elevation Balancing Tier\n(<3,525')", 
            angle=00, size=3, hjust = 0) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
            y=3477, label="Minimum Power Pool\n(3,490')", 
            angle=00, size=3, hjust = 0) +
   theme_bw(base_size = 14) +
@@ -287,9 +315,9 @@ ggsave("crmmsCloud_powell.png",
        width = 11, height = 8)
 
 ## Mead -------------------------
-m_breaks <- seq(900, 1250, 25)
+m_breaks <- seq(895, 1250, 15)
 m_breaks2 <- seq(900, 1250, 5)
-yy <- c(1000, 1150) # NULL for default ylimit
+yy <- c(1000, 1105) # NULL for default ylimit
 gg <-
   ggplot(df_stat_m, aes(x = Date, fill = Cloud)) +
   scale_fill_discrete(type = cloud_color) +
@@ -324,38 +352,39 @@ gg <-
        size = NULL,
        fill = NULL,
        title = 'Lake Mead End-of-Month Elevations',
-       subtitle = paste(cloud_model, 'Projections from', format(ym(run_date), "%B %Y"))) +
+       subtitle = subtitle_in) +
   # tier stuff
   geom_hline(
     yintercept = c(1110, 1090, 1045), 
     colour = 'black', linetype = 'dashed'
   ) +
   geom_hline(yintercept = c(1145, 1075, 1050, 1025), color = "black", linetype = 1) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-           y=1147.5, label="Surplus Condition (>1,145')", angle=00, size=3, hjust = 0) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-           y=1125, label="Normal Condition\n(1,075' to 1,145')", 
-           angle=00, size=3, hjust = 0) +
-  # annotate("text", x = as.yearmon(ym(run_date) - months(5)),
-  #          y=1083, label="Drought Contingency Plan Contributions\n(<1,090')", 
-  #          angle=00, size=3, hjust = 0) +
-  # annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-  #          y=1063, label="Shortage Condition\n(<1,075')", 
-  #          angle=00, size=3, hjust = 0) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-           y=1063, label="Level 1 Shortage Condition\n(1,050' to 1,075')",
-           angle=00, size=3, hjust = 0) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-           y=1037, label="Level 2 Shortage Condition\n(1,025' to 1,050')",
-           angle=00, size=3, hjust = 0) +
-  annotate("text", x = as.yearmon(ym(run_date) - months(6)),
-           y=1015, label="Level 3 Shortage Condition\n(<1,025')",
-           angle=00, size=3, hjust = 0) +
+  # EOCY lines are infront of tier lines but behind tier text
   geom_vline(
-    xintercept = as.yearmon(c("Dec 2021", "Dec 2022")),
+    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023", "Dec 2024")),
     size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
     alpha = 0.8
   ) +
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
+           y=1147.5, label="Surplus Condition (>1,145')", angle=00, size=3, hjust = 0) +
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
+           y=1084, label="Normal Condition\n(1,075' to 1,145')", 
+           angle=00, size=3, hjust = 0) +
+  # annotate("text", x = as.yearmon(ym(most_run_date) - months(5)),
+  #          y=1083, label="Drought Contingency Plan Contributions\n(<1,090')", 
+  #          angle=00, size=3, hjust = 0) +
+  # annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
+  #          y=1063, label="Shortage Condition\n(<1,075')", 
+  #          angle=00, size=3, hjust = 0) +
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
+           y=1060, label="Level 1 Shortage Condition\n(1,050' to 1,075')",
+           angle=00, size=3, hjust = 0) +
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
+           y=1037, label="Level 2 Shortage Condition\n(1,025' to 1,050')",
+           angle=00, size=3, hjust = 0) +
+  annotate("text", x = as.yearmon(ym(most_run_date) - months(6)),
+           y=1015, label="Level 3 Shortage Condition\n(<1,025')",
+           angle=00, size=3, hjust = 0) +
   theme_bw(base_size = 14) +
   guides(alpha = 'none',
          color = guide_legend(nrow = 3, order = 1),
