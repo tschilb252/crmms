@@ -191,6 +191,7 @@ PowellData.UpperElevBalBranch: file = $CRMMS_DIR/rdfOutput/flags.rdf
 FloodControlOutput.Flood Control Flag: file = $CRMMS_DIR/rdfOutput/monthlyflags.rdf
 Surplus.Flood Control Surplus Flag: file = $CRMMS_DIR/rdfOutput/monthlyflags.rdf
 PowellData.ControllingEqualizationCondition: file = $CRMMS_DIR/rdfOutput/flags.rdf
+PowellData.EffectiveEOCYPoolElevWith823Rel: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
 LowerBasinDemandVariability.AbvHooverTriggerSet: file = $CRMMS_DIR/rdfOutput/flags.rdf
 CoordinatedOperationsFlagsForFreqTbl.AnnualFloodControlFlag: file = $CRMMS_DIR/rdfOutput/flags.rdf
