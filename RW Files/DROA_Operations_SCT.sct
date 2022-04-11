@@ -1,4 +1,4 @@
-# SCT File Created 4/6/2022 11:07 AM
+# SCT File Created 4/6/2022 12:54 PM
 #  as E:/RiverWare/staff/neumannd/CRMMS/CRMMS/RW Files/DROA_Operations_SCT.sct
 # Generated using RiverWare Version <RiverWare_Model 8.4.1 Patch>
 # Generated from Model File <CRMMS_V1.14.9003+DROA.mdl>
@@ -25,7 +25,7 @@ SCT_PROPERTIES
   TSAGG_START_MONTH       0
 
   WINDOW_WIDTH            1344
-  WINDOW_HEIGHT           657
+  WINDOW_HEIGHT           910
   RIGHT_MARGIN            0
   DIAG_WINDOW_HEIGHT      0
 
@@ -324,8 +324,8 @@ SLOT_DIV  25
   SLOT_LABEL        ""
 
 SLOT_REF  26
-  SLOT_LABEL        "Nav Inflow"
-  SLOT_MULTILINE    "Nav Inflow"
+  SLOT_LABEL        "Navajo Inflow "
+  SLOT_MULTILINE    "Navajo Inflow"
   RW_SLOT_NAME      "Navajo.Inflow"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
@@ -334,8 +334,8 @@ SLOT_REF  26
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 SLOT_REF  27
-  SLOT_LABEL        "Nav Storage"
-  SLOT_MULTILINE    "Nav Storage"
+  SLOT_LABEL        "Navajo Storage "
+  SLOT_MULTILINE    "Navajo Storage"
   RW_SLOT_NAME      "Navajo.Storage"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
@@ -347,8 +347,8 @@ SLOT_DIV  28
   SLOT_LABEL        ""
 
 SLOT_REF  29
-  SLOT_LABEL        "Nav Pool Elevation (with DROA Ops) "
-  SLOT_MULTILINE    "Nav Pool Elevation<br>(with DROA Ops)"
+  SLOT_LABEL        "Navajo Pool Elevation (with DROA Ops) "
+  SLOT_MULTILINE    "Navajo Pool Elevation<br>(with DROA Ops)"
   RW_SLOT_NAME      "Navajo.Pool Elevation"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
@@ -357,8 +357,8 @@ SLOT_REF  29
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 SLOT_REF  30
-  SLOT_LABEL        "Nav Pool Elevation Without DROA Ops "
-  SLOT_MULTILINE    "Nav Pool Elevation<br>Without DROA Ops"
+  SLOT_LABEL        "Navajo Pool Elevation Without DROA Ops "
+  SLOT_MULTILINE    "Navajo Pool Elevation<br>Without DROA Ops"
   RW_SLOT_NAME      "NavajoData.PoolElevationWithoutDROA_Ops"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
@@ -370,8 +370,8 @@ SLOT_DIV  31
   SLOT_LABEL        ""
 
 SLOT_REF  32
-  SLOT_LABEL        "Nav Outflow (with DROA Ops) "
-  SLOT_MULTILINE    "Nav Outflow<br>(with DROA Ops)"
+  SLOT_LABEL        "Navajo Outflow (with DROA Ops) "
+  SLOT_MULTILINE    "Navajo Outflow<br>(with DROA Ops)"
   RW_SLOT_NAME      "Navajo.Outflow"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
@@ -380,8 +380,8 @@ SLOT_REF  32
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 SLOT_REF  33
-  SLOT_LABEL        "Nav Release Without DROA Ops "
-  SLOT_MULTILINE    "Nav Release<br>Without DROA Ops"
+  SLOT_LABEL        "Navajo Release Without DROA Ops "
+  SLOT_MULTILINE    "Navajo Release<br>Without DROA Ops"
   RW_SLOT_NAME      "NavajoData.ReleaseWithoutDROA_Ops"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
@@ -393,8 +393,8 @@ SLOT_DIV  34
   SLOT_LABEL        ""
 
 SLOT_REF  35
-  SLOT_LABEL        "Nav DROA Storage in Powell "
-  SLOT_MULTILINE    "Nav DROA<br>Storage in Powell"
+  SLOT_LABEL        "Navajo DROA Storage in Powell "
+  SLOT_MULTILINE    "Navajo DROA<br>Storage in Powell"
   RW_SLOT_NAME      "Powell^NavajoDROA.Storage"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
