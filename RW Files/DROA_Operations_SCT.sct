@@ -1,4 +1,4 @@
-# SCT File Created 4/6/2022 12:54 PM
+# SCT File Created 4/11/2022 4:30 PM
 #  as E:/RiverWare/staff/neumannd/CRMMS/CRMMS/RW Files/DROA_Operations_SCT.sct
 # Generated using RiverWare Version <RiverWare_Model 8.4.1 Patch>
 # Generated from Model File <CRMMS_V1.14.9003+DROA.mdl>
@@ -6,7 +6,7 @@
 #
 SCT 0 0 Version: 20.4
 SCT_PROPERTIES
-  SLOT_ITEM_CNT           49
+  SLOT_ITEM_CNT           56
   PRESIM_TSTEP_CNT        1
   POSTSIM_TSTEP_CNT       0
   TSTEP_AXIS_HORZ         False
@@ -38,8 +38,6 @@ SCT_PROPERTIES
   SLOT_UNITS_SHEET_COL_WIDTH  "BlueMesa" COLFIT_METHOD_ALL 107
   SLOT_LABEL_SHEET_COL_WIDTH  "Navajo" COLFIT_METHOD_ALL 193
   SLOT_UNITS_SHEET_COL_WIDTH  "Navajo" COLFIT_METHOD_ALL 107
-  SLOT_LABEL_SHEET_COL_WIDTH  "Powell" COLFIT_METHOD_ALL 204
-  SLOT_UNITS_SHEET_COL_WIDTH  "Powell" COLFIT_METHOD_ALL 107
 
   SHOW_SELECTION_STATS    True
   SEL_STAT_MEDIAN_MAXCNT  31
@@ -101,7 +99,7 @@ SCT_PROPERTIES
   TOOLBAR_RUN_CTRL        True
   TOOLBAR_START_RUN       True
   TOOLBAR_FLAGS           True
-  TOOLBAR_FLAG_BUT_CODES  "TBMDRi"
+  TOOLBAR_FLAG_BUT_CODES  "R"
 
   TOOLBAR_SAVE_MODEL      False
   TOOLBAR_OPEN_SLOTS      False
@@ -154,8 +152,8 @@ SLOT_DIV  1
   SLOT_LABEL        ""
 
 SLOT_REF  2
-  SLOT_LABEL        "BM Inflow"
-  SLOT_MULTILINE    "BM Inflow"
+  SLOT_LABEL        "Blue Mesa Inflow "
+  SLOT_MULTILINE    "Blue Mesa Inflow "
   RW_SLOT_NAME      "BlueMesa.Inflow"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
@@ -164,7 +162,7 @@ SLOT_REF  2
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 SLOT_REF  3
-  SLOT_LABEL        "BM Storage"
+  SLOT_LABEL        "Blue Mesa Storage "
   SLOT_MULTILINE    "BM Storage"
   RW_SLOT_NAME      "BlueMesa.Storage"
   RW_SLOT_COL_INDEX 0
@@ -177,8 +175,8 @@ SLOT_DIV  4
   SLOT_LABEL        ""
 
 SLOT_REF  5
-  SLOT_LABEL        "BM Pool Elevation (with DROA Ops) "
-  SLOT_MULTILINE    "BM Pool Elevation<br>(with DROA Ops)"
+  SLOT_LABEL        "Blue Mesa Pool Elevation (with DROA Ops) "
+  SLOT_MULTILINE    "Blue Mesa Pool Elevation (with DROA Ops) "
   RW_SLOT_NAME      "BlueMesa.Pool Elevation"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
@@ -187,8 +185,8 @@ SLOT_REF  5
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 SLOT_REF  6
-  SLOT_LABEL        "BM Pool Elevation Without DROA Ops "
-  SLOT_MULTILINE    "BM Pool Elevation <br>Without DROA Ops"
+  SLOT_LABEL        "Blue Mesa Pool Elevation Without DROA Ops "
+  SLOT_MULTILINE    "Blue Mesa Pool Elevation Without DROA Ops "
   RW_SLOT_NAME      "BlueMesaData.PoolElevationWithoutDROA_Ops"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
@@ -200,8 +198,8 @@ SLOT_DIV  7
   SLOT_LABEL        ""
 
 SLOT_REF  8
-  SLOT_LABEL        "BM Outflow with DROA Ops "
-  SLOT_MULTILINE    "BM Outflow <br>with DROA Ops"
+  SLOT_LABEL        "Blue Mesa Outflow with DROA Ops "
+  SLOT_MULTILINE    "Blue Mesa Outflow with DROA Ops "
   RW_SLOT_NAME      "BlueMesa.Outflow"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
@@ -210,8 +208,8 @@ SLOT_REF  8
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 SLOT_REF  9
-  SLOT_LABEL        "BM Release Without DROA Ops "
-  SLOT_MULTILINE    "BM Release<br>Without DROA Ops"
+  SLOT_LABEL        "Blue Mesa Release Without DROA Ops "
+  SLOT_MULTILINE    "Blue Mesa Release Without DROA Ops "
   RW_SLOT_NAME      "BlueMesaData.ReleaseWithoutDROA_Ops"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
@@ -223,23 +221,43 @@ SLOT_DIV  10
   SLOT_LABEL        ""
 
 SLOT_REF  11
-  SLOT_LABEL        "BM DROA Storage in Powell "
-  SLOT_MULTILINE    "BM DROA <br>Storage in Powell"
-  RW_SLOT_NAME      "Powell^BlueMesaDROA.Storage"
+  SLOT_LABEL        "BlueMesaData.DROA Credit "
+  SLOT_MULTILINE    "Blue Mesa<br>DROA Credits"
+  RW_SLOT_NAME      "BlueMesaData.DROA Credit"
+  RW_SLOT_COL_INDEX 0
+  SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
+  SLOT_DETAILS_OPEN False
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 124
+  A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+
+SLOT_REF  12
+  SLOT_LABEL        "BlueMesaData.DROA Debit "
+  SLOT_MULTILINE    "Blue Mesa<br>DROA Debits"
+  RW_SLOT_NAME      "BlueMesaData.DROA Debit"
+  RW_SLOT_COL_INDEX 0
+  SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
+  SLOT_DETAILS_OPEN False
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+  A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+
+SLOT_REF  13
+  SLOT_LABEL        "BlueMesaData.DROA Balance on Powell "
+  SLOT_MULTILINE    "DROA Balance <br>on Powell"
+  RW_SLOT_NAME      "BlueMesaData.DROA Balance on Powell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
-  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 106
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-TAB_DIV   12
+TAB_DIV   14
   SLOT_LABEL        "Flaming Gorge"
 
-SLOT_DIV  13
+SLOT_DIV  15
   SLOT_LABEL        ""
 
-SLOT_REF  14
-  SLOT_LABEL        "FG Inflow"
+SLOT_REF  16
+  SLOT_LABEL        "Flaming Gorge Inflow "
   SLOT_MULTILINE    "FG Inflow"
   RW_SLOT_NAME      "FlamingGorge.Inflow"
   RW_SLOT_COL_INDEX 0
@@ -248,9 +266,9 @@ SLOT_REF  14
   N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  15
-  SLOT_LABEL        "FG Storage"
-  SLOT_MULTILINE    "FG Storage"
+SLOT_REF  17
+  SLOT_LABEL        "FG Storage "
+  SLOT_MULTILINE    "Flaming Gorge Storage"
   RW_SLOT_NAME      "FlamingGorge.Storage"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
@@ -258,12 +276,12 @@ SLOT_REF  15
   N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_DIV  16
+SLOT_DIV  18
   SLOT_LABEL        ""
 
-SLOT_REF  17
+SLOT_REF  19
   SLOT_LABEL        "FG Pool Elevation (with DROA Ops) "
-  SLOT_MULTILINE    "FG Pool Elevation<br>(with DROA Ops)"
+  SLOT_MULTILINE    "Flaming Gorge Pool Elevation<br>(with DROA Ops)"
   RW_SLOT_NAME      "FlamingGorge.Pool Elevation"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
@@ -271,9 +289,9 @@ SLOT_REF  17
   N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  18
+SLOT_REF  20
   SLOT_LABEL        "FG Pool Elevation Without DROA Ops "
-  SLOT_MULTILINE    "FG Pool Elevation<br>Without DROA Ops"
+  SLOT_MULTILINE    "Flaming Gorge Pool Elevation<br>Without DROA Ops"
   RW_SLOT_NAME      "FlamingGorgeData.PoolElevationWithoutDROA_Ops"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
@@ -281,12 +299,12 @@ SLOT_REF  18
   N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_DIV  19
+SLOT_DIV  21
   SLOT_LABEL        ""
 
-SLOT_REF  20
+SLOT_REF  22
   SLOT_LABEL        "FG Outflow with DROA Ops "
-  SLOT_MULTILINE    "FG Outflow<br>with DROA Ops"
+  SLOT_MULTILINE    "Flaming Gorge Outflow<br>with DROA Ops"
   RW_SLOT_NAME      "FlamingGorge.Outflow"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
@@ -294,9 +312,9 @@ SLOT_REF  20
   N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  21
+SLOT_REF  23
   SLOT_LABEL        "FG ReleaseWithout DROA Ops "
-  SLOT_MULTILINE    "FG Release<br>Without DROA Ops"
+  SLOT_MULTILINE    "Flaming Gorge Release<br>Without DROA Ops"
   RW_SLOT_NAME      "FlamingGorgeData.ReleaseWithoutDROA_Ops"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
@@ -304,26 +322,46 @@ SLOT_REF  21
   N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_DIV  22
+SLOT_DIV  24
   SLOT_LABEL        ""
 
-SLOT_REF  23
-  SLOT_LABEL        "FG DROA Storage in Powell "
-  SLOT_MULTILINE    "FG DROA<br>Storage in Powell"
-  RW_SLOT_NAME      "Powell^FlamingGorgeDROA.Storage"
+SLOT_REF  25
+  SLOT_LABEL        "FlamingGorgeData.DROA Credit "
+  SLOT_MULTILINE    "Flaming Gorge<br>DROA Credit"
+  RW_SLOT_NAME      "FlamingGorgeData.DROA Credit"
+  RW_SLOT_COL_INDEX 0
+  SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
+  SLOT_DETAILS_OPEN False
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+  A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+
+SLOT_REF  26
+  SLOT_LABEL        "FlamingGorgeData.DROA Debit "
+  SLOT_MULTILINE    "Flaming Gorge<br>DROA Debit"
+  RW_SLOT_NAME      "FlamingGorgeData.DROA Debit"
+  RW_SLOT_COL_INDEX 0
+  SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
+  SLOT_DETAILS_OPEN False
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+  A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+
+SLOT_REF  27
+  SLOT_LABEL        "FlamingGorgeData.DROA Balance on Powell "
+  SLOT_MULTILINE    "DROA Balance <br>on Powell"
+  RW_SLOT_NAME      "FlamingGorgeData.DROA Balance on Powell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
   N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-TAB_DIV   24
+TAB_DIV   28
   SLOT_LABEL        "Navajo"
 
-SLOT_DIV  25
+SLOT_DIV  29
   SLOT_LABEL        ""
 
-SLOT_REF  26
+SLOT_REF  30
   SLOT_LABEL        "Navajo Inflow "
   SLOT_MULTILINE    "Navajo Inflow"
   RW_SLOT_NAME      "Navajo.Inflow"
@@ -333,7 +371,7 @@ SLOT_REF  26
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 125
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  27
+SLOT_REF  31
   SLOT_LABEL        "Navajo Storage "
   SLOT_MULTILINE    "Navajo Storage"
   RW_SLOT_NAME      "Navajo.Storage"
@@ -343,10 +381,10 @@ SLOT_REF  27
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 82
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_DIV  28
+SLOT_DIV  32
   SLOT_LABEL        ""
 
-SLOT_REF  29
+SLOT_REF  33
   SLOT_LABEL        "Navajo Pool Elevation (with DROA Ops) "
   SLOT_MULTILINE    "Navajo Pool Elevation<br>(with DROA Ops)"
   RW_SLOT_NAME      "Navajo.Pool Elevation"
@@ -356,7 +394,7 @@ SLOT_REF  29
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 112
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  30
+SLOT_REF  34
   SLOT_LABEL        "Navajo Pool Elevation Without DROA Ops "
   SLOT_MULTILINE    "Navajo Pool Elevation<br>Without DROA Ops"
   RW_SLOT_NAME      "NavajoData.PoolElevationWithoutDROA_Ops"
@@ -366,10 +404,10 @@ SLOT_REF  30
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 113
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_DIV  31
+SLOT_DIV  35
   SLOT_LABEL        ""
 
-SLOT_REF  32
+SLOT_REF  36
   SLOT_LABEL        "Navajo Outflow (with DROA Ops) "
   SLOT_MULTILINE    "Navajo Outflow<br>(with DROA Ops)"
   RW_SLOT_NAME      "Navajo.Outflow"
@@ -379,7 +417,7 @@ SLOT_REF  32
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 125
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  33
+SLOT_REF  37
   SLOT_LABEL        "Navajo Release Without DROA Ops "
   SLOT_MULTILINE    "Navajo Release<br>Without DROA Ops"
   RW_SLOT_NAME      "NavajoData.ReleaseWithoutDROA_Ops"
@@ -389,26 +427,46 @@ SLOT_REF  33
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 125
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_DIV  34
+SLOT_DIV  38
   SLOT_LABEL        ""
 
-SLOT_REF  35
-  SLOT_LABEL        "Navajo DROA Storage in Powell "
-  SLOT_MULTILINE    "Navajo DROA<br>Storage in Powell"
-  RW_SLOT_NAME      "Powell^NavajoDROA.Storage"
+SLOT_REF  39
+  SLOT_LABEL        "NavajoData.DROA Credit "
+  SLOT_MULTILINE    "Navajo<br>DROA Credit"
+  RW_SLOT_NAME      "NavajoData.DROA Credit"
+  RW_SLOT_COL_INDEX 0
+  SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
+  SLOT_DETAILS_OPEN False
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+  A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+
+SLOT_REF  40
+  SLOT_LABEL        "NavajoData.DROA Debit "
+  SLOT_MULTILINE    "Navajo<br>DROA Debit"
+  RW_SLOT_NAME      "NavajoData.DROA Debit"
+  RW_SLOT_COL_INDEX 0
+  SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
+  SLOT_DETAILS_OPEN False
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+  A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+
+SLOT_REF  41
+  SLOT_LABEL        "NavajoData.DROA Balance on Powell "
+  SLOT_MULTILINE    "DROA Balance <br>on Powell"
+  RW_SLOT_NAME      "NavajoData.DROA Balance on Powell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
-  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 106
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-TAB_DIV   36
+TAB_DIV   42
   SLOT_LABEL        "Powell"
 
-SLOT_DIV  37
+SLOT_DIV  43
   SLOT_LABEL        ""
 
-SLOT_REF  38
+SLOT_REF  44
   SLOT_LABEL        "Powell Inflow"
   SLOT_MULTILINE    "Powell Inflow"
   RW_SLOT_NAME      "Powell.Inflow"
@@ -418,7 +476,7 @@ SLOT_REF  38
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 125
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  39
+SLOT_REF  45
   SLOT_LABEL        "Powell Storage"
   SLOT_MULTILINE    "Powell Storage"
   RW_SLOT_NAME      "Powell.Storage"
@@ -428,7 +486,10 @@ SLOT_REF  39
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 93
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  40
+SLOT_DIV  46
+  SLOT_LABEL        ""
+
+SLOT_REF  47
   SLOT_LABEL        "Powell Pool Elevation (with DROA Ops) "
   SLOT_MULTILINE    "Powell Pool Elevation<br>(with DROA Ops)"
   RW_SLOT_NAME      "Powell.Pool Elevation"
@@ -438,30 +499,30 @@ SLOT_REF  40
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 127
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  41
+SLOT_REF  48
   SLOT_LABEL        "Powell Pool Elevation Without DROA Ops "
   SLOT_MULTILINE    "Powell Pool Elevation<br>Without DROA Ops"
   RW_SLOT_NAME      "PowellData.PoolElevationWithoutDROA_Ops"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
-  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 109
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 127
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_DIV  42
+SLOT_DIV  49
   SLOT_LABEL        ""
 
-SLOT_REF  43
+SLOT_REF  50
   SLOT_LABEL        "Powell Outflow"
   SLOT_MULTILINE    "Powell Outflow"
   RW_SLOT_NAME      "Powell.Outflow"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
   SLOT_DETAILS_OPEN False
-  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 125
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 125
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  44
+SLOT_REF  51
   SLOT_LABEL        "Powell Total DROA Storage "
   SLOT_MULTILINE    "Powell Total <br>DROA Storage"
   RW_SLOT_NAME      "PowellData.DROA_StorageTotal"
@@ -471,40 +532,134 @@ SLOT_REF  44
   N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 89
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_DIV  45
+SLOT_DIV  52
   SLOT_LABEL        ""
 
-SLOT_REF  46
-  SLOT_LABEL        "Blue Mesa DROA Storage in Powell "
-  SLOT_MULTILINE    "Blue Mesa<br>DROA Storage in Powell"
-  RW_SLOT_NAME      "Powell^BlueMesaDROA.Storage"
+SLOT_REF  53
+  SLOT_LABEL        "BlueMesa DROA Balance on Powell "
+  SLOT_MULTILINE    "BlueMesa <br>DROA Balance"
+  RW_SLOT_NAME      "BlueMesaData.DROA Balance on Powell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
-  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 141
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 88
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  47
-  SLOT_LABEL        "Flaming Gorge DROA Storage in Powell "
-  SLOT_MULTILINE    "Flaming Gorge<br>DROA Storage in Powell"
-  RW_SLOT_NAME      "Powell^FlamingGorgeDROA.Storage"
+SLOT_REF  54
+  SLOT_LABEL        "Flaming Gorge DROA Balance on Powell "
+  SLOT_MULTILINE    "Flaming Gorge <br>DROA Balance"
+  RW_SLOT_NAME      "FlamingGorgeData.DROA Balance on Powell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
-  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 141
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 93
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
-SLOT_REF  48
-  SLOT_LABEL        "Navajo DROA Storage in Powell "
-  SLOT_MULTILINE    "Navajo<br>DROA Storage in Powell"
-  RW_SLOT_NAME      "Powell^NavajoDROA.Storage"
+SLOT_REF  55
+  SLOT_LABEL        "Navajo DROA Balance on Powell "
+  SLOT_MULTILINE    "Navajo <br>DROA Balance"
+  RW_SLOT_NAME      "NavajoData.DROA Balance on Powell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
-  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 141
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 88
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 PANEL_SLOT "BlueMesaData.DROA_Flag" -1
 PANEL_SLOT "FlamingGorgeData.DROA_Flag" -1
 PANEL_SLOT "NavajoData.DROA_Flag" -1
+USER_FLAG_SET XML-UFLAG-SET-BEG
+<UserFlagSet>
+ <UserFlagDef bgEna="1" fgColor="#000000" label="Brown cell" fgEna="0" bgColor="#d8c082"/>
+ <UserFlagDef bgEna="1" fgColor="#0000ff" label="Blue text" fgEna="1" bgColor="#c6d5ff"/>
+ <UserFlagDef bgEna="1" fgColor="#ff0000" label="Red text" fgEna="1" bgColor="#ffdad9"/>
+ <UserFlagDef bgEna="0" fgColor="#904800" label="Brown Text" fgEna="1" bgColor="#ffffff"/>
+</UserFlagSet>
+XML-UFLAG-SET-END
+
+SLOT_USER_FLAG_MAP XML-UFLAG-MAP-BEG
+<SlotUserFlagMap slotRecCnt="10">
+ <UserFlagSlotRecord slotName="BlueMesaData.DROA Balance on Powell" slotCol="-1" cellCnt="0" slotRecInx="0">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft" unitType="Volume" val="0.01" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="DROA Storage" threshInx="1" flag="Brown cell">
+   <NumValue unit="acre-ft" unitType="Volume" val="0" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotName="BlueMesaData.DROA Credit" slotCol="-1" cellCnt="0" slotRecInx="1">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0.10000000000000001" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="Credit" threshInx="1" flag="Blue text">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotName="BlueMesaData.DROA Debit" slotCol="-1" cellCnt="0" slotRecInx="2">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0.10000000000000001" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="Debit" threshInx="1" flag="Red text">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotName="FlamingGorgeData.DROA Balance on Powell" slotCol="-1" cellCnt="0" slotRecInx="3">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft" unitType="Volume" val="0.01" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="DROA Storage" threshInx="1" flag="Brown cell">
+   <NumValue unit="acre-ft" unitType="Volume" val="0" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotName="FlamingGorgeData.DROA Credit" slotCol="-1" cellCnt="0" slotRecInx="4">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0.10000000000000001" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="DROA Credit" threshInx="1" flag="Blue text">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotName="FlamingGorgeData.DROA Debit" slotCol="-1" cellCnt="0" slotRecInx="5">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0.10000000000000001" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="DROA" threshInx="1" flag="Red text">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotName="NavajoData.DROA Balance on Powell" slotCol="-1" cellCnt="0" slotRecInx="6">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft" unitType="Volume" val="0.01" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="DROA Storage" threshInx="1" flag="Brown cell">
+   <NumValue unit="acre-ft" unitType="Volume" val="0" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotName="NavajoData.DROA Credit" slotCol="-1" cellCnt="0" slotRecInx="7">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0.10000000000000001" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="DROA Credit" threshInx="1" flag="Blue text">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotName="NavajoData.DROA Debit" slotCol="-1" cellCnt="0" slotRecInx="8">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0.10000000000000001" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="DROA Debit" threshInx="1" flag="Red text">
+   <NumValue unit="acre-ft/month" unitType="Flow" val="0" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotName="PowellData.DROA_StorageTotal" slotCol="-1" cellCnt="0" slotRecInx="9">
+  <ThresholdSpec valType="N" intervalName="Normal" threshInx="0">
+   <NumValue unit="acre-ft" unitType="Volume" val="0.10000000000000001" scale="1"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" intervalName="DROA Storage" threshInx="1" flag="Brown Text">
+   <NumValue unit="acre-ft" unitType="Volume" val="0" scale="1"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+</SlotUserFlagMap>
+XML-UFLAG-MAP-END
+
 # SCT File End
