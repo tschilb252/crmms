@@ -1,13 +1,13 @@
-# SCT File Created 4/15/2022 12:25 PM
+# SCT File Created 4/26/2022 10:40 AM
 #  as E:/RiverWare/staff/neumannd/CRMMS/CRMMS/RW Files/DROA_Operations_SCT.sct
-# Generated using RiverWare Version <RiverWare_Model 8.4.3 Patch>
+# Generated using RiverWare Version <RiverWare_Model 8.4.4 Patch>
 # Generated from Model File <CRMMS_V1.14.9003+DROA.mdl>
 # CADSWES, University of Colorado at Boulder, http://cadswes.colorado.edu/
 #
 SCT 0 0 Version: 20.4
 SCT_PROPERTIES
-  SLOT_ITEM_CNT           53
-  PRESIM_TSTEP_CNT        1
+  SLOT_ITEM_CNT           58
+  PRESIM_TSTEP_CNT        6
   POSTSIM_TSTEP_CNT       0
   TSTEP_AXIS_HORZ         False
   DETAIL_MODE             DETAIL_MODE_NOSUM
@@ -24,8 +24,8 @@ SCT_PROPERTIES
   TSAGG_START_MDAY        1
   TSAGG_START_MONTH       0
 
-  WINDOW_WIDTH            1663
-  WINDOW_HEIGHT           910
+  WINDOW_WIDTH            1568
+  WINDOW_HEIGHT           957
   RIGHT_MARGIN            0
   DIAG_WINDOW_HEIGHT      0
 
@@ -221,17 +221,17 @@ SLOT_DIV  10
 SLOT_REF  11
   SLOT_LABEL        "BlueMesaData.DROA Credit minus Debit "
   SLOT_MULTILINE    "Blue Mesa DROA <br>Credit (+) and Debit (-)"
-  RW_SLOT_NAME      "BlueMesaData.DROA Credit minus Debit"
+  RW_SLOT_NAME      "BlueMesaData.DROA_CreditMinusDebit"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
   SLOT_DETAILS_OPEN False
-  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 152
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 140
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 SLOT_REF  12
   SLOT_LABEL        "BlueMesaData.DROA Balance on Powell "
   SLOT_MULTILINE    "DROA Balance <br>on Powell"
-  RW_SLOT_NAME      "BlueMesaData.DROA Balance on Powell"
+  RW_SLOT_NAME      "BlueMesaData.DROA_BalanceOnPowell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
@@ -316,7 +316,7 @@ SLOT_DIV  23
 SLOT_REF  24
   SLOT_LABEL        "FlamingGorgeData.DROA Credit minus Debit "
   SLOT_MULTILINE    "Flaming Gorge DROA <br>Credit (+) and Debit (-)"
-  RW_SLOT_NAME      "FlamingGorgeData.DROA Credit minus Debit"
+  RW_SLOT_NAME      "FlamingGorgeData.DROA_CreditMinusDebit"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
   SLOT_DETAILS_OPEN False
@@ -325,8 +325,8 @@ SLOT_REF  24
 
 SLOT_REF  25
   SLOT_LABEL        "FlamingGorgeData.DROA Balance on Powell "
-  SLOT_MULTILINE    "DROA Balance <br>on Powell"
-  RW_SLOT_NAME      "FlamingGorgeData.DROA Balance on Powell"
+  SLOT_MULTILINE    "Flaming Gorge DROA<br>Balance on Powell"
+  RW_SLOT_NAME      "FlamingGorgeData.DROA_BalanceOnPowell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
@@ -421,7 +421,7 @@ SLOT_REF  37
 SLOT_REF  38
   SLOT_LABEL        "NavajoData.DROA Balance on Powell "
   SLOT_MULTILINE    "DROA Balance <br>on Powell"
-  RW_SLOT_NAME      "NavajoData.DROA Balance on Powell"
+  RW_SLOT_NAME      "NavajoData.DROA_BalanceOnPowell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
@@ -483,7 +483,7 @@ SLOT_DIV  46
 SLOT_REF  47
   SLOT_LABEL        "BlueMesa DROA Balance on Powell "
   SLOT_MULTILINE    "BlueMesa <br>DROA Balance"
-  RW_SLOT_NAME      "BlueMesaData.DROA Balance on Powell"
+  RW_SLOT_NAME      "BlueMesaData.DROA_BalanceOnPowell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
@@ -491,19 +491,19 @@ SLOT_REF  47
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 SLOT_REF  48
-  SLOT_LABEL        "Flaming Gorge DROA Balance on Powell "
-  SLOT_MULTILINE    "Flaming Gorge <br>DROA Balance"
-  RW_SLOT_NAME      "FlamingGorgeData.DROA Balance on Powell"
+  SLOT_LABEL        "FlamingGorge DROA Balance on Powell "
+  SLOT_MULTILINE    "FlamingGorge DROA <br>Balance on Powell"
+  RW_SLOT_NAME      "FlamingGorgeData.DROA_BalanceOnPowell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
-  N_SLOT_COL_WIDTH  COLFIT_METHOD_ALL 93
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
 SLOT_REF  49
   SLOT_LABEL        "Navajo DROA Balance on Powell "
   SLOT_MULTILINE    "Navajo <br>DROA Balance"
-  RW_SLOT_NAME      "NavajoData.DROA Balance on Powell"
+  RW_SLOT_NAME      "NavajoData.DROA_BalanceOnPowell"
   RW_SLOT_COL_INDEX 0
   SLOT_SUMFUNC      SLOT_SUMFUNC_LAST 0
   SLOT_DETAILS_OPEN False
@@ -533,131 +533,143 @@ SLOT_REF  52
   N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 125
   A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
 
+TAB_DIV   53
+  SLOT_LABEL        "Manual Recovery"
+
+SLOT_DIV  54
+  SLOT_LABEL        ""
+
+SLOT_REF  55
+  SLOT_LABEL        "Powell Blue Mesa DROA Manual Recovery "
+  SLOT_MULTILINE    "Blue Mesa DROA<br>Manual Recovery"
+  RW_SLOT_NAME      "Powell BlueMesaDROA to Powell System Tran.Supply"
+  RW_SLOT_COL_INDEX 0
+  SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
+  SLOT_DETAILS_OPEN False
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+  A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+
+SLOT_REF  56
+  SLOT_LABEL        "Powell Flaming Gorge DROA Manual Recovery "
+  SLOT_MULTILINE    "Flaming Gorge DROA <br>Manual Recovery"
+  RW_SLOT_NAME      "Powell FlamingGorgeDROA to Powell System Tran.Supply"
+  RW_SLOT_COL_INDEX 0
+  SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
+  SLOT_DETAILS_OPEN False
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+  A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+
+SLOT_REF  57
+  SLOT_LABEL        "Powell Navajo DROAManual Recovery "
+  SLOT_MULTILINE    "Navajo DROA<br>Manual Recovery"
+  RW_SLOT_NAME      "Powell NavajoDROA to Powell System Tran.Supply"
+  RW_SLOT_COL_INDEX 0
+  SLOT_SUMFUNC      SLOT_SUMFUNC_AVE 0
+  SLOT_DETAILS_OPEN False
+  N_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+  A_SLOT_COL_WIDTH  COLFIT_METHOD_MANUAL 120
+
 PANEL_SLOT "BlueMesaData.DROA_Flag" -1
 PANEL_SLOT "FlamingGorgeData.DROA_Flag" -1
 PANEL_SLOT "NavajoData.DROA_Flag" -1
 USER_FLAG_SET XML-UFLAG-SET-BEG
 <UserFlagSet>
- <UserFlagDef bgEna="1" fgColor="#000000" fgEna="0" label="Brown cell" bgColor="#d8c082"/>
- <UserFlagDef bgEna="1" fgColor="#0000ff" fgEna="1" label="Blue text" bgColor="#c6d5ff"/>
- <UserFlagDef bgEna="1" fgColor="#ff0000" fgEna="1" label="Red text" bgColor="#ffdad9"/>
- <UserFlagDef bgEna="0" fgColor="#904800" fgEna="1" label="Brown Text" bgColor="#ffffff"/>
+ <UserFlagDef bgColor="#d8c082" fgColor="#000000" label="Brown cell" fgEna="0" bgEna="1"/>
+ <UserFlagDef bgColor="#c6d5ff" fgColor="#0000ff" label="Blue text" fgEna="1" bgEna="1"/>
+ <UserFlagDef bgColor="#ffdad9" fgColor="#ff0000" label="Red text" fgEna="1" bgEna="1"/>
+ <UserFlagDef bgColor="#ffffff" fgColor="#904800" label="Brown Text" fgEna="1" bgEna="0"/>
 </UserFlagSet>
 XML-UFLAG-SET-END
 
 SLOT_USER_FLAG_MAP XML-UFLAG-MAP-BEG
-<SlotUserFlagMap slotRecCnt="13">
- <UserFlagSlotRecord cellCnt="0" slotRecInx="0" slotName="BlueMesaData.DROA Balance on Powell" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Volume" unit="acre-ft" val="0.01" scale="1000"/>
+<SlotUserFlagMap slotRecCnt="10">
+ <UserFlagSlotRecord slotRecInx="0" cellCnt="0" slotName="BlueMesaData.DROA_BalanceOnPowell" slotCol="-1">
+  <ThresholdSpec valType="N" threshInx="0" intervalName="Normal">
+   <NumValue unitType="Volume" val="0.01" unit="acre-ft" scale="1000"/>
   </ThresholdSpec>
-  <ThresholdSpec intervalName="DROA Storage" valType="N" threshInx="1" flag="Brown cell">
-   <NumValue unitType="Volume" unit="acre-ft" val="0" scale="1000"/>
-  </ThresholdSpec>
- </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="1" slotName="BlueMesaData.DROA Credit minus Debit" slotCol="-1">
-  <ThresholdSpec intervalName="Debit" valType="N" threshInx="0" flag="Red text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="-0.01" scale="1000"/>
-  </ThresholdSpec>
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="1">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0.10000000000000001" scale="1000"/>
-  </ThresholdSpec>
-  <ThresholdSpec intervalName="Credit" valType="N" threshInx="2" flag="Blue text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0" scale="1000"/>
+  <ThresholdSpec valType="N" flag="Brown cell" threshInx="1" intervalName="DROA Storage">
+   <NumValue unitType="Volume" val="0" unit="acre-ft" scale="1000"/>
   </ThresholdSpec>
  </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="2" slotName="BlueMesaData.DROA Credit" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0.10000000000000001" scale="1000"/>
+ <UserFlagSlotRecord slotRecInx="1" cellCnt="0" slotName="BlueMesaData.DROA_CreditMinusDebit" slotCol="-1">
+  <ThresholdSpec valType="N" flag="Red text" threshInx="0" intervalName="DROA Debit">
+   <NumValue unitType="Flow" val="-0.01" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
-  <ThresholdSpec intervalName="Credit" valType="N" threshInx="1" flag="Blue text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0" scale="1000"/>
+  <ThresholdSpec valType="N" threshInx="1" intervalName="Normal">
+   <NumValue unitType="Flow" val="0.10000000000000001" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
- </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="3" slotName="BlueMesaData.DROA Debit" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0.10000000000000001" scale="1000"/>
-  </ThresholdSpec>
-  <ThresholdSpec intervalName="Debit" valType="N" threshInx="1" flag="Red text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0" scale="1000"/>
+  <ThresholdSpec valType="N" flag="Blue text" threshInx="2" intervalName="DROA Credit">
+   <NumValue unitType="Flow" val="0" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
  </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="4" slotName="FlamingGorgeData.DROA Balance on Powell" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Volume" unit="acre-ft" val="0.01" scale="1000"/>
+ <UserFlagSlotRecord slotRecInx="2" cellCnt="0" slotName="BlueMesaData.DROA_Credit" slotCol="-1">
+  <ThresholdSpec valType="N" threshInx="0" intervalName="Normal">
+   <NumValue unitType="Flow" val="0.10000000000000001" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
-  <ThresholdSpec intervalName="DROA Storage" valType="N" threshInx="1" flag="Brown cell">
-   <NumValue unitType="Volume" unit="acre-ft" val="0" scale="1000"/>
-  </ThresholdSpec>
- </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="5" slotName="FlamingGorgeData.DROA Credit minus Debit" slotCol="-1">
-  <ThresholdSpec intervalName="Debit" valType="N" threshInx="0" flag="Red text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="-0.01" scale="1000"/>
-  </ThresholdSpec>
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="1">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0.10000000000000001" scale="1000"/>
-  </ThresholdSpec>
-  <ThresholdSpec intervalName="Credit" valType="N" threshInx="2" flag="Blue text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0" scale="1000"/>
+  <ThresholdSpec valType="N" flag="Blue text" threshInx="1" intervalName="Credit">
+   <NumValue unitType="Flow" val="0" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
  </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="6" slotName="FlamingGorgeData.DROA Credit" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0.10000000000000001" scale="1000"/>
+ <UserFlagSlotRecord slotRecInx="3" cellCnt="0" slotName="BlueMesaData.DROA_Debit" slotCol="-1">
+  <ThresholdSpec valType="N" threshInx="0" intervalName="Normal">
+   <NumValue unitType="Flow" val="0.10000000000000001" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
-  <ThresholdSpec intervalName="DROA Credit" valType="N" threshInx="1" flag="Blue text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0" scale="1000"/>
-  </ThresholdSpec>
- </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="7" slotName="FlamingGorgeData.DROA Debit" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0.10000000000000001" scale="1000"/>
-  </ThresholdSpec>
-  <ThresholdSpec intervalName="DROA" valType="N" threshInx="1" flag="Red text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0" scale="1000"/>
+  <ThresholdSpec valType="N" flag="Red text" threshInx="1" intervalName="Debit">
+   <NumValue unitType="Flow" val="0" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
  </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="8" slotName="NavajoData.DROA Balance on Powell" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Volume" unit="acre-ft" val="0.01" scale="1000"/>
+ <UserFlagSlotRecord slotRecInx="4" cellCnt="0" slotName="FlamingGorgeData.DROA_CreditMinusDebit" slotCol="-1">
+  <ThresholdSpec valType="N" flag="Red text" threshInx="0" intervalName="DROA Debit">
+   <NumValue unitType="Flow" val="-0.01" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
-  <ThresholdSpec intervalName="DROA Storage" valType="N" threshInx="1" flag="Brown cell">
-   <NumValue unitType="Volume" unit="acre-ft" val="0" scale="1000"/>
+  <ThresholdSpec valType="N" threshInx="1" intervalName="Normal">
+   <NumValue unitType="Flow" val="0.10000000000000001" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
- </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="9" slotName="NavajoData.DROA Credit minus Debit" slotCol="-1">
-  <ThresholdSpec intervalName="Debit" valType="N" threshInx="0" flag="Red text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="-0.01" scale="1000"/>
-  </ThresholdSpec>
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="1">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0.10000000000000001" scale="1000"/>
-  </ThresholdSpec>
-  <ThresholdSpec intervalName="Credit" valType="N" threshInx="2" flag="Blue text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0" scale="1000"/>
+  <ThresholdSpec valType="N" flag="Blue text" threshInx="2" intervalName="DROA Credit">
+   <NumValue unitType="Flow" val="0" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
  </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="10" slotName="NavajoData.DROA Credit" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0.10000000000000001" scale="1000"/>
+ <UserFlagSlotRecord slotRecInx="5" cellCnt="0" slotName="NavajoData.DROA Credit minus Debit" slotCol="-1">
+  <ThresholdSpec valType="N" flag="Red text" threshInx="0" intervalName="DROA Debit">
+   <NumValue unitType="Flow" val="-0.01" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
-  <ThresholdSpec intervalName="DROA Credit" valType="N" threshInx="1" flag="Blue text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0" scale="1000"/>
+  <ThresholdSpec valType="N" threshInx="1" intervalName="Normal">
+   <NumValue unitType="Flow" val="0.10000000000000001" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
- </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="11" slotName="NavajoData.DROA Debit" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0.10000000000000001" scale="1000"/>
-  </ThresholdSpec>
-  <ThresholdSpec intervalName="DROA Debit" valType="N" threshInx="1" flag="Red text">
-   <NumValue unitType="Flow" unit="acre-ft/month" val="0" scale="1000"/>
+  <ThresholdSpec valType="N" flag="Blue text" threshInx="2" intervalName="DROA Credit">
+   <NumValue unitType="Flow" val="0" unit="acre-ft/month" scale="1000"/>
   </ThresholdSpec>
  </UserFlagSlotRecord>
- <UserFlagSlotRecord cellCnt="0" slotRecInx="12" slotName="PowellData.DROA_StorageTotal" slotCol="-1">
-  <ThresholdSpec intervalName="Normal" valType="N" threshInx="0">
-   <NumValue unitType="Volume" unit="acre-ft" val="0.10000000000000001" scale="1"/>
+ <UserFlagSlotRecord slotRecInx="6" cellCnt="0" slotName="NavajoData.DROA_BalanceOnPowell" slotCol="-1">
+  <ThresholdSpec valType="N" threshInx="0" intervalName="Normal">
+   <NumValue unitType="Volume" val="0.01" unit="acre-ft" scale="1000"/>
   </ThresholdSpec>
-  <ThresholdSpec intervalName="DROA Storage" valType="N" threshInx="1" flag="Brown Text">
-   <NumValue unitType="Volume" unit="acre-ft" val="0" scale="1"/>
+  <ThresholdSpec valType="N" flag="Brown cell" threshInx="1" intervalName="DROA Storage">
+   <NumValue unitType="Volume" val="0" unit="acre-ft" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotRecInx="7" cellCnt="0" slotName="NavajoData.DROA_Credit" slotCol="-1">
+  <ThresholdSpec valType="N" threshInx="0" intervalName="Normal">
+   <NumValue unitType="Flow" val="0.10000000000000001" unit="acre-ft/month" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" flag="Blue text" threshInx="1" intervalName="DROA Credit">
+   <NumValue unitType="Flow" val="0" unit="acre-ft/month" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotRecInx="8" cellCnt="0" slotName="NavajoData.DROA_Debit" slotCol="-1">
+  <ThresholdSpec valType="N" threshInx="0" intervalName="Normal">
+   <NumValue unitType="Flow" val="0.10000000000000001" unit="acre-ft/month" scale="1000"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" flag="Red text" threshInx="1" intervalName="DROA Debit">
+   <NumValue unitType="Flow" val="0" unit="acre-ft/month" scale="1000"/>
+  </ThresholdSpec>
+ </UserFlagSlotRecord>
+ <UserFlagSlotRecord slotRecInx="9" cellCnt="0" slotName="PowellData.DROA_StorageTotal" slotCol="-1">
+  <ThresholdSpec valType="N" threshInx="0" intervalName="Normal">
+   <NumValue unitType="Volume" val="0.10000000000000001" unit="acre-ft" scale="1"/>
+  </ThresholdSpec>
+  <ThresholdSpec valType="N" flag="Brown Text" threshInx="1" intervalName="DROA Storage">
+   <NumValue unitType="Volume" val="0" unit="acre-ft" scale="1"/>
   </ThresholdSpec>
  </UserFlagSlotRecord>
 </SlotUserFlagMap>
