@@ -569,6 +569,13 @@
       "Repository": "CRAN",
       "Hash": "49f7258fd86ebeaea1df24d9ded00478"
     },
+    "openxlsx": {
+      "Package": "openxlsx",
+      "Version": "4.2.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2253a430965e222d11a2f9277cd34c2e"
+    },
     "patchwork": {
       "Package": "patchwork",
       "Version": "1.1.0",
@@ -694,13 +701,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "76c9e04c712a05848ae7a23d2f170a40"
-    },
-    "remotes": {
-      "Package": "remotes",
-      "Version": "2.1.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "57c3009534f805f0f6476ffee68483cc"
     },
     "renv": {
       "Package": "renv",
@@ -958,6 +958,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "2826c5d9efb0a88f657c7a679c7106db"
+    },
+    "zip": {
+      "Package": "zip",
+      "Version": "2.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3bc8405c637d988801ec5ea88372d0c2"
     },
     "zoo": {
       "Package": "zoo",
