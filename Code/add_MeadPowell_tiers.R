@@ -1,4 +1,12 @@
 ## Functions to adde tiers for Powell and Mead
+bor_theme <- function() {
+  theme_bw() + 
+    theme(panel.background = element_rect(fill = "transparent", colour = NA),
+    # plot.background = element_rect(fill = "transparent", colour = NA),
+    legend.background = element_rect(fill = "transparent", colour = NA),
+    legend.box.background = element_rect(fill = "transparent", colour = NA)) 
+}
+
 eq_tier_df <- function() {
   Timestep = matrix(seq.Date(as.Date('2007-10-1'), 
                              as.Date('2026-09-1'), 'months') - 1,
