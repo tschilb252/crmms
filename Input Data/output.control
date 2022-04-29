@@ -10,6 +10,7 @@ BlueMesa.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 BlueMesa.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 BlueMesa.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 BlueMesa.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
+BlueMesaData.AdditionalReleaseDueToDROA_ESP: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 MorrowPoint.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 MorrowPoint.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -40,6 +41,7 @@ FlamingGorge.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 FlamingGorge.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 FlamingGorge.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 FlamingGorge.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
+FlamingGorgeData.AdditionalReleaseDueToDROA_ESP: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 Fontenelle.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 Fontenelle.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -115,6 +117,7 @@ Navajo.Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 Navajo.Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
 Navajo.Unregulated Spill: file = $CRMMS_DIR/rdfOutput/res.rdf
 Navajo.Evaporation: file = $CRMMS_DIR/rdfOutput/res.rdf
+NavajoData.AdditionalReleaseDueToDROA_ESP: file = $CRMMS_DIR/rdfOutput/res.rdf
 
 TaylorPark.Outflow: file = $CRMMS_DIR/rdfOutput/res.rdf
 TaylorPark.Bank Storage: file = $CRMMS_DIR/rdfOutput/res.rdf
@@ -192,6 +195,9 @@ FloodControlOutput.Flood Control Flag: file = $CRMMS_DIR/rdfOutput/monthlyflags.
 Surplus.Flood Control Surplus Flag: file = $CRMMS_DIR/rdfOutput/monthlyflags.rdf
 PowellData.ControllingEqualizationCondition: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.EffectiveEOCYPoolElevWith823Rel: file = $CRMMS_DIR/rdfOutput/flags.rdf
+MeadData.PEforCondition: file = $CRMMS_DIR/rdfOutput/flags.rdf
+PowellData.LBAnnualWaterInPowell: file = $CRMMS_DIR/rdfOutput/flags.rdf
+PowellData.LBBankInPowell: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
 LowerBasinDemandVariability.AbvHooverTriggerSet: file = $CRMMS_DIR/rdfOutput/flags.rdf
 CoordinatedOperationsFlagsForFreqTbl.AnnualFloodControlFlag: file = $CRMMS_DIR/rdfOutput/flags.rdf
