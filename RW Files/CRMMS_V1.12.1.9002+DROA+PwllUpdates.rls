@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 15:47 April 29, 2022
+# Created 16:20 April 29, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -3772,7 +3772,7 @@ BEGIN
     RULE                 "Add DROA Release for ESP";
     DESCRIPTION          "DESCRIPTION: This rule adds DROA releases to Flaming Gorge, Blue Mesa, and Navajo outflow. This is done in the first timestep of run cycle 3 once UB res has been completely solved but before Powell rules have executed.  <br><br>SLOTS SET: FlamingGorge.Outflow, BlueMesa.Outflow, Navajo.Outflow<br>";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 3.00000000 AND @"t" == @"Start Timestep" AND NOT "Is24MonthStudy"(  );
+    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 3.00000000 AND @"t" == @"Start Timestep" AND $ "MTOMRunType.RunType" [] == 0.00000000;
     NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: S.Baker 20220429<br>";
     BEGIN
 
