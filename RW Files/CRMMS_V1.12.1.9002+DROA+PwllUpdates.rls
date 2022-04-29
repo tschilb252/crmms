@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 10:38 April 29, 2022
+# Created 15:47 April 29, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -3557,7 +3557,7 @@ BEGIN
     RULE                 "Set Powell Transfers for DROA Recovery on Target Date and Elevation";
     DESCRIPTION          "";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT NOT "HasRuleFiredSuccessfully"( "ThisRule" ) AND "GetRunCycleIndex"(  ) == 2.00000000;
+    RULE_EXEC_CONSTRAINT NOT "HasRuleFiredSuccessfully"( "ThisRule" ) AND "GetRunCycleIndex"(  ) == 2.00000000 AND "Is24MonthStudy"(  );
     NOTES                "";
     BEGIN
 
@@ -3621,7 +3621,7 @@ BEGIN
     RULE                 "Set Powell Transfers for DROA Recovery Due to Releases";
     DESCRIPTION          "";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000;
+    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000 AND "Is24MonthStudy"(  );
   NAMES_COLOR  "#0000ff";
     NOTES                "";
     BEGIN
@@ -3650,7 +3650,7 @@ BEGIN
     RULE                 "Set Powell Data Object Slots based on Accounts";
     DESCRIPTION          "";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000;
+    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000 AND "Is24MonthStudy"(  );
   NAMES_COLOR  "#0000ff";
     NOTES                "";
     BEGIN
@@ -3680,7 +3680,7 @@ BEGIN
     RULE                 "Set UIU Data Object Slots Based on Accounts";
     DESCRIPTION          "";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000;
+    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000 AND "Is24MonthStudy"(  );
   NAMES_COLOR  "#0000ff";
     NOTES                "";
     BEGIN
@@ -3705,7 +3705,7 @@ BEGIN
     RULE                 "Set UIU Accounts DROA Establishment";
     DESCRIPTION          "";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000;
+    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000 AND "Is24MonthStudy"(  );
   NAMES_COLOR  "#0000ff";
     NOTES                "";
     BEGIN
@@ -3731,7 +3731,7 @@ BEGIN
     RULE                 "Set UIU Data Object Slots Based on Inputs";
     DESCRIPTION          "";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000;
+    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 2.00000000 AND "Is24MonthStudy"(  );
   NAMES_COLOR  "#0000ff";
     NOTES                "";
     BEGIN
@@ -3768,6 +3768,25 @@ BEGIN
 
     END
     UUID "{9396c1d6-03a5-4a6e-8b58-2d8ded935a39}";;
+
+    RULE                 "Add DROA Release for ESP";
+    DESCRIPTION          "DESCRIPTION: This rule adds DROA releases to Flaming Gorge, Blue Mesa, and Navajo outflow. This is done in the first timestep of run cycle 3 once UB res has been completely solved but before Powell rules have executed.  <br><br>SLOTS SET: FlamingGorge.Outflow, BlueMesa.Outflow, Navajo.Outflow<br>";
+    ACTIVE               TRUE;
+    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 3.00000000 AND @"t" == @"Start Timestep" AND NOT "Is24MonthStudy"(  );
+    NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: S.Baker 20220429<br>";
+    BEGIN
+
+      FOREACH (DATETIME date IN @"Start Timestep" TO @"Finish Timestep") DO
+            $ "FlamingGorge.Outflow" [date] := $ "FlamingGorge.Outflow" [date] + NaNToZero "VolumeToFlow"( $ "FlamingGorgeData.AdditionalReleaseDueToDROA_ESP" [date], @"t" );
+
+            $ "BlueMesa.Outflow" [date] := $ "BlueMesa.Outflow" [date] + NaNToZero "VolumeToFlow"( $ "BlueMesaData.AdditionalReleaseDueToDROA_ESP" [date], @"t" );
+
+            $ "Navajo.Outflow" [date] := $ "Navajo.Outflow" [date] + NaNToZero "VolumeToFlow"( $ "NavajoData.AdditionalReleaseDueToDROA_ESP" [date], @"t" );
+
+      ENDFOREACH;
+
+    END
+    UUID "{1f3cb00a-2fb6-49e2-a304-42860a8f89fc}";;
 
   END
   UUID "{55f6051d-f2c5-4ac3-a745-e786e4b269ac}";;
@@ -4019,21 +4038,6 @@ BEGIN
   ACTIVE         TRUE;
   NOTES          "CF, 20180501: Operations have changed since 2012 and continue to evolve according to the FGTWG. <br><br>Old Description:<br>The operations of Flaming Gorge Reservoir meet the requirements detailed in the 2006 Record of Decision for the Operation of Flaming Gorge Dam Final Environmental Impact Statement (2006 ROD) that were designed to achieve the authorized purposes of the CRSP Act while addressing environmental requirements. The 2006 ROD outlines the operational guidelines of Flaming Gorge and implements, to the extent possible, recommendations to assist in the recovery of four endangered fish species, outlined in the 2000 Flow and Temperature Recommendations for Endangered Fish in the Green River Downstream of Flaming Gorge Dam (2000 Flow and Temperature Recommendations). This report outlines the peak flow magnitudes, high flow duration, and outflow temperature recommendations for three reaches of the Green River: <br><br>Reach 1<br>Reach 1 is 65 river miles long, beginning at Flaming Gorge Dam and ending at the confluence of the Green and Yampa Rivers. Flaming Gorge Dam releases comprise the primary component of Green River flow in this reach. The peak flow requirements for Reach 1 are compiled in Table 5.4 of the 2000 Flow and Temperature Recommendations and are summarized below. <br>Peak flow magnitude of at least 4,600 cfs each year and at least 8,600 cfs in wet years (0 to 10% Exceedance) <br>  <br>The peak flow period should coincide with the spring peak and immediate post peak flows of the Yampa River <br>  <br>Reach 1 Mean baseflow magnitude requirements are established for five hydrologic year classifications: <br>o   Wet (0-10% Exceedance): between 1,800 and 2,700 cfs <br>o   Moderately Wet (10-30% Exceedance): between 1,500 and 2,600 cfs <br>o   Average (30-70% Exceedance): between 800 and 2,200 cfs <br>o   Moderately Dry (70-90% Exceedance): between 800 and 1,300 cfs <br>o   Dry (90-100% Exceedance): between 800 and 1,000 cfs <br>  <br>The daily rate of decline from the peak flow period is limited as follows: <br>o   For Wet and Moderately Wet years (0-30% Exceedance):  approximately 1,000 cfs /day <br>o   For Average years (30-70% Exceedance):  approximately 500 cfs /day <br>o   For Dry and Moderately Dry years (70-100% Exceedance):  approximately 350 cfs /day <br>Where applicable, the historic unregulated Flaming Gorge inflow between the years of 1963 and 1996 are used to determine the respective percent exceedances for the criteria established. Hydrologic classifications and percent exceedances for the Yampa River basin are established using the historic record from 1922 to 1996. This is the case for all reaches. <br><br>Reach 2<br>Reach 2 is 99 river miles in length and extends from the confluence of the Green and Yampa Rivers to the confluence of the Green and White Rivers. In this reach, Flaming Gorge Dam releases and the Yampa River are the primary contributors to river flow. Flow recommendations establish peak flow and sustained high flow requirements at the Green River at the Jensen, Utah USGS stream gage for five hydrologic year types. These requirements are established in Table 5.5 of the 2000 Flow and Temperature Recommendations and are summarized below. <br>Peak releases should coincide with the annual spring peak and immediate post peak of the Yampa River <br>  <br>Peak flow magnitude recommendations measured on the Green River at Jensen are established for five hydrologic classifications as follows: <br>o   Wet (0-10% Exceedance): at least 26,400 cfs <br>o   Moderately Wet (10-30% Exceedance): at least 20,300 cfs <br>o   Average (30-70% Exceedance): at least 18,600 cfs in one of two average years and 8,300 cfs in other average years <br>o   Dry and Moderately Dry (70-100% Exceedance): at least 8,300 cfs <br>  <br>Recommendations for the duration of peak flows are established as follows: <br>o   Wet (0-10% Exceedance): maintain at least 22,700 cfs for at least 2 weeks and 18,600 cfs for at least 4 weeks <br>o   Moderately Wet (10-30% Exceedance): maintain at least 18,600 cfs for at least 2 weeks <br>o   Average (30-70% Exceedance): maintain at least 18,600 cfs for at least 2 weeks in 1 of 4 average years <br>o   Moderately Dry (70-90% Exceedance): maintain at least 8,300 cfs for at least 1 week <br>o   Dry (90-98% Exceedance): maintain at least 8,300 cfs for at least 2 days <br>o   Extremely Dry (98-100% Exceedance): no flow duration recommendations <br>  <br>Mean baseflow magnitudes are recommended for each hydrologic classification as follows: <br>o   Wet (0-10% Exceedance): between 2,800 and 3,000 cfs <br>o   Moderately Wet (10-30% Exceedance): between 2,400 and 2,800 cfs <br>o   Average (30-70% Exceedance): between 1,500 and 2,400 cfs <br>o   Moderately Dry (70-90% Exceedance): between 1,100 and 1,500 cfs <br>o   Dry (90-100% Exceedance): between 900 and 1,100 cfs <br><br>Rate of decline from the peak flow is regulated by the rate of decline in Reach 1 and the rate of decline of the Yampa River <br>  <br>Baseflow variation should be consistent with the variability observed in the pre-dam era <br><br>Reach 3 <br>Reach 3 is 246 river miles in length and extends from the confluence of the White and Green River to the confluence of the Green and Colorado Rivers. Flow in this reach is supplemented primarily by tributary flow from the White, Duchesne, Price, and San Rafael Rivers as well as releases from Flaming Gorge Dam and flow from the Yampa River. Although independent flow recommendations were outlined for Reach 3 as well as Reaches 1 and 2, it is assumed that meeting the flow requirements in Reach 1 and Reach 2 will result in the flow requirements for Reach 3 being adequately met. ";
   BEGIN
-
-    RULE                 "Add DROA Release";
-    DESCRIPTION          "DESCRIPTION: This rule adds DROA releases to Flaming Gorge outflow. This is done in the first timestep of run cycle 3 once Flaming Gorge has been completely solved but before Powell rules hav2 executed.  <br><br>SLOTS SET: FlamingGorge.Outflow<br>";
-    ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT "GetRunCycleIndex"(  ) == 3.00000000 AND @"t" == @"Start Timestep";
-    NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: S.Baker 20220429<br>";
-    BEGIN
-
-      FOREACH (DATETIME date IN @"Start Timestep" TO @"Finish Timestep") DO
-            $ "FlamingGorge.Outflow" [date] := $ "FlamingGorge.Outflow" [date] + "VolumeToFlow"( $ "FlamingGorgeData.AdditionalReleaseDueToDROA_ESP" [date], @"t" );
-
-      ENDFOREACH;
-
-    END
-    UUID "{1f3cb00a-2fb6-49e2-a304-42860a8f89fc}";;
 
     RULE                 "Calculate Daily Jensen Flows";
     DESCRIPTION          "DESCRIPTION: Calculates the daily Jensen flow using daily FG releases and daily Yampa flows with the assumption that FG releases are lagged one day.<br><br>SLOTS SET: KNN_MTOM.JensenDaily<br><br>";
@@ -14848,32 +14852,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{ad9751b3-242f-4d25-86bb-b9189e638ce6}";
+    UUID "{e0ec865b-e047-478c-9d39-b1d90459cad8}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{210a2f44-68a1-4850-8c8f-90e456f05aab}";
+    UUID "{cc501dc4-5b9c-49e8-98bc-b8a80a82c25e}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{20e246fc-a24f-46ec-b1ca-2cf51a1c649c}";
+    UUID "{53ca02ff-a218-49ec-b1fb-de0dc4886dc8}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{3757205d-aef3-4127-8672-fa100bcbf691}";
+    UUID "{2af96c49-47c3-449a-9b1f-53d205f3e4ce}";
 ;
 
   END
-  UUID "{f33ad757-93c9-4a1c-9742-7cf52c03608a}";;
+  UUID "{27f7f182-4be7-4e65-89c0-7be84380eb10}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14884,11 +14888,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{64d4fd0e-5409-4f53-bf4b-9470b0a93919}";
+    UUID "{37eee6c8-4a07-4a4a-b244-2742862e47e8}";
 ;
 
   END
-  UUID "{91d454bd-4045-44e6-b3f8-6ac5885befbb}";;
+  UUID "{3d13b40b-247b-4679-83d1-694911ed5618}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14899,11 +14903,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{16f2fced-02b6-401e-8931-a37f2e1e4df7}";
+    UUID "{ace58793-3536-4485-9191-0f4a0f819d72}";
 ;
 
   END
-  UUID "{8a56c526-d349-4a47-9d9a-cd1bb020fe62}";;
+  UUID "{811a6fd2-786c-4269-bc85-f03483ab8415}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14914,11 +14918,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0ca6fb2a-6a40-435c-b6d7-c2f67ad6900a}";
+    UUID "{d2ff2afd-05a3-4068-ad72-29a282fbcde0}";
 ;
 
   END
-  UUID "{dd397e7a-adef-4e46-9539-6ad7a3f1a547}";;
+  UUID "{a8219620-883a-4a45-8c61-48c731e464f8}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
