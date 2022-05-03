@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 14:09 May 3, 2022
+# Created 16:12 May 3, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -1905,8 +1905,8 @@ BEGIN
     RULE                 "Set User Surplus  Schedule - FC Only";
     DESCRIPTION          "This rule sets total annual schedules for users that have quantified and flood control surplus entitlments. Created during the redo of the surplus logic during the 24 MS - MTOM integration effort<br><br>Users set in the rule: Mexico, Needles, CAPumpersAboveImp";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT ( $ "Mead.Pool Elevation" [@"24:00:00 December 31, Previous Year"] >= $ "Surplus.Domestic Surplus Trigger Elevation" [] AND "IsJANofOutyear"(  ) AND "GetRunCycleIndex"(  ) >= 3.00000000 );
-    NOTES                "Mexico non FC surplus set in the Mexico Shortage and Suprlus. Annual Surplus Volume slot (Set Outyear Surplus Entitlement for Mexico rule)<br><br>APivarnik, 20201001: Changed run constraint to fire if RC > 3. Removed RC4 + condition changed constraint<br>";
+    RULE_EXEC_CONSTRAINT ( "GetProjectedPoolElevation"( "Mead", @"24:00:00 December 31, Previous Year" ) >= $ "Surplus.Domestic Surplus Trigger Elevation" [] AND "IsJANofOutyear"(  ) AND "GetRunCycleIndex"(  ) >= 3.00000000 );
+    NOTES                "Mexico non FC surplus set in the Mexico Shortage and Suprlus. Annual Surplus Volume slot (Set Outyear Surplus Entitlement for Mexico rule)<br><br>APivarnik, 20201001: Changed run constraint to fire if RC > 3. Removed RC4 + condition changed constraint<br>S.Baker, 20220503: Update execution constraint to use GetProjectedPE function to calucated Mead's effective PE.<br>";
     BEGIN
 
       WITH_STATEMENT (NUMERIC SurplusType = NaNToZero ( $ "Surplus.Surplus Flag" [@"24:00:00 December 31, Current Year"] )) DO
@@ -1935,8 +1935,8 @@ BEGIN
     RULE                 "Set User Surplus  Schedule -  QS, FC";
     DESCRIPTION          "This rule sets total annual schedules for users that have quantified and flood control surplus entitlments. Created during the redo of the surplus logic during the 24 MS - MTOM integration effort<br><br>Users set in the rule: Coachella, IID, City of Parker, Cibola Valley IID";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT ( $ "Mead.Pool Elevation" [@"24:00:00 December 31, Previous Year"] >= $ "Surplus.Domestic Surplus Trigger Elevation" [] AND "IsJANofOutyear"(  ) AND "GetRunCycleIndex"(  ) >= 3.00000000 );
-    NOTES                "APivarnik, 20201001: Changed run constraint to fire if RC > 3. Removed RC4 + condition changed constraint<br>";
+    RULE_EXEC_CONSTRAINT ( "GetProjectedPoolElevation"( "Mead", @"24:00:00 December 31, Previous Year" ) >= $ "Surplus.Domestic Surplus Trigger Elevation" [] AND "IsJANofOutyear"(  ) AND "GetRunCycleIndex"(  ) >= 3.00000000 );
+    NOTES                "APivarnik, 20201001: Changed run constraint to fire if RC > 3. Removed RC4 + condition changed constraint<br>S.Baker, 20220503: Update execution constraint to use GetProjectedPE function to calucated Mead's effective PE.";
     BEGIN
 
       WITH_STATEMENT (NUMERIC SurplusType = NaNToZero ( $ "Surplus.Surplus Flag" [@"24:00:00 December 31, Current Year"] )) DO
@@ -1973,8 +1973,8 @@ BEGIN
     RULE                 "Set User Surplus  Schedule -  DS, QS, FC";
     DESCRIPTION          "This rule sets total annual schedules for users that have domestic, quantified and flood control surplus entitlments. Created during the redo of the surplus logic during the 24 MS - MTOM integration effort<br><br>Users set in the rule: SNWA, MWD, CAP, Gila Monster Farms, AZPumpersBlwImperial";
     ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT ( $ "Mead.Pool Elevation" [@"24:00:00 December 31, Previous Year"] >= $ "Surplus.Domestic Surplus Trigger Elevation" [] AND "IsJANofOutyear"(  ) AND "GetRunCycleIndex"(  ) >= 3.00000000 );
-    NOTES                "APivarnik, 20201001: Changed run constraint to fire if RC > 3. Removed RC4 + condition changed constraint<br>";
+    RULE_EXEC_CONSTRAINT ( "GetProjectedPoolElevation"( "Mead", @"24:00:00 December 31, Previous Year" ) >= $ "Surplus.Domestic Surplus Trigger Elevation" [] AND "IsJANofOutyear"(  ) AND "GetRunCycleIndex"(  ) >= 3.00000000 );
+    NOTES                "APivarnik, 20201001: Changed run constraint to fire if RC > 3. Removed RC4 + condition changed constraint<br>S.Baker, 20220503: Update execution constraint to use GetProjectedPE function to calucated Mead's effective PE.";
     BEGIN
 
       WITH_STATEMENT (NUMERIC SurplusType = NaNToZero ( $ "Surplus.Surplus Flag" [@"24:00:00 December 31, Current Year"] )) DO
@@ -11186,7 +11186,7 @@ BEGIN
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG FALSE;
-    NOTES          "Author, Date: SB, 20180917<br><br>S.Baker, 20220429:Added logic to make function more universal. Added banked water in Powell for projected elevation calculations. ";
+    NOTES          "Author, Date: SB, 20180917<br><br>S.Baker, 20220429:Added logic to make function more universal. Added banked water in Powell for projected elevation calculations. Projected EOY PEs will include banked water in powell so no need to account";
     BEGIN
 
       IF ( Reservoir == "Mead" )
@@ -11198,7 +11198,7 @@ BEGIN
    ProjectionDate == "Dec31ofYear"( @"Start Timestep" ) OR ProjectionDate == "Dec31ofYear"( @"Start Timestep" - 1.00000000 "year" )
   ENDIF )
   THEN
-   "StorageToElevation"( % "Mead", "ElevationToStorage"( % "Mead", "GetSlot"( "PowellToMeadData.AugEOY" CONCAT Reservoir CONCAT "PEProjection" ) [ProjectionDate] ) + NaNToZero ( $ "PowellData.LBBankInPowell" ["Dec31ofYear"( ProjectionDate )] ) )
+   "GetSlot"( "PowellToMeadData.AugEOY" CONCAT Reservoir CONCAT "PEProjection" ) [ProjectionDate]
   ELSE
    "StorageToElevation"( % "Mead", "ElevationToStorage"( % "Mead", "GetSlot"( Reservoir CONCAT ".Pool Elevation" ) [ProjectionDate] ) + NaNToZero ( $ "PowellData.LBBankInPowell" ["Dec31ofYear"( ProjectionDate )] ) )
   ENDIF
@@ -11210,7 +11210,7 @@ BEGIN
    ProjectionDate == "Dec31ofYear"( @"Start Timestep" ) OR ProjectionDate == "Dec31ofYear"( @"Start Timestep" - 1.00000000 "year" )
   ENDIF )
   THEN
-   "StorageToElevation"( % "Powell", "ElevationToStorage"( % "Powell", "GetSlot"( "PowellToMeadData.AugEOY" CONCAT Reservoir CONCAT "PEProjection" ) [ProjectionDate] ) - NaNToZero ( $ "PowellData.LBBankInPowell" ["Dec31ofYear"( ProjectionDate )] ) )
+   "GetSlot"( "PowellToMeadData.AugEOY" CONCAT Reservoir CONCAT "PEProjection" ) [ProjectionDate]
   ELSE
    "StorageToElevation"( % "Powell", "ElevationToStorage"( % "Powell", "GetSlot"( Reservoir CONCAT ".Pool Elevation" ) [ProjectionDate] ) - NaNToZero ( $ "PowellData.LBBankInPowell" ["Dec31ofYear"( ProjectionDate )] ) )
   ENDIF
