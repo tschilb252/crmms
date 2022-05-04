@@ -195,7 +195,7 @@ FloodControlOutput.Flood Control Flag: file = $CRMMS_DIR/rdfOutput/monthlyflags.
 Surplus.Flood Control Surplus Flag: file = $CRMMS_DIR/rdfOutput/monthlyflags.rdf
 PowellData.ControllingEqualizationCondition: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.EffectiveEOCYPoolElevWith823Rel: file = $CRMMS_DIR/rdfOutput/flags.rdf
-MeadData.PEforCondition: file = $CRMMS_DIR/rdfOutput/flags.rdf
+MeadData.EffectiveEOCYPoolElev: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.LBAnnualWaterInPowell: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.LBBankInPowell: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
