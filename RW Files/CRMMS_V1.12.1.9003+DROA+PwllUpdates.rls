@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 10:58 May 4, 2022
+# Created 13:48 May 4, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -3777,11 +3777,11 @@ BEGIN
     BEGIN
 
       FOREACH (DATETIME date IN @"Start Timestep" TO @"Finish Timestep") DO
-            $ "FlamingGorge.Outflow" [date] := $ "FlamingGorge.Outflow" [date] + NaNToZero "VolumeToFlow"( $ "FlamingGorgeData.AdditionalReleaseDueToDROA_ESP" [date], @"t" );
+            $ "FlamingGorge.Outflow" [date] := $ "FlamingGorge.Outflow" [date] + NaNToZero "VolumeToFlow"( $ "FlamingGorgeData.AdditionalReleaseDueToDROA_ESP" [date], date );
 
-            $ "BlueMesa.Outflow" [date] := $ "BlueMesa.Outflow" [date] + NaNToZero "VolumeToFlow"( $ "BlueMesaData.AdditionalReleaseDueToDROA_ESP" [date], @"t" );
+            $ "BlueMesa.Outflow" [date] := $ "BlueMesa.Outflow" [date] + NaNToZero "VolumeToFlow"( $ "BlueMesaData.AdditionalReleaseDueToDROA_ESP" [date], date );
 
-            $ "Navajo.Outflow" [date] := $ "Navajo.Outflow" [date] + NaNToZero "VolumeToFlow"( $ "NavajoData.AdditionalReleaseDueToDROA_ESP" [date], @"t" );
+            $ "Navajo.Outflow" [date] := $ "Navajo.Outflow" [date] + NaNToZero "VolumeToFlow"( $ "NavajoData.AdditionalReleaseDueToDROA_ESP" [date], date );
 
       ENDFOREACH;
 
