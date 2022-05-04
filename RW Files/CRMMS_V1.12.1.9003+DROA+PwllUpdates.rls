@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 10:15 May 4, 2022
+# Created 10:58 May 4, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -2468,7 +2468,7 @@ BEGIN
   ENDIF
  ENDIF;
 
-            $ "MeadData.PEforCondition" [@"24:00:00 December 31, Current Year"] := ProjectedMeadPE;
+            $ "MeadData.EffectiveEOCYPoolElev" [@"24:00:00 December 31, Current Year"] := ProjectedMeadPE;
 
       END_WITH_STATEMENT;
 
@@ -14854,32 +14854,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{417f3e20-5fd8-4aa7-829f-ce12c8fc3c44}";
+    UUID "{411352cb-94ac-44ca-856c-8729dbeb805d}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{c1afadfa-e85e-482c-9ea2-24dae097bf9c}";
+    UUID "{5962a5be-bf00-4c18-a741-38874812b439}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{3d8c6a23-996b-4e2e-9b4c-1f4a029fc5b5}";
+    UUID "{067084d1-ed65-4c8b-a3d5-514bf4c1a78a}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{b1cf1d91-7f62-43fa-a022-7227c9f91557}";
+    UUID "{63f2c485-dc7b-4111-968e-4df9cbaba993}";
 ;
 
   END
-  UUID "{579ddc1e-2520-4f28-973d-f934a83aac3c}";;
+  UUID "{d17c1761-2a0d-4fbb-a0ec-33e4b0b12acf}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14890,11 +14890,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{4ac18ff7-574b-4554-b7e7-c38daebcf5dd}";
+    UUID "{a68ce2c1-df31-443d-a57c-f6d3086e6f9c}";
 ;
 
   END
-  UUID "{e49b8e3c-e706-4273-82fb-d45e4cf767f3}";;
+  UUID "{d84579d7-9c29-4306-91ed-ba05ead4326a}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14905,11 +14905,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{55ccee50-05ac-491a-8a8d-e496e32a9a34}";
+    UUID "{71520749-45e4-4c9c-a3c0-afe74cedc8ac}";
 ;
 
   END
-  UUID "{dae75973-14f7-496e-86f9-4048ce7f4e49}";;
+  UUID "{0f431ef1-02c9-4e75-8e1f-076cf53f752b}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14920,11 +14920,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{f0255cf1-85b7-4358-882e-9bd753bfe62a}";
+    UUID "{f0f8a51d-33a8-4c57-babd-1bb26d22afa1}";
 ;
 
   END
-  UUID "{38c312f3-b3f7-4e3f-ac6b-4f5fa43bd1e3}";;
+  UUID "{3a7ba9c7-f507-4b98-9e9f-acea88496b0d}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
