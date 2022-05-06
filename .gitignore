@@ -1,11 +1,7 @@
-
+# ignore rdf output
 rdfOutput/*
 !rdfOutput/ReadMe.txt
-!rdfOutput/output.control
 ReportFiles
-
-MTOM_Overview_Description.pdf
-MTOM_Stakeholder_User_Manual.pdf
 
 # ignore other backup files of zipped rules, models, and RiverSMART files
 *.bak.gz
@@ -28,8 +24,10 @@ ehthumbs.db
 
 # Folder config file
 Desktop.ini
+
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+
 # Windows Installer files
 *.cab
 *.msi
@@ -53,14 +51,13 @@ Icon
 
 !RW Files*
 
-#pass through sheets 
-/Output Data/EnsembleOutput.xlsx
-/Output Data/MTOMcsvOutput.csv
+# Ignore pass through sheets & other unecessary output data
+/Output Data/*
+!/Output Data/CRMMS_EnsembleOutput.xlsm
+!/Output Data/ReadMe.txt
 
 # Testbed Forecasts and IC data
 /Inflow Forecasts/Testbed_Historical_Forecasts
-/Input Data/Historical_Diversions.xlsx
-/Input Data/Observed_for_MTOM_IC.xlsx
 /Input Data/TestbedData
 /RW Files/TestbedFiles
 
