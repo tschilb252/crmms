@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 12:16 May 20, 2022
+# Created 15:15 May 26, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -1424,7 +1424,19 @@ BEGIN
     BEGIN
 
       WITH_STATEMENT (NUMERIC YeartoYearBankAdjustment = $ "ICS Credits.AdjustedBankMaxCapacity_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.Bank_NV" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
-            $ "ICS Credits.AnnualNevadaStoredOffstream" [@"24:00:00 December Max DayOfMonth, Current Year"] := "MinItem"( { ? , ? } COMMENTED_BY "This min statement calculates the amount of the NV apportionment from the current year to be <br>stored off stream.<br><br>If the difference in the yearly banks is negative, ie the availble bank space for NV went down <br>from the previous year, then store all of the attempted ICS creation from the current year <br>offstream.  <br>" );
+            WITH_STATEMENT (NUMERIC YeartoYearBankAdjustment_PreTax = YeartoYearBankAdjustment / "SystemTaxAdjustment_DCP"(  )) DO
+            WITH_STATEMENT (NUMERIC CurrentYearECICSCreation = $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
+          DESCRIPTION          "This statement calculates how much of NV's current year apportionment that needs to be <br>stored offstream.<br><br>If NV's bank space went down from the previous year then store the left over apportionment <br>offstream. Since NV's bank space went down they will be required to vacate space for other <br>states and there will be no room for the current years left over apportionment to be created <br>as EC ICS.<br><br>Else NV's bank space went up. This means they can store at lease some amount of EC ICS in <br>the current year. Store the difference between the preliminary creation and that the bank <br>increased<br>";
+      $ "ICS Credits.AnnualNevadaStoredOffstream" [@"24:00:00 December Max DayOfMonth, Current Year"] := IF ( YeartoYearBankAdjustment < 0.00000000 "acre-ft" )
+ THEN
+  CurrentYearECICSCreation
+ ELSE
+  "SetNegativeToZero"( CurrentYearECICSCreation - YeartoYearBankAdjustment_PreTax )
+ ENDIF;
+
+      END_WITH_STATEMENT;
+
+      END_WITH_STATEMENT;
 
       END_WITH_STATEMENT;
 
@@ -1438,7 +1450,7 @@ BEGIN
     NOTES                "";
     BEGIN
 
-      $ "ICS Credits.AnnualNevadaBankSpaceforTrib" [@"24:00:00 December Max DayOfMonth, Current Year"] := "SetNegativeToZero"( $ "ICS Credits.AdjustedBankMaxCapacity_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - "TaxedECICS"( $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) * "SystemTaxAdjustment_DCP"(  ) - "NonTaxedECICS"( $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) );
+      $ "ICS Credits.AnnualNevadaBankSpaceforTrib" [@"24:00:00 December Max DayOfMonth, Current Year"] := "SetNegativeToZero"( $ "ICS Credits.AdjustedBankMaxCapacity_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) );
 
     END
     UUID "{411e51b8-47f8-46c2-8689-f7382b77e4cf}";;
@@ -1794,19 +1806,19 @@ BEGIN
   THEN
    $ "ICSProjectionData.AnnualCreationEC_GRIC_Default" [@"24:00:00 December Max DayOfMonth, Current Year"]
   ELSE
-   "FitDefaultECICSIntoBank"( $ "ICSProjectionData.AnnualCreationEC_GRIC_Default" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_GRIC" [@"24:00:00 December Max DayOfMonth, Previous Year"], "AZTribal", $ "ICS Credits.Bank_AZ" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Current Year ECICS into Bank"( AnnualCreationEC_CRIT, $ "ICS Credits.AnnualDeliveryEC_CRIT" [@"24:00:00 December Max DayOfMonth, Previous Year"], "AZTribal" ) )
+   "FitDefaultECICSIntoBank"( $ "ICSProjectionData.AnnualCreationEC_GRIC_Default" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_GRIC" [@"24:00:00 December Max DayOfMonth, Previous Year"], "AZTribal", $ "ICS Credits.Bank_AZ" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Current Year ECICS into Bank"( AnnualCreationEC_CRIT, $ "ICS Credits.AnnualDeliveryEC_CRIT" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) )
   ENDIF )
  ENDIF) DO
             WITH_STATEMENT (LIST AZFiming = "AZ Firming Agreement"(  )) DO
           DESCRIPTION          "Assign GRIC EC ICS values <br>";
       $ "ICS Credits.AnnualCreationEC_GRIC" [@"24:00:00 December Max DayOfMonth, Current Year"] := AnnualCreationEC_GRIC;
 
-            $ "ICS Credits.ExtraordinaryConservationICS_GRIC" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( $ "ICS Credits.ExtraordinaryConservationICS_GRIC" [@"24:00:00 December Max DayOfMonth, Previous Year"] + "Current Year ECICS into Bank"( AnnualCreationEC_GRIC, $ "ICS Credits.AnnualDeliveryEC_GRIC" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Arizona" ) - $ "ICS Credits.AnnualDeliveryEC_GRIC" [@"24:00:00 December 31, Current Year"] ) - GET @INDEX 0.00000000 FROM AZFiming;
+            $ "ICS Credits.ExtraordinaryConservationICS_GRIC" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( $ "ICS Credits.ExtraordinaryConservationICS_GRIC" [@"24:00:00 December Max DayOfMonth, Previous Year"] + "Current Year ECICS into Bank"( AnnualCreationEC_GRIC, $ "ICS Credits.AnnualDeliveryEC_GRIC" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) - $ "ICS Credits.AnnualDeliveryEC_GRIC" [@"24:00:00 December 31, Current Year"] ) - GET @INDEX 0.00000000 FROM AZFiming;
 
           DESCRIPTION          "Assign CRIT EC ICS values <br>";
       $ "ICS Credits.AnnualCreationEC_CRIT" [@"24:00:00 December Max DayOfMonth, Current Year"] := AnnualCreationEC_CRIT;
 
-            $ "ICS Credits.ExtraordinaryConservationICS_CRIT" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( $ "ICS Credits.ExtraordinaryConservationICS_CRIT" [@"24:00:00 December Max DayOfMonth, Previous Year"] + "Current Year ECICS into Bank"( AnnualCreationEC_CRIT, $ "ICS Credits.AnnualDeliveryEC_CRIT" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Arizona" ) - $ "ICS Credits.AnnualDeliveryEC_CRIT" [@"24:00:00 December Max DayOfMonth, Current Year"] );
+            $ "ICS Credits.ExtraordinaryConservationICS_CRIT" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( $ "ICS Credits.ExtraordinaryConservationICS_CRIT" [@"24:00:00 December Max DayOfMonth, Previous Year"] + "Current Year ECICS into Bank"( AnnualCreationEC_CRIT, $ "ICS Credits.AnnualDeliveryEC_CRIT" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) - $ "ICS Credits.AnnualDeliveryEC_CRIT" [@"24:00:00 December Max DayOfMonth, Current Year"] );
 
       END_WITH_STATEMENT;
 
@@ -1844,18 +1856,18 @@ BEGIN
   THEN
    $ "ICSProjectionData.AnnualCreationEC_WM_Default" [@"24:00:00 December Max DayOfMonth, Current Year"]
   ELSE
-   "FitDefaultECICSIntoBank"( $ "ICSProjectionData.AnnualCreationEC_WM_Default" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_WM" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Arizona", $ "ICS Credits.Bank_AZ" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Current Year ECICS into Bank"( AnnualCreationEC_MVIDD, $ "ICS Credits.AnnualDeliveryEC_MVIDD" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Arizona" ) )
+   "FitDefaultECICSIntoBank"( $ "ICSProjectionData.AnnualCreationEC_WM_Default" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_WM" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Arizona", $ "ICS Credits.Bank_AZ" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Current Year ECICS into Bank"( AnnualCreationEC_MVIDD, $ "ICS Credits.AnnualDeliveryEC_MVIDD" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) )
   ENDIF )
  ENDIF) DO
           DESCRIPTION          "Assign MVIDD EC ICS Values <br>";
       $ "ICS Credits.AnnualCreationEC_MVIDD" [@"24:00:00 December Max DayOfMonth, Current Year"] := AnnualCreationEC_MVIDD;
 
-            $ "ICS Credits.ExtraordinaryConservationICS_MVIDD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( $ "ICS Credits.ExtraordinaryConservationICS_MVIDD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + "Current Year ECICS into Bank"( AnnualCreationEC_MVIDD, $ "ICS Credits.AnnualDeliveryEC_MVIDD" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Arizona" ) - $ "ICS Credits.AnnualDeliveryEC_MVIDD" [@"24:00:00 December Max DayOfMonth, Current Year"] );
+            $ "ICS Credits.ExtraordinaryConservationICS_MVIDD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( $ "ICS Credits.ExtraordinaryConservationICS_MVIDD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + "Current Year ECICS into Bank"( AnnualCreationEC_MVIDD, $ "ICS Credits.AnnualDeliveryEC_MVIDD" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) - $ "ICS Credits.AnnualDeliveryEC_MVIDD" [@"24:00:00 December Max DayOfMonth, Current Year"] );
 
           DESCRIPTION          "Assign WM EC ICS Values<br>";
       $ "ICS Credits.AnnualCreationEC_WM" [@"24:00:00 December Max DayOfMonth, Current Year"] := AnnualCreationEC_WM;
 
-            $ "ICS Credits.ExtraordinaryConservationICS_WM" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( $ "ICS Credits.ExtraordinaryConservationICS_WM" [@"24:00:00 December Max DayOfMonth, Previous Year"] + "Current Year ECICS into Bank"( AnnualCreationEC_WM, $ "ICS Credits.AnnualDeliveryEC_WM" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Arizona" ) - $ "ICS Credits.AnnualDeliveryEC_WM" [@"24:00:00 December 31, Current Year"] );
+            $ "ICS Credits.ExtraordinaryConservationICS_WM" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( $ "ICS Credits.ExtraordinaryConservationICS_WM" [@"24:00:00 December Max DayOfMonth, Previous Year"] + "Current Year ECICS into Bank"( AnnualCreationEC_WM, $ "ICS Credits.AnnualDeliveryEC_WM" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) - $ "ICS Credits.AnnualDeliveryEC_WM" [@"24:00:00 December 31, Current Year"] );
 
       END_WITH_STATEMENT;
 
@@ -11709,7 +11721,7 @@ BEGIN
     END
     UUID "{692236dd-d545-45fb-968d-b35496cae6db}";;
 
-    FUNCTION       "Current Year ECICS into Bank" ( NUMERIC AnnualCreation, NUMERIC PreviousDelivery, STRING State )
+    FUNCTION       "Current Year ECICS into Bank" ( NUMERIC AnnualCreation, NUMERIC PreviousDelivery )
     RETURN_TYPE    NUMERIC;
     SCALE_UNITS    "";
     DESCRIPTION    "";
@@ -11719,12 +11731,7 @@ BEGIN
     NOTES          "";
     BEGIN
 
-      ( "TaxedECICS"( AnnualCreation, PreviousDelivery ) * "SystemTaxAdjustment_DCP"(  ) + "NonTaxedECICS"( AnnualCreation, PreviousDelivery ) ) + IF ( State == "Nevada" )
- THEN
-  $ "ICS Credits.ImportedICS_NV" [@"24:00:00 December 31, Previous Year"] + $ "ICS Credits.TributaryICS_NV" [@"24:00:00 December 31, Previous Year"]
- ELSE
-  0.00000000 "acre-ft"
- ENDIF;
+      ( "TaxedECICS"( AnnualCreation, PreviousDelivery ) * "SystemTaxAdjustment_DCP"(  ) + "NonTaxedECICS"( AnnualCreation, PreviousDelivery ) );
 
     END
     UUID "{eac40aed-9d69-40d5-bf49-2974b9138165}";;
@@ -12548,7 +12555,7 @@ BEGIN
 
       WITH NUMERIC MWDPreviousYearsBank = $ "ICS Credits.Bank_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
   WITH NUMERIC NonMWDBankICSinCA = $ "ICS Credits.BiNationalICS_IID" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.ExtraordinaryConservationICS_IID" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-   WITH NUMERIC MWDPreliminaryECCreation = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"], "CA" ) DO
+   WITH NUMERIC MWDPreliminaryECCreation = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) DO
     WITH NUMERIC MWDBICSCreation = $ "ICS Credits.AnnualCreationBiNat_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
      WITH NUMERIC AvailableBankBalanceForDelivery = "Available ICS Bank Balance For Delivery"( "CA" ) DO
       MWDPreviousYearsBank + NonMWDBankICSinCA + MWDPreliminaryECCreation + MWDBICSCreation - "Min"( $ "ICSProjectionData.AnnualICSDelivery_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], AvailableBankBalanceForDelivery )
@@ -12572,10 +12579,12 @@ BEGIN
     BEGIN
 
       WITH NUMERIC PreviousBank = $ "ICS Credits.Bank_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
-  WITH NUMERIC ECPreliminaryCreation = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"], "Nevada" ) DO
+  WITH NUMERIC ECPreliminaryCreation = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) DO
    WITH NUMERIC BICSCreation = $ "ICS Credits.AnnualCreationBiNat_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-    WITH NUMERIC AvailableBankBalanceForDelivery = "Available ICS Bank Balance For Delivery"( "NV" ) DO
-     PreviousBank + ECPreliminaryCreation + BICSCreation - "Min"( $ "ICSProjectionData.AnnualICSDelivery_NV_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], AvailableBankBalanceForDelivery )
+    WITH NUMERIC TributaryICS = $ "ICS Credits.TributaryICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
+     WITH NUMERIC AvailableBankBalanceForDelivery = "Available ICS Bank Balance For Delivery"( "NV" ) DO
+      PreviousBank + ECPreliminaryCreation + BICSCreation + TributaryICS - "Min"( $ "ICSProjectionData.AnnualICSDelivery_NV_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], AvailableBankBalanceForDelivery )
+     ENDWITH
     ENDWITH
    ENDWITH
   ENDWITH
@@ -12596,7 +12605,7 @@ BEGIN
 
       WITH NUMERIC CAWCDPreviousYearsBank = $ "ICS Credits.Bank_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
   WITH NUMERIC NonCAWCDECICSinAZ = $ "ICS Credits.ExtraordinaryConservationICS_CRIT" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.ExtraordinaryConservationICS_GRIC" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.ExtraordinaryConservationICS_MVIDD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.ExtraordinaryConservationICS_WM" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-   WITH NUMERIC CAWCDPreliminaryECCreation = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"], "CAWCD" ) DO
+   WITH NUMERIC CAWCDPreliminaryECCreation = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) DO
     WITH NUMERIC BICSCreation = $ "ICS Credits.AnnualCreationBiNat_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
      WITH NUMERIC AvailableBankBalanceForDelivery = "Available ICS Bank Balance For Delivery"( "CAWCD" ) DO
       CAWCDPreviousYearsBank + NonCAWCDECICSinAZ + CAWCDPreliminaryECCreation + BICSCreation - "Min"( $ "ICSProjectionData.AnnualICSDelivery_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], AvailableBankBalanceForDelivery )
@@ -15096,32 +15105,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{061a24c1-13b4-48dd-8ea3-2f2b64741358}";
+    UUID "{2328faf3-8a5a-46e9-9ec6-7ddbae34d4da}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{593dde22-baf3-4f07-8338-85631f706fb6}";
+    UUID "{db4cf21d-4c50-4bf7-a92f-a0a21d85ea4e}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{db3e395b-0d52-4d9b-a2f6-c4fce9b4497e}";
+    UUID "{0971dda2-f731-4f85-93cd-11c86d075603}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{8c3a6ce2-1ccd-4d3e-8107-f72b52d25e63}";
+    UUID "{227412a9-2902-4e1b-825b-fefc7a0da74e}";
 ;
 
   END
-  UUID "{bd5c9f47-63c9-4c6e-a4e8-98cdeb4f0c4c}";;
+  UUID "{9206af4a-6a60-46ae-bb95-ec2e1e88b9dd}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15132,11 +15141,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{33b6101c-5290-4784-876b-3160869749ad}";
+    UUID "{fb75eeba-d4e4-4b69-ac92-fa11e8e559f0}";
 ;
 
   END
-  UUID "{1393b856-3601-40c3-aecc-d42a17459bcd}";;
+  UUID "{1171f9a1-0fc2-4b5c-aea4-b53d8f4ff92c}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15147,11 +15156,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{8c29ed0c-684b-44ea-ba52-440dc57bac1e}";
+    UUID "{3f979f36-d50f-4439-884f-914373622f6c}";
 ;
 
   END
-  UUID "{4f895321-f346-4ab5-871f-ad90b3e5822f}";;
+  UUID "{6a8549cf-297c-4146-b7ed-9bbe34eff7db}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15162,11 +15171,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{43deaf9d-1e8a-4290-a738-4c95b12487dd}";
+    UUID "{deb4e4df-99f3-47e8-8392-af339b3925a3}";
 ;
 
   END
-  UUID "{a6b0aa0d-bfd0-4f4c-b2f9-b12b0abb5125}";;
+  UUID "{174b88cb-6943-45b3-8152-ff64230d5e5f}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
