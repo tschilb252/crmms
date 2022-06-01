@@ -1,8 +1,8 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 13:48 May 4, 2022
+# Created 16:42 June 1, 2022
 # 
 RULESET
-NAME "CRMMS Ruleset w/ DROA + Powell Updates";
+NAME "CRMMS Ruleset";
 AGENDA_ORDER ASCENDING;
 DESCRIPTION "";
 PRECISION   8;
@@ -4541,7 +4541,7 @@ BEGIN
   UUID "{de4834ef-d1df-4dbb-874d-362d8ee2cfd7}";;
 
   POLICY_GROUP   "Aspinall Ops";
-  DESCRIPTION    "The Aspinall Unit on the Gunnison River was authorized as part of the Colorado Storage Project Act (1956). The unit is made up of Blue Mesa Dam, Morrow Point Dam, and Crystal Dam. Primary water storage occurs in the uppermost and largest reservoir, Blue Mesa. The Aspinall Unit is operated for water storage, hydropower production, releases for water rights and agreements, flood control and for downstream endangered fish species. Reclamation works with other government agencies, public and special interest groups in setting the operations of the Aspinall Unit via the Aspinall Unit Working Group. <br><br>The Aspinall Unit is upstream of the Black Canyon of the Gunnison National Park. The park holds a federal reserved water right (2008 Decree). CRSS calculates the daily flow targets which satisfy the water right, based on the Blue Mesa Unregulated Inflow for April-July, and then aggregates these to monthly releases. <br><br>Endangered fish are found in the lower Gunnison River approximately 50 miles downstream of the Aspinall Unit reservoirs. The Record of Decision for the Aspinall Unit Operations Final Environmental Impact Statement (2012) specifies spring peak and base flow targets for the Gunnison River Near Grand Junction Gage (USGS 09152500, a.k.a. the Whitewater Gage) to benefit the endangered fish species. Target flows depend on the hydrologic year type which is determine to be between Dry and Wet based on the Blue Mesa Unregulated Inflow for April-July. CRSS calculates daily flow targets at the Whitewater Gage and then aggregates these to monthly release targets.   <br><br>CRSS determines the outflow as the greater of the flow necessary to meet the Whitewater Target Flow, the Black Canyon Target Flow, or the flow necessary to meet the target pool elevation for Blue Mesa (rule curve). This is subject to the constraints that those flows are not greater than the maximum release to prevent an overflow at Crystal, the maximum release to avoid the minimum pool elevation, the maximum possible outflow for Blue Mesa Reservoir, and the maximum outflow to the absolute bottom (top of dead pool), but no less than the amount to prevent flood control. <br><br>Blue Mesa?s releases is passed down stream to the critical reaches through Morrow Point and Crystal Reservoirs. Both reservoirs maintain a constant storage by passing the inflow minus enough water to offset their evaporation.  <br><br><br>";
+  DESCRIPTION    "The Aspinall Unit on the Gunnison River was authorized as part of the Colorado Storage Project Act (1956). The unit is made up of Blue Mesa Dam, Morrow Point Dam, and Crystal Dam. Primary water storage occurs in the uppermost and largest reservoir, Blue Mesa. The Aspinall Unit is operated for water storage, hydropower production, releases for water rights and agreements, flood control and for downstream endangered fish species. Reclamation works with other government agencies, public and special interest groups in setting the operations of the Aspinall Unit via the Aspinall Unit Working Group. <br><br>Endangered fish are found in the lower Gunnison River approximately 50 miles downstream of the Aspinall Unit reservoirs. The Record of Decision for the Aspinall Unit Operations Final Environmental Impact Statement (2012) specifies spring peak and base flow targets for the Gunnison River Near Grand Junction Gage (USGS 09152500, a.k.a. the Whitewater Gage) to benefit the endangered fish species. Target flows depend on the hydrologic year type which is determine to be between Dry and Wet based on the Blue Mesa Unregulated Inflow for April-July by rule 'Calculate Gunnison Flow Targets'. CRSS calculates daily flow targets at the Whitewater Gage, in rule 'Annual Daily Whitewater Flow Determination', and then aggregates these to monthly release targets in rule 'Blue Mesa Operations'.   <br><br>The Aspinall Unit is upstream of the Black Canyon of the Gunnison National Park. The park holds a federal reserved water right (2008 Decree). CRSS calculates the daily flow targets which satisfy the water right, based on the Blue Mesa Unregulated Inflow for April-July, in rule 'Annual Daily Black Canyon Flow Determination', and then aggregates these to monthly releases targets in rule 'Blue Mesa Operations'.<br><br>In rule 'Blue Mesa Operations',CRSS determines the outflow as the greater of the flow necessary to meet the Whitewater Target Flow, the Black Canyon Target Flow, or the flow necessary to meet the target pool elevation for Blue Mesa (rule curve). This is subject to the constraints that those flows are not greater than the maximum release to prevent an overflow at Crystal, the maximum release to avoid the minimum pool elevation, the maximum possible outflow for Blue Mesa Reservoir, and the maximum outflow to the absolute bottom (top of dead pool), but no less than the amount to prevent flood control. <br><br>Blue Mesas releases are passed down stream to the critical reaches through Morrow Point and Crystal Reservoirs. Both reservoirs maintain a constant storage by passing the inflow minus enough water to offset their evaporation in rules 'Morrow Point Outflow' and 'Crystal Outflow'.  ";
   ACTIVE         TRUE;
   NOTES          "The April 2012 Record of Decision for the Aspinall Unit Operations Final Environmental Impact Statement (2012 Aspinall ROD) and the decree quantifying the Federal Reserved Water Right for the Black Canyon of the Gunnison specify the spring peak outflow hydrograph and base flow for the rest of the year based on the hydrologic conditions upstream of Blue Mesa Reservoir, specifically the forecasted inflow to Blue Mesa Reservoir for April through July in the year of interest.  The 2012 Aspinall ROD provides specifications to avoid jeopardizing the continued existence of fish listed under the Endangered Species Act and to ensure the dam's operations do not result in the destruction or adverse modification of critical habitat in the Gunnison and Colorado rivers. <br><br>Data used to calculate the peak flow and duration targets are on the BlueMesaData object in the slots GunnisonDurationTargets, CanyonFlowCalcData, PeakFlowCalcData";
   BEGIN
@@ -14854,32 +14854,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{411352cb-94ac-44ca-856c-8729dbeb805d}";
+    UUID "{076c40d3-ddf7-48fa-9984-644dc3c37924}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{5962a5be-bf00-4c18-a741-38874812b439}";
+    UUID "{9e199f28-9bc1-45ed-99b7-afdb89e1a309}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{067084d1-ed65-4c8b-a3d5-514bf4c1a78a}";
+    UUID "{b11abe95-a964-4a2c-a4c9-a0230c349d5d}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{63f2c485-dc7b-4111-968e-4df9cbaba993}";
+    UUID "{19a6b0f3-4e18-49d4-8df9-9480e628ba19}";
 ;
 
   END
-  UUID "{d17c1761-2a0d-4fbb-a0ec-33e4b0b12acf}";;
+  UUID "{ce6b7eba-2498-42e1-b14f-926bbb6f6e1e}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14890,11 +14890,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{a68ce2c1-df31-443d-a57c-f6d3086e6f9c}";
+    UUID "{f470dc85-9fae-41f3-a632-32bebdaf30a7}";
 ;
 
   END
-  UUID "{d84579d7-9c29-4306-91ed-ba05ead4326a}";;
+  UUID "{29309771-00cd-48dd-8bb3-2f78a8ff0b67}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14905,11 +14905,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{71520749-45e4-4c9c-a3c0-afe74cedc8ac}";
+    UUID "{680d575b-b55c-4273-8071-c54151fd9cd4}";
 ;
 
   END
-  UUID "{0f431ef1-02c9-4e75-8e1f-076cf53f752b}";;
+  UUID "{afc05941-8941-43b9-b527-5e2dd45c92b2}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14920,18 +14920,622 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{f0f8a51d-33a8-4c57-babd-1bb26d22afa1}";
+    UUID "{1b9cbeeb-1991-4add-be37-bb3e5c940901}";
 ;
 
   END
-  UUID "{3a7ba9c7-f507-4b98-9e9f-acea88496b0d}";;
+  UUID "{a2709c13-5c38-4530-ba68-3257ca68ec5b}";;
 
-  REPORT_GROUP "Report Group";
+  REPORT_GROUP "Aspinall Slot Report Group";
   DESCRIPTION  "";
   NOTES  "";
   BEGIN
+    REPORT_ITEM      "BlueMesaData";
+    REPORT_ITEM_TYPE 2;
+    REPORT_ITEM_PARENT "";
+    UUID "{085fe01f-782d-476a-83c9-eecf0f8e0dd6}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.AccountingReconciliation";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{0448f62b-beb7-427b-8593-1461db3a7f5a}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.AdditionalReleaseDueToDROA_ESP";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{c6c9ba31-abe3-4a0f-ac71-706b3946f400}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.BaseFlowTarget";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{25dea86b-fe6f-49e7-ae57-080362a15045}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.BlueMesa_MaxOutflowTable";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{f6e0bc1c-1855-4e10-a013-1964099859fd}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.BlueMesaAprilThroughJulyVolume";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{c60fceb1-ee25-4894-8407-694b25cd4075}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.BlueMesaGuide";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{f54f3838-ca7a-4d7a-bf09-843d3b714ef6}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.BlueMesaMinRelease";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{e8494efd-6321-42f7-a7ad-79703b45fb04}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.CanyonAbove300";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{41aa8c13-66a6-40c5-a29e-d95cb7dc4df2}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.CanyonFlowCalcData";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{37778167-c5fe-46f1-9404-8d1bc7c907d9}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.CanyonPeakFlowTarget";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{9b7c6000-5f35-4ca1-a136-3819760ee088}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.CanyonRampDownRateFromPeak";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{8703da92-c51f-45c3-ac2c-7d8dfd95550f}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.CanyonRampUpRateToPeak";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{59e671e4-ae6e-408a-98c0-079880b9265b}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.CrystalMaxOutflow";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{15a2ba15-a31d-4a02-a321-4d044eefd6f6}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.CrystalToGJ_MayAdjustment";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{ba048f92-60f0-48a2-af7d-5116c0e9e5de}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.DROA_BalanceOnPowell";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{ae108f8f-db69-4819-b38f-0647f51b671a}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.DROA_Credit";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{f6e28ba6-ab13-40bf-b073-f7187cf7bf73}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.DROA_CreditMinusDebit";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{950e219d-ff3e-47e2-a315-c34ff3811025}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.DROA_Debit";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{bc1aed49-3545-4017-a957-7e28978cdfa9}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.DROA_Flag";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{6953487f-8be7-45e1-a886-eff767ab8e57}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.DROA_RecoveryTarget";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{ddfe2805-6667-43ba-bd1b-3cf78a135591}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.DROA_RecoveryTargetDate";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{d864776a-47c5-4531-94bd-cf0c901e61d6}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.GunnisonDurationTargets";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{a3e68acb-eb31-4222-aa1b-c290f55a67d4}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.GunnisonHClass";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{b923e9f7-5a36-4b5b-b7aa-c4d24073668a}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.HalfBankFlow";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{103e3216-1672-4353-a99f-a7b2f6406f57}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MaxDeadPoolElevation";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{1314e518-e064-47fa-9b00-3ea6e02ffe5a}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MaximumPoolElevation";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{d8c06df2-3ba1-4ac4-a37a-320cec68e7d4}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MayPeakFlowDate";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{328f0c5a-f868-4652-998c-c4075fb0c0dc}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MayReleaseVolume";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{6d5200a0-4edf-4c48-ad06-7cfca722c134}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MeetCanyonDecreeFlows";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{c06ff431-b967-425e-96db-96a8f10b4d6c}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MeetCanyonFlowTarget";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{26e3ea23-e65a-40cb-bae7-1411864ae71d}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MeetCanyonVolumeGoal";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{a6d852a7-e66b-4e30-9fb2-488c3d92fc00}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MeetStorageTargetByDec";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{bd48275b-6bc1-4bfb-aebe-cbe56885fbee}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MeetStorageTargetByJuly";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{7b1adaf7-35b7-4c04-ac73-8bfa7e59d1aa}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MeetWhitewaterVolumeGoal";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{d0704bec-5d9d-4fcc-9168-61b1c0c6e68c}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MeetWWBaseFlow";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{e11993a8-aadf-4c73-b6e0-f88511d63934}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MinimumOperationalTargetBlackCanyonFlow";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{ad2317b5-acf0-4857-beeb-04ddc722c821}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.MinimumPoolElevation";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{5bae048b-043a-46ef-a9ea-e8396420ba81}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.PeakFlowCalcData";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{7513aba5-2e12-4685-90d0-98d5817a0c5a}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.PeakFlowDuration";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{bf3c6ba9-4b21-491a-b897-49db4d8e3b60}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.PoolElevationWithDROA_Ops";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{5549a966-366a-4fd0-b3d5-323c4c3d396e}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.PoolElevationWithoutDROA_Ops";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{241b2836-b8db-4d8f-a786-ef37a0f0b225}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.ReleaseChangeDueToDROA_Ops";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{6475e86b-d22b-4e3f-82b1-13f1ccdda058}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.ReleaseControl";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{dbe8a5ce-67c1-449b-acd9-8625cc9260f8}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.ReleaseWithDROA_Ops";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{ec85230a-c3c8-4106-8495-2d02106c3bb0}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.ReleaseWithoutDROA_Ops";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{b24fdd72-19d0-4dfa-af07-6fba9b34013b}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.ShoulderFlowCalcData";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{d946aa41-d274-4858-a062-8bddc3eb354d}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.ShoulderFlowDuration";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{19881a55-b234-4271-8aad-5dd764a1f339}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.SpillwayElevation";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{956e341c-b5be-4edd-84c9-3962a4da3d87}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.StorageTargetCrystal";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{cb1441cf-79e7-404d-8bfc-ed3295ba08e1}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.StorageTargetMorrowPoint";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{6272398a-6ce3-42b8-aa2d-a029c9f46af0}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.StorageWithDROA_Ops";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{ab6398b9-8c55-421a-baa1-5d9d8cbd2bf3}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.StorageWithoutDROA_Ops";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{40c71d17-fec0-4f5e-af38-dff13dd6c2cd}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.TargetDailyBlackCanyonFlows";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{fa11be6f-d7d7-4124-9ddf-83952e7298bd}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.TargetDailyOutflowFromBlueMesa";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{9d7ab638-aa1f-430c-881c-d80e97445026}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.TargetDailyWhitewaterFlows";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{4d5b40b4-75f4-451b-b9e8-85ab3632500c}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.TunnelDivCheck";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{ebe3bbb2-ee43-425a-98e8-0a3ac550cf67}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.WhitewaterOpsAssurance";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{df1002c8-0913-49c0-a35c-9b748ca1cce3}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.WhitewaterPeakFlowTarget";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{7d774928-b8a5-459b-ae13-f9b6b62032d7}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "BlueMesaData.WhitewaterVolumeGoal";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "BlueMesaData";
+    UUID "{687e9586-f2b8-4fa2-b1d0-5809d7332f10}";
+    REPORT_ITEM_END;
+
   END
   UUID "{82213d73-dfc6-4866-a9c2-9ce4d699edd4}";;
+
+  REPORT_GROUP "Aspinall Rules Report Group";
+  DESCRIPTION  "";
+  NOTES  "";
+  BEGIN
+    REPORT_ITEM      "Calculate Gunnison Flow Targets";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Ops";
+    UUID "{0f79ea93-e34f-4646-8ea7-88c27986385c}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "Annual Daily Whitewater Flow Determination";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Ops";
+    UUID "{3f5183d4-060c-4c1f-9e70-1385815fb920}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "Annual Daily Black Canyon Flow Determination";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Ops";
+    UUID "{c95d651b-122f-4295-b122-6ec44ce58fce}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "Calculate May Release Volume";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Ops";
+    UUID "{ae5c94dc-2f0b-4269-80de-dfbd69d85eb5}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "Blue Mesa Operations";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Ops";
+    UUID "{019f5c0a-8157-45c5-a350-77a84d17223d}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "Morrow Point Outflow";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Ops";
+    UUID "{a9e79605-b47e-4588-b5a7-b743936e91bc}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "Crystal Outflow";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Ops";
+    UUID "{66b816e1-f337-4ebb-bff1-917a46e25ba9}";
+    REPORT_ITEM_END;
+
+  END
+  UUID "{1c7b5ba0-afba-489f-9704-b9bfd8e9084c}";;
+
+  REPORT_GROUP "Aspinall Functions Report Group";
+  DESCRIPTION  "";
+  NOTES  "";
+  BEGIN
+    REPORT_ITEM      "BlueMesaOutflowCalc";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{0a6db198-32c0-4149-8262-2504a6000bf0}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "TaylorParkMinReleaseConstraint";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{5002ede0-93ad-4c18-83d2-1ac15035999e}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "CalcCanyonPeakFlowTarget";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{3a76e9da-4f81-4f94-8d3f-0aa5f74de80e}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "CalcGunnisonWWPeakFlowTarget";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{3994e0d6-9e7e-479d-8e04-5874b8046f91}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "CalcGunnisonHClass";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{ec232c42-8766-452c-b736-ef839d5e2a86}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "UBConstrainedOutflow";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{6b4e1a7f-741b-42c2-93db-d2b0ac76ea12}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "SolveBlueMesaReleaseForDownstreamTargets";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{2e98de2b-0420-4720-b42b-0ee12ba56542}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "SolveBlueMesaReleaseForDownstreamTargets_NoEvap";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{898ae049-01de-426c-a15f-b594bfbe467e}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "SolveBlueMesaReleaseForCrystalReleaseTarget";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{1d6a363c-d6f4-4906-a3ca-e1e5392e2480}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "MaximumRelToAvoidMinimumPE";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{1677a4da-0100-4104-a76b-1e1091876683}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "ReleaseableVolumeRate";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{1a80efa0-ca36-4412-851c-322a93b4c474}";
+    REPORT_ITEM_END;
+
+  END
+  UUID "{25951462-d239-49ea-8d91-73dea2ff0dce}";;
+
+  REPORT_GROUP "Flaming Gorge Data Slots Report Group";
+  DESCRIPTION  "";
+  NOTES  "";
+  BEGIN
+    REPORT_ITEM      "FlamingGorgeData.AbsoluteMinRelease";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{c9f3f9d2-c6bd-4ddb-bc1c-5e23857a858b}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "KNN_MTOM.AprJulPercentExceedanceBaseFlow";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "KNN_MTOM";
+    UUID "{22b7e3f1-09fe-463f-8e6e-61bcc1da0fe7}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.BaseFlowDownrampRate";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{d49fbd77-aa9b-4d03-86d0-aba06f0d0812}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.BaseFlowMagnitudeLimits";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{bbbd3ee8-e439-448f-8d53-b1abb3d61f60}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "KNN_MTOM.BypassCapacity";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "KNN_MTOM";
+    UUID "{eb92a106-bbe2-41b1-871d-d9c49970b2fc}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.DaysAtBypassCapacity";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{ffed4e46-8c4e-45db-b3f5-38ae74757568}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.DaysAtPowerPlantCapacity";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{8ad45d60-10d6-4d7d-a49e-6adf1941c903}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.HydrologicClassPercentileLimits";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{adc7623c-5380-4125-ae31-b5f6b6bf7fb7}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.MaxPE";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{feb51999-6da5-4a63-980a-e28625922d78}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.May1TargetElevation";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{e5ee0011-a6d4-42fb-986b-6d2be912fddf}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.MinFlow";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{d6c0c451-2263-4a65-a6a6-e5917b3af888}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.PowerPlantCapacity";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{7bfcdf1a-8889-4238-b602-c6bcb474d91a}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.RampUpRate";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{3062167d-32e4-470e-891f-d1d8267da37e}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "KNN_MTOM.SpringHClass";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "KNN_MTOM";
+    UUID "{d9ec5add-0033-437d-8d94-f72b4f043b52}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.YampaDaysAbove10000ForBypass";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{60bf19bb-b180-4152-aea8-969129d48995}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "FlamingGorgeData.YampaDaysAbove14000ForBypass";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "FlamingGorgeData";
+    UUID "{0860070c-e2d8-45be-9073-c796db30fa01}";
+    REPORT_ITEM_END;
+
+  END
+  UUID "{a44b32aa-24a6-4137-8301-dc8304c786f2}";;
+
+  REPORT_GROUP "UB Constrained Outflow Function & Slot";
+  DESCRIPTION  "";
+  NOTES  "";
+  BEGIN
+    REPORT_ITEM      "UBConstrainedOutflow";
+    REPORT_ITEM_TYPE 0;
+    REPORT_ITEM_PARENT "Aspinall Functions - MTOM Only";
+    UUID "{bb18ff37-a855-4500-bfc7-48f238df0ff6}";
+    REPORT_ITEM_END;
+
+    REPORT_ITEM      "UBRuleCurveData.ReservoirData";
+    REPORT_ITEM_TYPE 1;
+    REPORT_ITEM_PARENT "UBRuleCurveData";
+    UUID "{6cfba137-b49e-4432-9b93-9b425b3dcbae}";
+    REPORT_ITEM_END;
+
+  END
+  UUID "{e6e9f9a0-176a-463c-b320-2f39a77ccc31}";;
 
 END
 UUID "{ab281990-c627-4d76-b0b9-e4f3661ac5ff}";
