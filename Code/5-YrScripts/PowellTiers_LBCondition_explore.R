@@ -1,5 +1,5 @@
 # ============================================================================
-# Compare CRMMS-ESP run 
+# Compare Last official CRMMS-ESP run 
 #   Powell Tiers / Powell TARV / LB Condition
 #   
 # ============================================================================
@@ -12,8 +12,31 @@ library(RWDataPlyr)
 library(CRSSIO)
 library(patchwork)
 
-## -- Inputs if run alone
-# source(file.path('Code', '0_MasterInputs.R'))
+## -- Inputs 
+scenario_dir <- c(
+  'May2022',
+  'Apr2022_wy22Fix'
+  # 'Mar2022'
+  # 'Feb2022_wy22Fix',
+  # 'Feb2022'
+  # 'Feb2022_ClimoISM'
+  # 'Jan2022_OG',
+  # 'Jan2022_updatedRegression'
+)
+scenarios <- c(
+  'May 2022',
+  'Apr. 2022 - wyfix'
+  # 'Apr. 2022 - Official',
+  # 'Mar. 2022'
+  # 'Feb. 2022 - wyfix',
+  # 'Feb. 2022 - Pub'
+  # 'Feb 2022 - ClimoISM'
+  # 'Jan. 2022'
+)
+extra_slots = c(
+  T, F
+)
+fig_dir_nm <- 'May_Apr,explore'
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -32,8 +55,8 @@ end_file_nm = paste0('_', max_yr)
 slots = c(
   'Shortage.Shortage Flag', 'PowellData.ReleaseTier',
   'PowellData.TargetAnnualReleaseVolume',
-  'PowellData.ActualAnnualReleaseVolume', 'DCP BWSCP Flags.LB DCP BWSCP'#,
-  # 'MeadData.EffectiveEOCYPoolElev', "PowellData.EffectiveEOCYPoolElevWith823Rel"
+  'PowellData.ActualAnnualReleaseVolume', 'DCP BWSCP Flags.LB DCP BWSCP',
+  'MeadData.EffectiveEOCYPoolElev', "PowellData.EffectiveEOCYPoolElevWith823Rel"
 )
 rdfs = rep('flags.rdf', length(slots))
 
@@ -49,19 +72,47 @@ rwa1 <- rwd_agg(data.frame(
   stringsAsFactors = FALSE
 ))
 
+rwa1_2 <- rwd_agg(data.frame(
+  file = rep('res.rdf', 2),
+  slot =  c('Mead.Pool Elevation', 'Powell.Pool Elevation'),
+  period = rep('December', 2),
+  summary = rep(NA, 2),
+  eval = rep(NA, 2),
+  t_s = rep(NA, 2),
+  variable = c('MeadData.EffectiveEOCYPoolElev', "PowellData.EffectiveEOCYPoolElevWith823Rel"),
+  stringsAsFactors = FALSE
+))
+
 # read/process RDFs
 df<- NULL
 for (i in 1:length(scenarios)) {
-  scen_res <- rdf_aggregate(  
-    agg = rwa1, 
-    rdf_dir = data_dir[i]
-  )
+  # add in effective PE if doesnt exist
+  if (extra_slots[i]) {
+    scen_res <- rdf_aggregate(  
+      agg = rwa1, 
+      rdf_dir = data_dir[i]
+    )
+  } else {
+    scen_res <- rdf_aggregate(  
+      agg = rwa1[-c(length(slots) - 1, length(slots)),], 
+      rdf_dir = data_dir[i]
+    )
+    scen_res2 <- rdf_aggregate(  
+      agg = rwa1_2, 
+      rdf_dir = data_dir[i]
+    ) %>%
+      mutate(Year = Year + 1)
+    scen_res = rbind.data.frame(scen_res, scen_res2)
+  }
+
   scen_res$Scenario <- scenarios[i]
   
   # keep only last 30 traces (ESP)
   trces = unique(scen_res$TraceNumber)
   tr_keep = trces[(length(trces)-29):length(trces)]
-  scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
+  scen_res = scen_res %>% ungroup() %>%
+    dplyr::filter(TraceNumber %in% as.numeric(tr_keep)) %>%
+   dplyr::mutate(TraceNumber = TraceNumber - min(tr_keep) +1)
   
   df <- rbind(df, scen_res)
 }
@@ -104,9 +155,9 @@ df_i = df_scens %>% pivot_wider(names_from = Variable, values_from = Value) %>%
                                         labels = names(ShortLabs)),
          `DCP Contribution` = factor(`DCP BWSCP Flags.LB DCP BWSCP`, 
                                      levels = 8:0, 
-                                     labels = names(DCPlab))) %>%#,
-         # MeadPEDeter = MeadData.PEforCondition,
-         # PowellPEDeter = PowellData.EffectiveEOCYPoolElevWith823Rel) %>%
+                                     labels = names(DCPlab)),
+  MeadPEDeter = MeadData.EffectiveEOCYPoolElev,
+  PowellPEDeter = PowellData.EffectiveEOCYPoolElevWith823Rel) %>%
   select(-all_of(slots), -Date) 
 
 
@@ -144,7 +195,7 @@ openxlsx::addWorksheet(wb1, "PwlDifs")
 openxlsx::writeData(wb1, "PwlDifs", powell_difs)
 
 tr_dif = tier_difs %>% filter(diff == FALSE) %>% select(Year, Trace)
-tier_difs = df_i %>% select(Scenario, Year, Trace, `Powell Tiers`)#, PowellPEDeter)
+tier_difs = df_i %>% select(Scenario, Year, Trace, `Powell Tiers`, PowellPEDeter)
 diffsCom = left_join(tr_dif, tier_difs)
 openxlsx::addWorksheet(wb1, 'diffs')
 openxlsx::writeData(wb1, 'diffs', diffsCom)
@@ -190,7 +241,7 @@ openxlsx::writeData(wb, 'MeadDCP', tier_difs)
 
 # check Mead eocy pes and shortage
 tr_dif = tier_difs %>% filter(diff == FALSE) %>% select(Year, Trace)
-pe_difs = df_i %>% select(Scenario, Year, Trace, `DCP Contribution`, tarv)#, MeadPEDeter) #%>%
+pe_difs = df_i %>% select(Scenario, Year, Trace, `DCP Contribution`, tarv, MeadPEDeter) #%>%
 diffsCom = left_join(tr_dif, pe_difs)
 openxlsx::addWorksheet(wb, 'diffs')
 openxlsx::writeData(wb, 'diffs', diffsCom)

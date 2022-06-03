@@ -1,4 +1,8 @@
-# CRMMS vs CRSS for Feb 2022 CRMMS run
+# ============================================================================
+# CRMMS-ESP 5-Year projections for Website
+#    CRMMS current projections only   
+#
+# ============================================================================
 rm(list=ls())
 
 library(tidyverse)
@@ -9,19 +13,19 @@ library(rhdb)
 
 ## -- Inputs
 scenario_dir <- c(
-  'Apr2022'  
+  'May2022'  
   # 'Mar2022'
   # 'Feb2022'
 )
 scenarios <- c(
-  'April CRMMS-ESP'   
+  'May CRMMS-ESP'   
   # 'March CRMMS-ESP'
   # 'February CRMMS-ESP'
 )
 # fig_dir_nm <- 'AprvMarvFeb2022_5yr' 
 # fig_dir_nm <- 'AprvMar2022_5yr' 
 # fig_dir_nm <- 'AprvFeb2022_5yr' 
-fig_dir_nm <- 'Apr2022_5yr' 
+fig_dir_nm <- 'May2022_5yrv2' 
 # ^ script will create directory with this name if it doesn't exist
 
 ## Directories & Data
@@ -33,22 +37,23 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 
 base_dir = 'C:/Users/sabaker/Projects/Models/Projection Analyses'
-crmms_dir_jan = 'C:/Users/sabaker/Projects/Models/CRMMS Info/CRMMS-January2022/rdfOutput'
+# crmms_dir_jan = 'C:/Users/sabaker/Projects/Models/CRMMS Info/CRMMS-January2022/rdfOutput'
 # crmms_dir = 'C:/Users/sabaker/Projects/Models/CRMMS Info/CRMMS-February2022/rdfOutput'
-crss_dir = file.path(base_dir, "data", "Jan2022_modelCompare")
+# crss_dir = file.path(base_dir, "data", "Jan2022_modelCompare")
 # fig_dir = file.path(base_dir, 'figures', '2022-02_FebCRMMS_crssCloud')
 # source(file.path(base_dir, 'add_MeadPowell_tiers.R'))
 
 slots = c("Mead.Pool Elevation", "Powell.Pool Elevation") 
 plot_title = c('Lake Mead End-of-Month Elevations', 
                'Lake Powell End-of-Month Elevations')
-sub_title = 'April 2022 CRMMS-ESP Projection with Range of Uncertainty from January 2022 CRSS'
-crss_scenName = 'Jan 2022 CRSS'
-crmms_nm = 'Apr 2022 CRMMS-ESP'
+# sub_title = 'May 2022 CRMMS-ESP Projection with Range of Uncertainty from January 2022 CRSS'
+sub_title = 'May 2022 CRMMS-ESP Projection'
+# crss_scenName = 'Jan 2022 CRSS'
+crmms_nm = 'May 2022 CRMMS-ESP'
 
 ## Read historical data from hdb
 sdis <- c("Mead.Pool Elevation" = 1930, "Powell.Pool Elevation" = 1928)
-run_date = "2022-04"
+run_date = "2022-05"
 hist_nMons = 7 # keep 7 months before start date
 # end_date = format(ym(run_date) + months(23), "%Y-%m")
 histStart_date = format(ym(run_date) - months(hist_nMons), "%Y-%m") 
@@ -72,6 +77,7 @@ df_hist <- df_hist %>%
 ## -- CRMMS results
 
 # slots/agg to read
+slots = names(sdis)
 rwa1 <- rwd_agg(data.frame(
   file = rep("res.rdf", length(slots)),
   slot = slots, 
@@ -88,6 +94,11 @@ scen_res <- rdf_aggregate(
   agg = rwa1, 
   rdf_dir = data_dir,
   keep_cols = 'Unit')
+  
+# keep only last 30 traces (ESP)
+trces = unique(scen_res$TraceNumber)
+tr_keep = trces[(length(trces)-29):length(trces)]
+scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
 
 df_crmms <- data.table::as.data.table(scen_res)  %>% 
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
@@ -97,8 +108,7 @@ df_crmms <- data.table::as.data.table(scen_res)  %>%
   mutate(Value = ifelse(Variable %in% c('Mead.Inflow', 'Mead.Storage', "Powell.Outflow",
                                         "Powell.Inflow", "Powell.Storage"),
                         Value * 10^3,
-                        Value)) %>%
-  filter(Trace %in% 4:33)
+                        Value)) 
 
 # add historical data from run date to connect
 df_crmms_con = df_hist %>% 
@@ -110,38 +120,38 @@ df_units = data.table::as.data.table(scen_res) %>%
   select(Variable, Unit) %>% distinct()
 
 ## --- Jan 22 CRMSS-ESP for CRSS Jan projection - read in data
-scen_res <- rdf_aggregate(
-  agg = rwa1,
-  rdf_dir = crmms_dir_jan,
-  keep_cols = 'Unit')
-
-df_crmms_22 <- data.table::as.data.table(scen_res)  %>%
-  filter(Year == 2022) %>%
-  mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
-  mutate(Scenario = crss_scenName) %>%
-  dplyr::select(Scenario, Variable, Date, Year, Trace = TraceNumber, Value) %>%
-  # bring units into line with crss
-  mutate(Value = ifelse(Variable %in% c('Mead.Inflow', 'Mead.Storage', "Powell.Outflow",
-                                        "Powell.Inflow", "Powell.Storage"),
-                        Value * 10^3,
-                        Value))
-
-## -- CRSS results
-df_crss <- readRDS(file.path(crss_dir, "CRSS_Jan2022_CRMMStraces4to33_lots.rds")) %>%
-  mutate(Trace = paste0(Scenario,'-', Trace),
-         Scenario = crss_scenName)
-
-df_crss <- rbind(df_crmms_22, df_crss)
-
-## connect CRSS cloud to historical
-df_crss_con = df_hist %>% 
-  filter(Date == min(df_crss$Date) - 1/12) %>%
-  mutate(Scenario = crss_scenName)
-df_crss = rbind(df_crss, df_crss_con)
+# scen_res <- rdf_aggregate(
+#   agg = rwa1,
+#   rdf_dir = crmms_dir_jan,
+#   keep_cols = 'Unit')
+# 
+# df_crmms_22 <- data.table::as.data.table(scen_res)  %>%
+#   filter(Year == 2022) %>%
+#   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
+#   mutate(Scenario = crss_scenName) %>%
+#   dplyr::select(Scenario, Variable, Date, Year, Trace = TraceNumber, Value) %>%
+#   # bring units into line with crss
+#   mutate(Value = ifelse(Variable %in% c('Mead.Inflow', 'Mead.Storage', "Powell.Outflow",
+#                                         "Powell.Inflow", "Powell.Storage"),
+#                         Value * 10^3,
+#                         Value))
+# 
+# ## -- CRSS results
+# df_crss <- readRDS(file.path(crss_dir, "CRSS_Jan2022_CRMMStraces4to33_lots.rds")) %>%
+#   mutate(Trace = paste0(Scenario,'-', Trace),
+#          Scenario = crss_scenName)
+# 
+# df_crss <- rbind(df_crmms_22, df_crss)
+# 
+# ## connect CRSS cloud to historical
+# df_crss_con = df_hist %>% 
+#   filter(Date == min(df_crss$Date) - 1/12) %>%
+#   mutate(Scenario = crss_scenName)
+# df_crss = rbind(df_crss, df_crss_con)
 
 
 ## -- Combine and process
-df_all <- rbind(df_hist, df_crmms, df_crss) %>%
+df_all <- rbind(df_hist, df_crmms) %>%#, df_crss) %>%
   filter(year(Date) <= 2026)
 
 df_all2 <- df_all %>%
@@ -164,15 +174,15 @@ df_Stat = df_all2 %>%
   mutate(Cloud = factor(paste(Scenario, 'Range')),
          Trace = factor(Trace, 
                         levels = c("mdl.10", "mdl.50", "mdl.90"),
-                        labels = c("10%", "50%", "90%"))) %>% 
-  filter(Scenario != crss_scenName)
+                        labels = c("10%", "50%", "90%"))) #%>% 
+  # filter(Scenario != crss_scenName)
 
 ## -- Setup plot
-nms = c('Historical', crmms_nm, crss_scenName)
+nms = c('Historical', crmms_nm)#, crss_scenName)
 # custom_Tr_col <- c(rep('#f1c40f', 3), rep('#8077ab', 3))
-custom_col = c("grey30", "#f2ca27", "gray80")   #c('#cbbedd', '#fdcd9e')
+custom_col = c("grey30", "#f2ca27")#, "gray80")   
 names(custom_col) <- nms
-custom_line <- custom_col[-3]
+custom_line <- custom_col#[-3]
 custom_cloud <- custom_col[-1] 
 names(custom_cloud) <- paste(names(custom_cloud), "Range")
 

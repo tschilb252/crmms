@@ -1,36 +1,17 @@
 # ============================================================================
-# Compare CRMMS-ESP slots for different CRMMS scenarios 
-#   
+# Compare CRMMS-ESP output slots for different CRMMS scenarios 
+#   User can change range plotted and to single trace
 #
 # ============================================================================
-rm(list=ls())
+rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
 
 library(tidyverse)
 library(lubridate)
 library(zoo)
 library(RWDataPlyr)
 
-## -- Inputs
-scenario_dir <- c(
-  'Apr2022_v3',
-  # 'Apr2022_v2',
-  'Apr2022_v1',
-  'Mar2022'
-  # 'Feb2022',
-  # 'Jan2022_OG',
-  # 'Jan2022_updatedRegression'
-)
-scenarios <- c(
-  'Apr. 2022 v3',
-  # 'Apr. 2022 v2',
-  'Apr. 2022 v1',  
-  'Mar. 2022'
-  # 'Feb. 2022',
-  # 'Jan. 2022',
-  # 'Jan. 2022 Updated Regres.'
-)
-fig_dir_nm <- 'Aprv1,3_Mar_Compare'
-# ^ script will create directory with this name if it doesn't exist
+## -- Inputs if run alone
+# source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -49,15 +30,24 @@ single_Trace <- FALSE
 # sel_trace <- c(6)
 # trace_yr = 1991 + sel_trace - 4
 
-slots = c("Mead.Pool Elevation", "Powell.Pool Elevation",
-          "Mead.Inflow", "Powell.Inflow",
-          "Mead.Outflow", "Powell.Outflow",
-          "Mead.Storage", "Powell.Storage",
-          # "Mohave.Outflow", "Havasu.Outflow",
-          "FlamingGorge.Outflow", "FlamingGorge.Storage",
-          "BlueMesa.Outflow", "BlueMesa.Storage",
-          "Navajo.Outflow", "Navajo.Storage",
-          "PowellInflow.Unregulated")
+print(paste('-------- Max Date is:', max_date, ';',
+            ifelse(single_Trace, 'Single trace output',
+                   'Cloud of traces output'), '--------'))
+
+slots = c(
+  "Mead.Pool Elevation", "Powell.Pool Elevation",
+  # "Mead.Inflow", "Powell.Inflow",
+  # "Mead.Outflow", "Powell.Outflow",
+  # "Mead.Storage", "Powell.Storage",
+  # # "Mohave.Outflow", "Havasu.Outflow",
+  # "FlamingGorge.Outflow", "FlamingGorge.Storage",
+  # "BlueMesa.Outflow", "BlueMesa.Storage",
+  # "Navajo.Outflow", "Navajo.Storage",
+  "PowellInflow.Unregulated"
+  
+    # "Vallecito.Outflow", "Vallecito.Storage", "Navajo.Inflow", "Navajo.Pool Elevation",
+    # "NavajoInflow.ModUnregulated"
+  )
 plot_title = paste('CRMMS-ESP Run Comparison')
 file_nm_end <- ifelse(single_Trace, 
                       paste0('_thru', format(ym(max_date), "%Y"), '_', trace_yr),
@@ -155,7 +145,11 @@ df_Stat = df_all %>%
                         labels = c("10%", "50%", "90%")))
 
 ## -- Setup plot
-custom_Tr_col <- scales::hue_pal()(length(scenarios))
+if (length(scenarios) == 2) {
+  custom_Tr_col <- c('#f1c40f', '#8077ab')
+} else {
+  custom_Tr_col <- scales::hue_pal()(length(scenarios))
+}
 custom_cloud <- custom_Tr_col 
 custom_size <- rep(c(1,1.15,1), length(scenarios))
 custom_lt <- rep(c(2,1,4), length(scenarios))

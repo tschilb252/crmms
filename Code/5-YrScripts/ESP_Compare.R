@@ -3,33 +3,16 @@
 #   currently set-up only for Powell unreg but could be extended for other pts
 #
 # ============================================================================
-rm(list=ls())
+rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
 
+library(RWDataPlyr)
 library(tidyverse)
 library(lubridate)
 library(rhdb)
+library(zoo)
 
-## -- Inputs
-scenario_dir <- c(
-  'Apr2022_v3',
-  # 'Apr2022_v2',
-  'Apr2022_v1',
-  'Mar2022'
-  # 'Feb2022',
-  # 'Jan2022_OG',
-  # 'Jan2022_updatedRegression'
-)
-scenarios <- c(
-  'Apr. 2022 v3',
-  # 'Apr. 2022 v2',
-  'Apr. 2022 v1',  
-  'Mar. 2022'
-  # 'Feb. 2022',
-  # 'Jan. 2022',
-  # 'Jan. 2022 Updated Regres.'
-)
-fig_dir_nm <- 'Aprv1,3_Mar_Compare'
-# ^ script will create directory with this name if it doesn't exist
+## -- Inputs if run alone
+# source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -84,14 +67,14 @@ df_scens <- data.table::as.data.table(df)  %>%
          wy = ifelse(month(Date) >= 10,
                      year(Date) + 1, year(Date))) 
 
-## Read Powell fcst csv from CBRFC website
-# newAprFcst = read.csv('GLDA3.espmvol.5yr.adj.csv') 
+## Read Powell fcst csv from CBRFC website: https://www.cbrfc.noaa.gov/outgoing/ucbor/
+# scenario_add = 'May 22'
+# newFcst = read.csv('C:/Users/sabaker/Downloads/GLDA3.espmvol.5yr.adj.csv', skip = 2, header = T)
 # traceVals = as.character(4:33)
-# scenario_add = 'Apr. 2022 - updated'
-# colnames(newAprFcst) <- c('Date', traceVals)
-# df_add = newAprFcst %>% pivot_longer(cols = traceVals, names_to = 'Trace', values_to = 'Value') %>%
-#   mutate(Date = as.yearmon(as.character(Date), "%b-%y"),
-#          Scenario = 'Apr. 2022 - updated',
+# colnames(newFcst) <- c('Date', traceVals)
+# df_add = newFcst %>% pivot_longer(cols = traceVals, names_to = 'Trace', values_to = 'Value') %>%
+#   mutate(Date = as.yearmon(lubridate::my(Date), "%b-%y"),
+#          Scenario = scenario_add,
 #          wy = ifelse(month(Date) >= 10,
 #                      year(Date) + 1, year(Date)),
 #          Variable = slots) %>%
@@ -127,7 +110,7 @@ for (i in 1:length(scenarios)) {
   df_scensI = df_scens %>% filter(Scenario == scenarios[i]) 
   df_histAdd <- df_hdb %>% 
     filter(wy %in% min(df_scensI$wy) & 
-             Date <=min(df_scensI$Date)) %>%
+             Date < min(df_scensI$Date)) %>%
     select(Variable, Date, wy, Value = value)
   
   df_add <- df_scensI %>% 
@@ -142,15 +125,23 @@ for (i in 1:length(scenarios)) {
 
 df_ann = df_scens %>%
   group_by(Scenario, Variable, Trace, wy) %>%
-  summarise(ann_wy = sum(Value)) %>%
+  # summarise(ann_wy = sum(Value)) %>%
+  summarise(ann_wy = sum(Value), 
+            n = n()) %>%
   left_join(df_clim, by = 'Variable') %>%
   mutate(POA = ann_wy/ann*100) %>%
   filter(wy <= year(ym(max_date)))
 
+# check that there are 12 months for each year
+if (any(df_ann$n != 12)) {
+  warning('Some scenarios/WYs do not have 12 entries')
+  df_ann = df_ann %>% filter(n == 12)
+}
+
 ggplot(df_ann, aes(factor(wy), ann_wy, fill = Scenario)) +
   CRSSIO::stat_boxplot_custom() +
   bor_theme() +
-  geom_hline(yintercept = 9603.36, color = 'grey', linetype = 'dashed') +
+  # geom_hline(yintercept = 9603.36, color = 'grey', linetype = 'dashed') +
   labs(y = 'Lake Powell Unreg. Inflow (kaf)', x = 'WY')
 
 ggsave(file = file.path(fig_dir, paste0(slots, '_WY', file_nm_end, '.png')),
@@ -186,7 +177,9 @@ ggsave(file = file.path(fig_dir, paste0(slots, '_CDF_WY', wyI, '.png')),
 
 # average of wy annuals
 df_ann %>% 
- group_by(Scenario, wy) %>%
- summarise(avgI = mean(ann_wy)) %>% ungroup() %>%
+  group_by(Scenario, wy) %>%
+  # summarise(avgI = mean(ann_wy)) %>% 
+  summarise(avgI = quantile(ann_wy,0.5)) %>% 
+  ungroup() %>%
   pivot_wider(names_from = Scenario, values_from = avgI)
 
