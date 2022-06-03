@@ -36,9 +36,9 @@ print(paste('-------- Max Date is:', max_date, ';',
 
 slots = c(
   "Mead.Pool Elevation", "Powell.Pool Elevation",
-  # "Mead.Inflow", "Powell.Inflow",
-  # "Mead.Outflow", "Powell.Outflow",
-  # "Mead.Storage", "Powell.Storage",
+  "Mead.Inflow", "Powell.Inflow",
+  "Mead.Outflow", "Powell.Outflow",
+  "Mead.Storage", "Powell.Storage",
   # # "Mohave.Outflow", "Havasu.Outflow",
   # "FlamingGorge.Outflow", "FlamingGorge.Storage",
   # "BlueMesa.Outflow", "BlueMesa.Storage",
