@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 11:45 June 9, 2022
+# Created 16:20 June 9, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -1331,7 +1331,7 @@ BEGIN
   ENDWITH
  ENDFOR) DO
           DESCRIPTION          "Set ICS delivery slots <br>";
-      $ "ICS Credits.AnnualDeliveryDCP_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 0.00000000 FROM DeliveryChargedList ) + $ "ICS Credits.SurplusCondition_DCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedDCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"];
+      $ "ICS Credits.AnnualDeliveryDCP_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 0.00000000 FROM DeliveryChargedList ) + "Max"( $ "ICS Credits.SurplusCondition_DCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.VacatedDCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] );
 
             $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 1.00000000 FROM DeliveryChargedList ) + $ "ICS Credits.VacatedExtraordinaryConservationICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
@@ -1367,8 +1367,8 @@ BEGIN
  THEN
   0.00000000 "acre-ft"
  ELSE
-  $ "ICS Credits.DCPICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedDCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedDCPICSSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"]
- ENDIF - $ "ICS Credits.SurplusCondition_DCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] );
+  $ "ICS Credits.DCPICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"]
+ ENDIF - "Max"( $ "ICS Credits.SurplusCondition_DCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.VacatedDCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedDCPICSSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] ) );
 
       $ "ICS Credits.AvailableECICSForDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := "SetNegativeToZero"( $ "ICS Credits.ExtraordinaryConservationICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedExtraordinaryConservationICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedExtraordinaryConservationICSSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualConversionPreviousECtoDCP_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.TributaryICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.ImportedICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] );
 
@@ -12746,7 +12746,7 @@ BEGIN
    WITH NUMERIC MWDPreliminaryECCreation = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] ) DO
     WITH NUMERIC MWDBICSCreation = $ "ICS Credits.AnnualCreationBiNat_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
      WITH NUMERIC AvailableBankBalanceForDelivery = "Available ICS Bank Balance For Delivery"( "CA" ) DO
-      WITH NUMERIC PotentialSimultaneousCreationDCPICS = $ "ICS Credits.AnnualRemainingDCPContribution_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
+      WITH NUMERIC PotentialSimultaneousCreationDCPICS = $ "ICS Credits.AnnualRemainingDCPContribution_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
        MWDPreviousYearsBank + NonMWDBankICSinCA + MWDPreliminaryECCreation + MWDBICSCreation - "Min"( $ "ICSProjectionData.AnnualICSDelivery_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], AvailableBankBalanceForDelivery ) + PotentialSimultaneousCreationDCPICS
       ENDWITH
      ENDWITH
@@ -12773,7 +12773,7 @@ BEGIN
    WITH NUMERIC BICSCreation = $ "ICS Credits.AnnualCreationBiNat_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
     WITH NUMERIC TributaryICS = $ "ICS Credits.TributaryICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
      WITH NUMERIC AvailableBankBalanceForDelivery = "Available ICS Bank Balance For Delivery"( "NV" ) DO
-      WITH NUMERIC PotentialSimultaneousCreationofDCPICS = $ "ICS Credits.AnnualRemainingDCPContribution_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
+      WITH NUMERIC PotentialSimultaneousCreationofDCPICS = $ "ICS Credits.AnnualRemainingDCPContribution_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
        PreviousBank + ECPreliminaryCreation + BICSCreation + TributaryICS - "Min"( $ "ICSProjectionData.AnnualICSDelivery_NV_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], AvailableBankBalanceForDelivery ) + PotentialSimultaneousCreationofDCPICS
       ENDWITH
      ENDWITH
@@ -15422,32 +15422,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{55f962d9-a363-4868-8b85-9dfc9cb440aa}";
+    UUID "{f3855b87-f176-4708-aaab-f0e43a7edd2c}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{9277e0b7-86be-4adf-8750-e70617c40e00}";
+    UUID "{06e6fb3f-78aa-4123-8425-317777e321da}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{3b714f9c-042e-4792-9609-2962826f3d17}";
+    UUID "{0a84d2f6-b25f-42a7-9926-a06cbecaeb68}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{21b16f4d-fe1d-4f29-9a5b-ae9acdb0f7ce}";
+    UUID "{fcd004d9-e7da-4269-a0b0-8700e6026857}";
 ;
 
   END
-  UUID "{6badfff4-4239-48b0-9d78-0615fc9f9d34}";;
+  UUID "{21411d9a-4d03-4cb9-99a6-1b6253f0be39}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15458,11 +15458,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{38cd2d16-d476-4ca9-b2ad-6ab56a3e7be7}";
+    UUID "{a7eaf57b-8c7f-4b50-afd3-482c51a2d346}";
 ;
 
   END
-  UUID "{142fe08f-1e0c-4332-8e18-bfad66458301}";;
+  UUID "{0d5e7c58-83fe-4070-a7a3-5e686ea794e5}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15473,11 +15473,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{078919c3-1a3f-4f51-ab9b-8c45495c58e4}";
+    UUID "{18e694c7-792d-4cc6-9abc-2c54428a7dd3}";
 ;
 
   END
-  UUID "{227d733b-67e1-4cd5-ad36-8b675f533010}";;
+  UUID "{53aa4017-7381-4fbd-b597-01f7ce397f21}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15488,11 +15488,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0511c948-cfb3-4c2e-8ef6-38be16f0d1f7}";
+    UUID "{e8a97a31-c227-434b-a752-06d0f6d56333}";
 ;
 
   END
-  UUID "{bca87446-33fb-4418-ab1f-36629416da8e}";;
+  UUID "{f1f24e3c-e219-4c53-b7c6-7b30d8f4bfd7}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
