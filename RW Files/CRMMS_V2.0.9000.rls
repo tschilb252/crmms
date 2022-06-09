@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 16:20 June 9, 2022
+# Created 16:55 June 9, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -607,6 +607,7 @@ BEGIN
     NOTES                "S. Baker, 20200311: Add description. Add function IsDomesticOrQuantifiedOrFloodControl() & IsLBorDCPconditionChanged() to replace Or statement to improve readability. <br>A. Pivarnik, 20200501: Replaced non SNWP water users individually listed with function call. Changed the month percent calculation to be based off volume and not flow. Adjusted logic and run constraint to allow rule to adjust for domestic surplus<br>A. Pivarnik, 20200505: Reorded delivery logic and added notes. Rule now solves for quantified surplus scenarios. Changed run constraint to allow rule to fire in quantified surplus. Refernced Annual Shortage volume slot instead of calculating shortage via table<br>A. PIvarnik, 20200714: Integration effort. Added execution constraint to not fire in start timestep of RC3 in 24MS mode. This rule is different than the 24 MS rule due to MTOM's ruleset structure but accomplishes that same thing. Besides the execution constraint this rule is unchanged<br>";
     BEGIN
 
+    BREAKPOINT AFTER_EXEC TRUE;
       WITH_STATEMENT (NUMERIC NVoffstream = $ "ICS Credits.AnnualNevadaStoredOffstream" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC NVICSDelivery = $ "ICS Credits.AnnualICSDelivery_NV" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
           DESCRIPTION          "SNWADivVol = total yearly volume of diversion for SNWA <br>";
@@ -1467,7 +1468,8 @@ BEGIN
     NOTES                "";
     BEGIN
 
-      WITH_STATEMENT (NUMERIC YeartoYearBankAdjustment = $ "ICS Credits.AdjustedBankMaxCapacity_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.Bank_NV" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
+    BREAKPOINT AFTER_EXEC TRUE;
+      WITH_STATEMENT (NUMERIC YeartoYearBankAdjustment = $ "ICS Credits.AdjustedBankMaxCapacity_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.Bank_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"]) DO
             WITH_STATEMENT (NUMERIC YeartoYearBankAdjustment_PreTax = YeartoYearBankAdjustment / "SystemTaxAdjustment_DCP"(  )) DO
             WITH_STATEMENT (NUMERIC CurrentYearECICSCreation = $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
           DESCRIPTION          "This statement calculates how much of NV's current year apportionment that needs to be <br>stored offstream.<br><br>If NV's bank space went down from the previous year then store the left over apportionment <br>offstream. Since NV's bank space went down they will be required to vacate space for other <br>states and there will be no room for the current years left over apportionment to be created <br>as EC ICS.<br><br>Else NV's bank space went up. This means they can store at lease some amount of EC ICS in <br>the current year. Store the difference between the preliminary creation and that the bank <br>increased<br>";
@@ -15422,32 +15424,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{f3855b87-f176-4708-aaab-f0e43a7edd2c}";
+    UUID "{2078b19f-ff60-4205-9136-1fd6f99f5afb}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{06e6fb3f-78aa-4123-8425-317777e321da}";
+    UUID "{d77a1ed9-3a87-4eed-a86f-18902866d72d}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0a84d2f6-b25f-42a7-9926-a06cbecaeb68}";
+    UUID "{09fd582a-5733-4c80-be45-9c41a8f0ff89}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{fcd004d9-e7da-4269-a0b0-8700e6026857}";
+    UUID "{edcd2aed-41fa-4496-9097-e1ec9eec44c0}";
 ;
 
   END
-  UUID "{21411d9a-4d03-4cb9-99a6-1b6253f0be39}";;
+  UUID "{f541dbc7-9034-45c0-9d4b-7bbb167fff78}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15458,11 +15460,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{a7eaf57b-8c7f-4b50-afd3-482c51a2d346}";
+    UUID "{0b72bf72-d961-446e-a7dc-015537b16473}";
 ;
 
   END
-  UUID "{0d5e7c58-83fe-4070-a7a3-5e686ea794e5}";;
+  UUID "{8bf2b6e3-9880-4626-a646-7831cd6507eb}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15473,11 +15475,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{18e694c7-792d-4cc6-9abc-2c54428a7dd3}";
+    UUID "{2516c33e-bc20-43db-888f-7dbe8291f9c6}";
 ;
 
   END
-  UUID "{53aa4017-7381-4fbd-b597-01f7ce397f21}";;
+  UUID "{50f6eb70-add8-4dc4-a563-d9b68a48d23f}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15488,11 +15490,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{e8a97a31-c227-434b-a752-06d0f6d56333}";
+    UUID "{95547526-26db-4fc8-a744-efc38f381f1e}";
 ;
 
   END
-  UUID "{f1f24e3c-e219-4c53-b7c6-7b30d8f4bfd7}";;
+  UUID "{8db61f20-7e40-400f-af66-a2a68a0c5cfc}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
