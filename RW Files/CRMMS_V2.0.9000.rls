@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 16:55 June 9, 2022
+# Created 17:28 June 9, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -1676,7 +1676,7 @@ BEGIN
     BEGIN
 
       IF_STATEMENT ($ "ICSProjectionData.LowerBasinICSBank_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] <= $ "ICS Credits.MeadBankParameters" ["LC Basin", "Max Capacity"]) THEN
-          DESCRIPTION          "Any left over ICS creation space for simulataneous creation of DCP ICS is going back to CA <br>due to the following assumptions:<br><br>1) AZ does not try to fill the ICS bank prior to making system water for a DCP contribution. <br>They will convert whatever creation of EC ICS entered in the model into DCP ICS and the rest <br>of the DCP contribution is made via system water.<br><br>2) NV converts existing EC ICS into DCP ICS first. Given their EC ICS volume is extremely high <br>compared to the annual DCP contributions required, it can be assumed that NV will not need <br>to simulatenously create and convert EC ICS in the near future. <br>";
+          DESCRIPTION          "<br>";
       WITH_STATEMENT (NUMERIC LeftOverICSCreationSpace = $ "ICS Credits.MeadBankParameters" ["LC Basin", "Max Capacity"] - $ "ICSProjectionData.LowerBasinICSBank_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             $ "ICS Credits.AdjustedBankMaxCapacity_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] := "AZPrelimBank"(  );
 
@@ -12885,10 +12885,10 @@ BEGIN
     NOTES          "";
     BEGIN
 
-      WITH NUMERIC AZICSSharingSpace = $ "ICS Credits.MeadBankParameters" ["AZ", "Max Capacity"] - "AZPrelimBank"(  ) DO
-  WITH NUMERIC CAICSSharingSpace = $ "ICS Credits.MeadBankParameters" ["CA", "Max Capacity"] - "CAPrelimBank"(  ) DO
-   WITH NUMERIC NVICSSharingSpace = $ "ICS Credits.MeadBankParameters" ["NV", "Max Capacity"] - "NVPrelimBank"(  ) DO
-    { { "SetNegativeToZero"( AZICSSharingSpace ) , "Abs"( AZICSSharingSpace ) } , { "SetNegativeToZero"( CAICSSharingSpace ) , "Abs"( CAICSSharingSpace ) } , { "SetNegativeToZero"( NVICSSharingSpace ) , "Abs"( NVICSSharingSpace ) } } COMMENTED_BY "First value in each sub list is the Lending Capacity and the second value is the borrowed volume <br>"
+      WITH NUMERIC AZICSLendingCapacity = $ "ICS Credits.MeadBankParameters" ["AZ", "Max Capacity"] - "AZPrelimBank"(  ) DO
+  WITH NUMERIC CAICSLendingCapacity = $ "ICS Credits.MeadBankParameters" ["CA", "Max Capacity"] - "CAPrelimBank"(  ) DO
+   WITH NUMERIC NVICSLendingCapacoty = $ "ICS Credits.MeadBankParameters" ["NV", "Max Capacity"] - "NVPrelimBank"(  ) DO
+    { { "SetNegativeToZero"( AZICSLendingCapacity ) , "Abs"( "Min"( AZICSLendingCapacity, 0.00000000 "acre-ft" ) ) } , { "SetNegativeToZero"( CAICSLendingCapacity ) , "Abs"( "Min"( CAICSLendingCapacity, 0.00000000 "acre-ft" ) ) } , { "SetNegativeToZero"( NVICSLendingCapacoty ) , "Abs"( "Min"( NVICSLendingCapacoty, 0.00000000 "acre-ft" ) ) } } COMMENTED_BY "First value in each sub list is the Lending Capacity and the second value is the borrowed volume <br>"
    ENDWITH
   ENDWITH
  ENDWITH;
@@ -15424,32 +15424,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{2078b19f-ff60-4205-9136-1fd6f99f5afb}";
+    UUID "{95f9087e-dbd9-405b-bc27-fa11863a7f84}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{d77a1ed9-3a87-4eed-a86f-18902866d72d}";
+    UUID "{2c2e5353-bc19-4cfb-8e74-c3e84a63e20f}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{09fd582a-5733-4c80-be45-9c41a8f0ff89}";
+    UUID "{d67e669b-8fb9-4539-8efd-0db1b5b2783b}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{edcd2aed-41fa-4496-9097-e1ec9eec44c0}";
+    UUID "{815f7db5-0ccd-4f34-a581-83db3eba7b5d}";
 ;
 
   END
-  UUID "{f541dbc7-9034-45c0-9d4b-7bbb167fff78}";;
+  UUID "{93057a35-6505-4b49-a287-e6c36af65937}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15460,11 +15460,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{0b72bf72-d961-446e-a7dc-015537b16473}";
+    UUID "{fb8a2596-6314-4813-abd5-f655f6f5ec07}";
 ;
 
   END
-  UUID "{8bf2b6e3-9880-4626-a646-7831cd6507eb}";;
+  UUID "{bd2a11e5-290e-46f6-a58e-d03beefb9344}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15475,11 +15475,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{2516c33e-bc20-43db-888f-7dbe8291f9c6}";
+    UUID "{772018bf-5c4c-4350-b72c-eed54f011f48}";
 ;
 
   END
-  UUID "{50f6eb70-add8-4dc4-a563-d9b68a48d23f}";;
+  UUID "{0103d6d8-7c85-4d22-8fe2-caf42f706e73}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15490,11 +15490,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{95547526-26db-4fc8-a744-efc38f381f1e}";
+    UUID "{91d3bd70-102c-4162-90e1-55f74a0533d3}";
 ;
 
   END
-  UUID "{8db61f20-7e40-400f-af66-a2a68a0c5cfc}";;
+  UUID "{a61f30c3-ff0f-4169-a0c3-5dca171f373d}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
