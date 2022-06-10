@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 14:23 June 10, 2022
+# Created 14:33 June 10, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -12889,9 +12889,9 @@ BEGIN
     NOTES          "";
     BEGIN
 
-      WITH NUMERIC AZICSLendingCapacity = $ "ICS Credits.MeadBankParameters" ["AZ", "Max Capacity"] - "AZPrelimBank"(  ) DO
-  WITH NUMERIC CAICSLendingCapacity = $ "ICS Credits.MeadBankParameters" ["CA", "Max Capacity"] - "CAPrelimBank"(  ) DO
-   WITH NUMERIC NVICSLendingCapacoty = $ "ICS Credits.MeadBankParameters" ["NV", "Max Capacity"] - "NVPrelimBank"(  ) DO
+      WITH NUMERIC AZICSLendingCapacity = $ "ICS Credits.MeadBankParameters" ["Arizona", "Max Capacity"] - "AZPrelimBank"(  ) DO
+  WITH NUMERIC CAICSLendingCapacity = $ "ICS Credits.MeadBankParameters" ["California", "Max Capacity"] - "CAPrelimBank"(  ) DO
+   WITH NUMERIC NVICSLendingCapacoty = $ "ICS Credits.MeadBankParameters" ["Nevada", "Max Capacity"] - "NVPrelimBank"(  ) DO
     { { "SetNegativeToZero"( AZICSLendingCapacity ) , "Abs"( "Min"( AZICSLendingCapacity, 0.00000000 "acre-ft" ) ) } , { "SetNegativeToZero"( CAICSLendingCapacity ) , "Abs"( "Min"( CAICSLendingCapacity, 0.00000000 "acre-ft" ) ) } , { "SetNegativeToZero"( NVICSLendingCapacoty ) , "Abs"( "Min"( NVICSLendingCapacoty, 0.00000000 "acre-ft" ) ) } } COMMENTED_BY "First value in each sub list is the Lending Capacity and the second value is the borrowed volume <br>"
    ENDWITH
   ENDWITH
@@ -15428,32 +15428,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{b25868a5-c8c9-446b-937f-31d560139418}";
+    UUID "{0038ea10-7fcf-487a-be9c-1953493b73fc}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{dadd623d-6bf2-4b26-bbf5-252b1dd17cc5}";
+    UUID "{2a0cc3ae-9aa1-41d7-9517-c4baf7f5939a}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{c2b69946-7fc1-4c09-955a-dfda93d64722}";
+    UUID "{a005c33f-68ea-4c74-b6dd-17073da940d5}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{b627ddd8-bc78-43d9-95b6-5bb1eb33dd5c}";
+    UUID "{e8211a8e-61b2-4a68-bd0a-f4cdc3b1eec3}";
 ;
 
   END
-  UUID "{0aa674df-c87c-4e69-8f3d-e15a9bf102f3}";;
+  UUID "{57ae038b-3cd8-4d75-9899-42915540be28}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15464,11 +15464,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{bf2c90c5-fbc8-4d15-9f14-43bea0632461}";
+    UUID "{ccbe911d-5d4c-46cc-a023-00cc21608e2e}";
 ;
 
   END
-  UUID "{a7ef577b-9131-4dbf-aa37-e294b5c42edd}";;
+  UUID "{4d60a712-daf6-4908-9ecd-7d4fd9e48f03}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15479,11 +15479,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{61636fed-cba2-4e7e-95a1-bdd58345f985}";
+    UUID "{9201c4b6-ba74-42fc-9ea7-0ea4728fe634}";
 ;
 
   END
-  UUID "{66c7c577-39a7-45de-a97e-affc69b2f17b}";;
+  UUID "{356b920e-d0d1-4400-aaa0-8bfde094d83e}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15494,11 +15494,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{02bb3940-0f60-4c75-aa87-ac7ce4ca5d5f}";
+    UUID "{99c5a240-6065-42c6-92d6-e8d5173e0057}";
 ;
 
   END
-  UUID "{1a0b9e10-f212-4093-a41c-f99a36b12483}";;
+  UUID "{8a62817c-8840-457e-aecb-e129af983308}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
