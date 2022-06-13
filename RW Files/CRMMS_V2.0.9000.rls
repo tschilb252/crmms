@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 12:08 June 13, 2022
+# Created 13:04 June 13, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -12862,7 +12862,7 @@ BEGIN
      WITH LIST NVLendingCapacityandBorrowedVolume = GET @INDEX 2.00000000 FROM LendingCapacityandBorrowedVolumes DO
       IF ( ( ( GET @INDEX 1.00000000 FROM AZLendingCapacityandBorrowedVolume ) > 0.00000000 "acre-ft" AND ( GET @INDEX 1.00000000 FROM CALendingCapacityandBorrowedVolume ) > 0.00000000 "acre-ft" AND ( GET @INDEX 1.00000000 FROM NVLendingCapacityandBorrowedVolume ) > 0.00000000 "acre-ft" ) COMMENTED_BY "If all three states are requesting to borrow ICS accumulation volume then the sum of the three <br>Lower Basin States ICS accumulation in the first pass is greater than the 2.7 MAF max ICS <br>accumulation volume, and each state is above the individual state's max ICS limit, so force all <br>three states ICS volumes to each individual state's ICS max accumulation volume. Since all three <br>states were over the individual max accumulation volume, there is no ICS sharing possible.    <br>" )
       THEN
-       { GET @INDEX 0.00000000 FROM MeadBankParametersMaxCapacity , GET @INDEX 1.00000000 FROM MeadBankParametersMaxCapacity , GET @INDEX 2.00000000 FROM MeadBankParametersMaxCapacity }
+       { { 0.00000000 "acre-ft" , GET @INDEX 0.00000000 FROM MeadBankParametersMaxCapacity } , { 0.00000000 "acre-ft" , GET @INDEX 1.00000000 FROM MeadBankParametersMaxCapacity } , { 0.00000000 "acre-ft" , GET @INDEX 2.00000000 FROM MeadBankParametersMaxCapacity } }
       ELSE
        WITH LIST PreviousYearsBorrowedICSPercents = "Calculate Previous Years Borrowed Percents"(  ) DO
         WITH NUMERIC TotalLendingCapacity = "SumByIndex"( LendingCapacityandBorrowedVolumes, 0.00000000 ) DO
@@ -15457,32 +15457,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{26852118-a6d4-41fe-9aff-76543cc91971}";
+    UUID "{82355ca3-e1b7-484a-8e3a-2dbc46adfa6b}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{81458f48-6e16-40ae-92f6-56f5bed8c59f}";
+    UUID "{07858a8e-62e1-458f-b425-0802f8ac1032}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{e3faddd6-45b0-47e8-aa31-1f836faf13c1}";
+    UUID "{1ffc954a-3df8-4f29-9441-3304ce6010e6}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{47659e67-a2f6-44fa-8cd6-67dfabba27af}";
+    UUID "{8ae65b69-0ada-4fd1-bce2-bfcbe1509201}";
 ;
 
   END
-  UUID "{fecae396-e83e-423f-bce3-bd026d60402a}";;
+  UUID "{eeadc28f-0f3a-40f5-ab1a-525785cd6d86}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15493,11 +15493,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{fe500cba-b8e7-4e39-8331-88526faa6ba4}";
+    UUID "{d5733764-23df-4249-a35d-e15d865fc1a8}";
 ;
 
   END
-  UUID "{2e1b13e8-5df4-4efd-99b4-6b3418d657fc}";;
+  UUID "{910dd911-9c8a-4f90-a2a2-b8b59d07aca5}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15508,11 +15508,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{ac2aeae2-5035-478d-a9c2-664407c8b334}";
+    UUID "{b0d7956b-9971-4fda-809a-01589b632f09}";
 ;
 
   END
-  UUID "{ac627b44-bae8-4d32-b56f-26adf2e88456}";;
+  UUID "{406a54fd-9422-469c-a222-02c68070e2f9}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15523,11 +15523,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{3f2e8089-eec5-4cd0-bc30-ebd59bf58849}";
+    UUID "{adabb624-30b6-438c-9c95-0c0a577cc886}";
 ;
 
   END
-  UUID "{0df6275e-a0fe-4b4a-90fc-3babc335036b}";;
+  UUID "{d8b37cff-8a76-4d5e-9294-b1146ec20309}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
