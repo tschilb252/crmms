@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 13:04 June 13, 2022
+# Created 14:23 June 13, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -12860,45 +12860,47 @@ BEGIN
    WITH LIST AZLendingCapacityandBorrowedVolume = GET @INDEX 0.00000000 FROM LendingCapacityandBorrowedVolumes DO
     WITH LIST CALendingCapacityandBorrowedVolume = GET @INDEX 1.00000000 FROM LendingCapacityandBorrowedVolumes DO
      WITH LIST NVLendingCapacityandBorrowedVolume = GET @INDEX 2.00000000 FROM LendingCapacityandBorrowedVolumes DO
-      IF ( ( ( GET @INDEX 1.00000000 FROM AZLendingCapacityandBorrowedVolume ) > 0.00000000 "acre-ft" AND ( GET @INDEX 1.00000000 FROM CALendingCapacityandBorrowedVolume ) > 0.00000000 "acre-ft" AND ( GET @INDEX 1.00000000 FROM NVLendingCapacityandBorrowedVolume ) > 0.00000000 "acre-ft" ) COMMENTED_BY "If all three states are requesting to borrow ICS accumulation volume then the sum of the three <br>Lower Basin States ICS accumulation in the first pass is greater than the 2.7 MAF max ICS <br>accumulation volume, and each state is above the individual state's max ICS limit, so force all <br>three states ICS volumes to each individual state's ICS max accumulation volume. Since all three <br>states were over the individual max accumulation volume, there is no ICS sharing possible.    <br>" )
-      THEN
-       { { 0.00000000 "acre-ft" , GET @INDEX 0.00000000 FROM MeadBankParametersMaxCapacity } , { 0.00000000 "acre-ft" , GET @INDEX 1.00000000 FROM MeadBankParametersMaxCapacity } , { 0.00000000 "acre-ft" , GET @INDEX 2.00000000 FROM MeadBankParametersMaxCapacity } }
-      ELSE
-       WITH LIST PreviousYearsBorrowedICSPercents = "Calculate Previous Years Borrowed Percents"(  ) DO
-        WITH NUMERIC TotalLendingCapacity = "SumByIndex"( LendingCapacityandBorrowedVolumes, 0.00000000 ) DO
-         WITH NUMERIC TotalBorrowedVolumeRequested = "SumByIndex"( LendingCapacityandBorrowedVolumes, 1.00000000 ) DO
-          WITH LIST FirstPassBorrowedVolumes = FOR ( NUMERIC BorrowRequest IN { ( GET @INDEX 1.00000000 FROM AZLendingCapacityandBorrowedVolume ) , ( GET @INDEX 1.00000000 FROM CALendingCapacityandBorrowedVolume ) , ( GET @INDEX 1.00000000 FROM NVLendingCapacityandBorrowedVolume ) } ) WITH LIST firstpass = {  } DO
-           WITH NUMERIC ListValue = NaNToZero LENGTH firstpass DO
-            WITH NUMERIC PercentBorrowedCapacity = GET @INDEX ListValue FROM PreviousYearsBorrowedICSPercents DO
-             APPEND "MinItem"( { ( TotalLendingCapacity * PercentBorrowedCapacity ) , BorrowRequest } ) ONTO firstpass
+      WITH LIST LendingCapacities = { GET @INDEX 0.00000000 FROM AZLendingCapacityandBorrowedVolume , GET @INDEX 0.00000000 FROM CALendingCapacityandBorrowedVolume , GET @INDEX 0.00000000 FROM NVLendingCapacityandBorrowedVolume } DO
+       IF ( ( ( GET @INDEX 1.00000000 FROM AZLendingCapacityandBorrowedVolume ) > 0.00000000 "acre-ft" AND ( GET @INDEX 1.00000000 FROM CALendingCapacityandBorrowedVolume ) > 0.00000000 "acre-ft" AND ( GET @INDEX 1.00000000 FROM NVLendingCapacityandBorrowedVolume ) > 0.00000000 "acre-ft" ) COMMENTED_BY "If all three states are requesting to borrow ICS accumulation volume then the sum of the three <br>Lower Basin States ICS accumulation in the first pass is greater than the 2.7 MAF max ICS <br>accumulation volume, and each state is above the individual state's max ICS limit, so force all <br>three states ICS volumes to each individual state's ICS max accumulation volume. Since all three <br>states were over the individual max accumulation volume, there is no ICS sharing possible.    <br>" )
+       THEN
+        { { 0.00000000 "acre-ft" , GET @INDEX 0.00000000 FROM MeadBankParametersMaxCapacity } , { 0.00000000 "acre-ft" , GET @INDEX 1.00000000 FROM MeadBankParametersMaxCapacity } , { 0.00000000 "acre-ft" , GET @INDEX 2.00000000 FROM MeadBankParametersMaxCapacity } }
+       ELSE
+        WITH LIST PreviousYearsBorrowedICSPercents = "Calculate Previous Years Borrowed Percents"(  ) DO
+         WITH NUMERIC TotalLendingCapacity = "SumByIndex"( LendingCapacityandBorrowedVolumes, 0.00000000 ) DO
+          WITH NUMERIC TotalBorrowedVolumeRequested = "SumByIndex"( LendingCapacityandBorrowedVolumes, 1.00000000 ) DO
+           WITH LIST FirstPassBorrowedVolumes = FOR ( NUMERIC BorrowRequest IN { ( GET @INDEX 1.00000000 FROM AZLendingCapacityandBorrowedVolume ) , ( GET @INDEX 1.00000000 FROM CALendingCapacityandBorrowedVolume ) , ( GET @INDEX 1.00000000 FROM NVLendingCapacityandBorrowedVolume ) } ) WITH LIST firstpass = {  } DO
+            WITH NUMERIC ListValue = NaNToZero LENGTH firstpass DO
+             WITH NUMERIC PercentBorrowedCapacity = GET @INDEX ListValue FROM PreviousYearsBorrowedICSPercents DO
+              APPEND "MinItem"( { ( TotalLendingCapacity * PercentBorrowedCapacity ) , BorrowRequest } ) ONTO firstpass
+             ENDWITH
             ENDWITH
-           ENDWITH
-          ENDFOR DO
-           WITH NUMERIC TotalBorrowedOnFirstPass = "Sum"( FirstPassBorrowedVolumes ) DO
-            WITH NUMERIC RemainingLendingCapacity = TotalLendingCapacity - TotalBorrowedOnFirstPass DO
-             FOR ( NUMERIC InitialBorrowRequest IN { ( GET @INDEX 1.00000000 FROM AZLendingCapacityandBorrowedVolume ) , ( GET @INDEX 1.00000000 FROM CALendingCapacityandBorrowedVolume ) , ( GET @INDEX 1.00000000 FROM NVLendingCapacityandBorrowedVolume ) } ) WITH LIST secondpass = {  } DO
-              WITH NUMERIC ListValue = NaNToZero LENGTH secondpass DO
-               WITH NUMERIC RemainingBorrowRequest = InitialBorrowRequest - GET @INDEX ListValue FROM FirstPassBorrowedVolumes DO
-                WITH NUMERIC RemainingLendingCapacityBalance = IF ( ListValue == 0.00000000 )
-                THEN
-                 RemainingLendingCapacity
-                ELSE
-                 RemainingLendingCapacity - "SumByIndex"( secondpass, 0.00000000 )
-                ENDIF DO
-                 WITH NUMERIC AdditionalBorrowedVolume = "Min"( RemainingBorrowRequest, RemainingLendingCapacityBalance ) DO
-                  APPEND { AdditionalBorrowedVolume , ( GET @INDEX ListValue FROM FirstPassBorrowedVolumes ) + AdditionalBorrowedVolume + GET @INDEX ListValue FROM MeadBankParametersMaxCapacity } ONTO secondpass
+           ENDFOR DO
+            WITH NUMERIC TotalBorrowedOnFirstPass = "Sum"( FirstPassBorrowedVolumes ) DO
+             WITH NUMERIC RemainingLendingCapacity = TotalLendingCapacity - TotalBorrowedOnFirstPass DO
+              FOR ( NUMERIC InitialBorrowRequest IN { ( GET @INDEX 1.00000000 FROM AZLendingCapacityandBorrowedVolume ) , ( GET @INDEX 1.00000000 FROM CALendingCapacityandBorrowedVolume ) , ( GET @INDEX 1.00000000 FROM NVLendingCapacityandBorrowedVolume ) } ) WITH LIST secondpass = {  } DO
+               WITH NUMERIC ListValue = NaNToZero LENGTH secondpass DO
+                WITH NUMERIC RemainingBorrowRequest = InitialBorrowRequest - GET @INDEX ListValue FROM FirstPassBorrowedVolumes DO
+                 WITH NUMERIC RemainingLendingCapacityBalance = IF ( ListValue == 0.00000000 )
+                 THEN
+                  RemainingLendingCapacity
+                 ELSE
+                  RemainingLendingCapacity - "SumByIndex"( secondpass, 0.00000000 )
+                 ENDIF DO
+                  WITH NUMERIC AdditionalBorrowedVolume = "Min"( RemainingBorrowRequest, RemainingLendingCapacityBalance ) DO
+                   APPEND { AdditionalBorrowedVolume , ( ( GET @INDEX ListValue FROM FirstPassBorrowedVolumes ) + AdditionalBorrowedVolume + GET @INDEX ListValue FROM MeadBankParametersMaxCapacity ) - GET @INDEX ListValue FROM LendingCapacities } ONTO secondpass
+                  ENDWITH
                  ENDWITH
                 ENDWITH
                ENDWITH
-              ENDWITH
-             ENDFOR
+              ENDFOR
+             ENDWITH
             ENDWITH
            ENDWITH
           ENDWITH
          ENDWITH
         ENDWITH
-       ENDWITH
-      ENDIF
+       ENDIF
+      ENDWITH
      ENDWITH
     ENDWITH
    ENDWITH
@@ -15457,32 +15459,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{82355ca3-e1b7-484a-8e3a-2dbc46adfa6b}";
+    UUID "{20fc5258-ba78-460f-81ee-6ec07798c820}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{07858a8e-62e1-458f-b425-0802f8ac1032}";
+    UUID "{a8f39a20-b322-4ec3-ac46-e531ed65ead1}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{1ffc954a-3df8-4f29-9441-3304ce6010e6}";
+    UUID "{773648d7-66c0-47d4-9961-e45ed5585d7e}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{8ae65b69-0ada-4fd1-bce2-bfcbe1509201}";
+    UUID "{8c6d4788-b076-4c67-bfb0-0448233ba76f}";
 ;
 
   END
-  UUID "{eeadc28f-0f3a-40f5-ab1a-525785cd6d86}";;
+  UUID "{448c6de9-5b5f-426d-b75c-0b296c1d4f10}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15493,11 +15495,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{d5733764-23df-4249-a35d-e15d865fc1a8}";
+    UUID "{ad94f368-6ed5-4d5e-8819-700f98dc3d7e}";
 ;
 
   END
-  UUID "{910dd911-9c8a-4f90-a2a2-b8b59d07aca5}";;
+  UUID "{b18c1c33-c5e2-46e0-9e3f-e043bbe2e72a}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15508,11 +15510,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{b0d7956b-9971-4fda-809a-01589b632f09}";
+    UUID "{7dde0917-b8f5-4130-80ac-4a558ef54f34}";
 ;
 
   END
-  UUID "{406a54fd-9422-469c-a222-02c68070e2f9}";;
+  UUID "{ac6c0c84-f123-4ed5-9cbf-fec5fa872870}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15523,11 +15525,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{adabb624-30b6-438c-9c95-0c0a577cc886}";
+    UUID "{1f10394e-0511-4bbf-b303-3fc9fe04c8b1}";
 ;
 
   END
-  UUID "{d8b37cff-8a76-4d5e-9294-b1146ec20309}";;
+  UUID "{b8c87b8a-3302-49c4-bf7a-b672e3c7311f}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
