@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 14:23 June 13, 2022
+# Created 14:27 June 13, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -1508,7 +1508,7 @@ BEGIN
     BREAKPOINT AFTER_EXEC TRUE;
       WITH_STATEMENT (NUMERIC CurrentYearTributaryToBeDelivered = "Current Year NV Tributary ICS Volume Available For Delivery"(  ) - $ "ICS Credits.AnnualNevadaBankSpaceforTrib" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC VacatedICSSpace = $ "ICS Credits.VacatedBankSpace_NV" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
-            WITH_STATEMENT (NUMERIC CurrentYearECICSCreationIntoBank = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] )) DO
+            WITH_STATEMENT (NUMERIC CurrentYearECICSCreationIntoBank = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] )) DO
             WITH_STATEMENT (LIST VacatedICSListFirstPass = FOR ( NUMERIC CategoryBalance IN { CurrentYearECICSCreationIntoBank , "Vacating Bank Space - DCP ICS Available For Conversion to System Water"( "NV" ) , "Vacating Bank Space - DCP ICS Available For Delivery"( "NV" ) , "Vacating Bank Space - EC ICS Available For Delivery"( "NV" ) , $ "ICS Credits.BiNationalICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] } ) WITH LIST firstpass = {  } DO
   WITH NUMERIC RemainingVolume = IF ( ( LENGTH firstpass ) == 0.00000000 )
   THEN
@@ -1536,13 +1536,13 @@ BEGIN
    ENDWITH
   ENDWITH
  ENDFOR) DO
-            $ "ICS Credits.IntendedECICSCreationToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 0.00000000 FROM VacatedICSListFirstPass ) + GET @INDEX 0.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+            $ "ICS Credits.IntendedECICSCreationToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 0.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 0.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
             $ "ICS Credits.IntendedECICSCreationToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 0.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
             $ "ICS Credits.VacatedDCPICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 1.00000000 FROM VacatedICSListFirstPass ) + GET @INDEX 1.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
-            $ "ICS Credits.VacatedDCPICSToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 3.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 1.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+            $ "ICS Credits.VacatedDCPICSToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 2.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 1.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
             $ "ICS Credits.VacatedECICSToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 3.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 2.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
