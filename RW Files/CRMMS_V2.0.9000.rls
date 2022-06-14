@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 11:00 June 14, 2022
+# Created 12:24 June 14, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -608,6 +608,7 @@ BEGIN
     BEGIN
 
       WITH_STATEMENT (NUMERIC NVoffstream = $ "ICS Credits.AnnualNevadaStoredOffstream" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
+            WITH_STATEMENT (NUMERIC IntendedECICSCreationToBeDelivered = $ "ICS Credits.IntendedECICSCreationToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC NVICSDelivery = $ "ICS Credits.AnnualICSDelivery_NV" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
           DESCRIPTION          "SNWADivVol = total yearly volume of diversion for SNWA <br>";
       WITH_STATEMENT (NUMERIC SNWADivVol = IF ( "GetYear"( @"t" ) == "GetYear"( @"Start Timestep" ) )
@@ -628,7 +629,7 @@ BEGIN
      WITH NUMERIC NonSNWANevadaDivReqs = FOR ( DATETIME date IN @"24:00:00 January 31, Current Year" TO @"24:00:00 December 31, Current Year" ) STAT_SUM
       "Monthly Sum Non SNWP Nevada Users"( date )
      ENDFOR DO
-      ( ( "Min"( $ "AnnualWaterUse.NV_BasicApportionment" [] - shortageVolume, $ "AnnualWaterUse.Nevada_Apportionment" ["Dec31ofYear"( @"t" )] ) - NonSNWANevadaDivReqs ) * "MeadPumpingDemandVariabilityFactor"( @"24:00:00 December Max DayOfMonth, Current Year" ) - AdditionalDCPReductionNV + NVICSDelivery + NVoffstream ) COMMENTED_BY "Annual SNWP volume = (NV annual allotment - Priority users diversions + ICS delivery - DCP <br>reduction - Shortage volume)  <br>"
+      ( ( "Min"( $ "AnnualWaterUse.NV_BasicApportionment" [] - shortageVolume, $ "AnnualWaterUse.Nevada_Apportionment" ["Dec31ofYear"( @"t" )] ) - NonSNWANevadaDivReqs ) * "MeadPumpingDemandVariabilityFactor"( @"24:00:00 December Max DayOfMonth, Current Year" ) - AdditionalDCPReductionNV + NVICSDelivery + NVoffstream + IntendedECICSCreationToBeDelivered ) COMMENTED_BY "Annual SNWP volume = (NV annual allotment - Priority users diversions + ICS delivery - DCP <br>reduction - Shortage volume)  <br>"
      ENDWITH
     ENDWITH
    ENDWITH COMMENTED_BY "SNWA diversion volume in non surplus condition. This calculation takes into account any ICS <br>delivery, DCP reductions, shortage reductions or demand variability.  <br>"
@@ -645,6 +646,8 @@ BEGIN
       END_WITH_STATEMENT;
 
       ENDFOREACH;
+
+      END_WITH_STATEMENT;
 
       END_WITH_STATEMENT;
 
@@ -1317,6 +1320,7 @@ BEGIN
     NOTES                "DEVELOPMENT NOTES<br>AUTHOR, DATE: <br><br>AP, 20191117: DCP development.<br>S.Baker, 20200309: Add description.<br>S.Baker, 20200310: Added SetNegativeToZero() to replace Max(0 &quot;acre-ft&quot;, xxxx). Added function IsMeadBelowDCPRecoveryElevation() to replace frequently used boolean. This also changes this rule so that it checks the projected Mead PE to be consistent with other rules. Replace OR statement with & IsLBorDCPconditionChanged() .<br>GCAA, 20200330: Updated rule to include delivery of Nevada's DCP ICS<br>S.Baker, 20200420: Updated execution constraints to match LCs model.<br>A.Pivarnik, 20200713: Integration effort. This rule is slightly different than the one that was in the 24MS ruleset. This rule is more complex and covers more operations as guided by SNWA. This rule was unchanged in the integration effort.";
     BEGIN
 
+    BREAKPOINT AFTER_EXEC TRUE;
       WITH_STATEMENT (NUMERIC AnnualDelivery = "SetNegativeToZero"( $ "ICSProjectionData.AnnualICSDelivery_NV_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedDCPICSToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedECICSToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedBiNationalICSToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] )) DO
             WITH_STATEMENT (LIST DeliveryChargedList = FOR ( NUMERIC CategoryBalance IN { $ "ICS Credits.AvailableDCPICSForDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] COMMENTED_BY "If there is an ICS deivery amount, take out of accounts in the following order. <br>" , $ "ICS Credits.AvailableECICSForDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] , $ "ICS Credits.AvailableTribICSForDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] , "Max Brock Delivery Volume"( "NV" ) , $ "ICS Credits.SystemEfficiencyICS_YDP_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] , $ "ICS Credits.AvailableBICSForDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] COMMENTED_BY "BiNat <br>" , $ "ICS Credits.AvailableTribICSForDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] COMMENTED_BY "Imported <br>" } ) WITH LIST result = {  } DO
   WITH NUMERIC RemainingBalance = IF ( ( LENGTH result ) == 0.00000000 )
@@ -1347,7 +1351,7 @@ BEGIN
 
             $ "ICS Credits.AnnualDeliveryImp_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 6.00000000 FROM DeliveryChargedList ) + $ "ICS Credits.SurplusCondition_ImpICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
-            $ "ICS Credits.AnnualICSDelivery_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] := "Sum"( DeliveryChargedList ) + $ "ICS Credits.SurplusCondition_TribICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.SurplusCondition_ImpICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.SurplusCondition_DCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"];
+            $ "ICS Credits.AnnualICSDelivery_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] := "Sum"( DeliveryChargedList ) + $ "ICS Credits.SurplusCondition_TribICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.SurplusCondition_ImpICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + "Max"( $ "ICS Credits.SurplusCondition_DCPICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.VacatedDCPICSToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] ) + $ "ICS Credits.VacatedECICSToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedBiNationalICSToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
       END_WITH_STATEMENT;
 
@@ -1423,6 +1427,29 @@ BEGIN
     END
     UUID "{7e8e761a-11dc-4861-938d-741e1fa973b0}";;
 
+    RULE                 "NV Current Year Apportionment Stored Off Stream";
+    DESCRIPTION          "";
+    ACTIVE               TRUE;
+    RULE_EXEC_CONSTRAINT ( @"t" == @"Start Timestep" OR @"t" == @"24:00:00 January Max DayOfMonth, Current Year" ) AND "GetRunCycleIndex"(  ) >= 3.00000000;
+    NOTES                "";
+    BEGIN
+
+    DESCRIPTION          "Do we need this? <br>";
+      WITH_STATEMENT (NUMERIC YeartoYearBankAdjustment = $ "ICS Credits.AdjustedBankMaxCapacity_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.Bank_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"]) DO
+            WITH_STATEMENT (NUMERIC YeartoYearBankAdjustment_PreTax = YeartoYearBankAdjustment / "SystemTaxAdjustment_DCP"(  )) DO
+            WITH_STATEMENT (NUMERIC CurrentYearECICSCreation = $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
+          DESCRIPTION          "This statement calculates how much of NV's current year apportionment that needs to be <br>stored offstream.<br><br>If NV's bank space went down from the previous year then store the left over apportionment <br>offstream. Since NV's bank space went down they will be required to vacate space for other <br>states and there will be no room for the current years left over apportionment to be created <br>as EC ICS.<br><br>Else NV's bank space went up. This means they can store at lease some amount of EC ICS in <br>the current year. Store the difference between the preliminary creation and that the bank <br>increased<br>";
+      $ "ICS Credits.AnnualNevadaStoredOffstream" [@"24:00:00 December Max DayOfMonth, Current Year"] := 0.00000000 "acre-ft";
+
+      END_WITH_STATEMENT;
+
+      END_WITH_STATEMENT;
+
+      END_WITH_STATEMENT;
+
+    END
+    UUID "{838994f3-9705-4eb5-bcf7-9937ea7a1c41}";;
+
     RULE                 "NV ICS Delivery Requests in LB Surplus";
     DESCRIPTION          "";
     ACTIVE               TRUE;
@@ -1460,33 +1487,6 @@ BEGIN
     END
     UUID "{2368963b-6366-4ca6-9745-3ecb6c0cd306}";;
 
-    RULE                 "NV Current Year Apportionment Stored Off Stream";
-    DESCRIPTION          "";
-    ACTIVE               TRUE;
-    RULE_EXEC_CONSTRAINT ( @"t" == @"Start Timestep" OR @"t" == @"24:00:00 January Max DayOfMonth, Current Year" ) AND "GetRunCycleIndex"(  ) >= 3.00000000;
-    NOTES                "";
-    BEGIN
-
-      WITH_STATEMENT (NUMERIC YeartoYearBankAdjustment = $ "ICS Credits.AdjustedBankMaxCapacity_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.Bank_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"]) DO
-            WITH_STATEMENT (NUMERIC YeartoYearBankAdjustment_PreTax = YeartoYearBankAdjustment / "SystemTaxAdjustment_DCP"(  )) DO
-            WITH_STATEMENT (NUMERIC CurrentYearECICSCreation = $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
-          DESCRIPTION          "This statement calculates how much of NV's current year apportionment that needs to be <br>stored offstream.<br><br>If NV's bank space went down from the previous year then store the left over apportionment <br>offstream. Since NV's bank space went down they will be required to vacate space for other <br>states and there will be no room for the current years left over apportionment to be created <br>as EC ICS.<br><br>Else NV's bank space went up. This means they can store at lease some amount of EC ICS in <br>the current year. Store the difference between the preliminary creation and that the bank <br>increased<br>";
-      $ "ICS Credits.AnnualNevadaStoredOffstream" [@"24:00:00 December Max DayOfMonth, Current Year"] := IF ( YeartoYearBankAdjustment < 0.00000000 "acre-ft" )
- THEN
-  CurrentYearECICSCreation
- ELSE
-  "SetNegativeToZero"( CurrentYearECICSCreation - YeartoYearBankAdjustment_PreTax )
- ENDIF;
-
-      END_WITH_STATEMENT;
-
-      END_WITH_STATEMENT;
-
-      END_WITH_STATEMENT;
-
-    END
-    UUID "{1bc1421c-db31-422f-8177-b07cde9e6cc6}";;
-
   END
   UUID "{3f523123-2536-4487-a732-9f06f03e16f6}";;
 
@@ -1503,6 +1503,7 @@ BEGIN
     NOTES                "";
     BEGIN
 
+    BREAKPOINT AFTER_EXEC TRUE;
       WITH_STATEMENT (NUMERIC CurrentYearTributaryToBeDelivered = "Current Year NV Tributary ICS Volume Available For Delivery"(  ) - $ "ICS Credits.AnnualNevadaBankSpaceforTrib" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC VacatedICSSpace = $ "ICS Credits.VacatedBankSpace_NV" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC CurrentYearECICSCreationIntoBank = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] )) DO
@@ -12277,6 +12278,7 @@ BEGIN
     END
     UUID "{fb667623-0553-452e-af24-8afa189a5714}";;
 
+    BREAKPOINT AFTER_EXEC TRUE;
     FUNCTION       "ICSAccountingForNV" (  )
     RETURN_TYPE    LIST;
     SCALE_UNITS    "";
@@ -12295,7 +12297,7 @@ BEGIN
       WITH NUMERIC Tributary = $ "ICS Credits.AnnualCreationTrib_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryTrib_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
        WITH NUMERIC ConversionofExistingECICSforDCPcontribution = $ "ICS Credits.AnnualConversionPreviousECtoDCP_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
         WITH NUMERIC SNWAnontaxeableICScreation = $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
-         WITH NUMERIC IntendedECICSCreationConvertedToPretax = "SetNegativeToZero"( ( $ "ICS Credits.IntendedECICSCreationToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.IntendedECICSCreationToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] ) - SNWAnontaxeableICScreation ) / "SystemTaxAdjustment_DCP"(  ) + SNWAnontaxeableICScreation DO
+         WITH NUMERIC IntendedECICSCreationConvertedToPretax = "SetNegativeToZero"( ( $ "ICS Credits.IntendedECICSCreationToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.IntendedECICSCreationToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] ) - SNWAnontaxeableICScreation ) / "SystemTaxAdjustment_DCP"(  ) + "Min"( ( $ "ICS Credits.IntendedECICSCreationToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.IntendedECICSCreationToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] ), SNWAnontaxeableICScreation ) DO
           WITH NUMERIC SNWApreliminaryECICScreation = $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] - IntendedECICSCreationConvertedToPretax DO
            WITH NUMERIC ConversionofExcessDCPICStoICSprovisionVolume = "Conversion of Excess DCP ICS to ICS Provision"( "NV" ) DO
             WITH NUMERIC AnnualDCPContribution = $ "ICS Credits.AnnualDCPContribution_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
@@ -12959,7 +12961,7 @@ BEGIN
            ELSE
             0.00000000 "acre-ft"
            ENDIF DO
-            APPEND ( PreviousYearsBorrowedVolume + AdditionalVolumeAvailableToEachState ) / CurrentYearBorrowedVolume ONTO result
+            APPEND ( PreviousYearsBorrowedVolume + AdditionalVolumeAvailableToEachState ) / ( AdditionalVolumeAvailableForSharingThisYear + TotalPreviousYearBorrowedVolume ) ONTO result
            ENDWITH
           ENDWITH
          ENDFOR
