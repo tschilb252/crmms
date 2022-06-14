@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 14:47 June 13, 2022
+# Created 16:36 June 13, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -12301,7 +12301,7 @@ BEGIN
       WITH NUMERIC Tributary = $ "ICS Credits.AnnualCreationTrib_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryTrib_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
        WITH NUMERIC ConversionofExistingECICSforDCPcontribution = $ "ICS Credits.AnnualConversionPreviousECtoDCP_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
         WITH NUMERIC SNWAnontaxeableICScreation = $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
-         WITH NUMERIC IntendedECICSCreationConvertedToPretax = "SetNegativeToZero"( ( $ "ICS Credits.IntendedECICSCreationToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.IntendedECICSCreationToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] ) - SNWAnontaxeableICScreation ) / "SystemTaxAdjustment_DCP"(  ) + SNWAnontaxeableICScreation DO
+         WITH NUMERIC IntendedECICSCreationConvertedToPretax = "SetNegativeToZero"( ( $ "ICS Credits.IntendedECICSCreationToBeDelivered_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.IntendedECICSCreationToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] ) - SNWAnontaxeableICScreation ) / "SystemTaxAdjustment_DCP"(  ) + SNWAnontaxeableICScreation DO
           WITH NUMERIC SNWApreliminaryECICScreation = $ "ICSProjectionData.AnnualCreationEC_SNWP_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] - IntendedECICSCreationConvertedToPretax DO
            WITH NUMERIC ConversionofExcessDCPICStoICSprovisionVolume = "Conversion of Excess DCP ICS to ICS Provision"( "NV" ) DO
             WITH NUMERIC AnnualDCPContribution = $ "ICS Credits.AnnualDCPContribution_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
@@ -15459,32 +15459,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{20fc5258-ba78-460f-81ee-6ec07798c820}";
+    UUID "{87105c31-9f70-411a-9d6a-a8995f42d423}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{a8f39a20-b322-4ec3-ac46-e531ed65ead1}";
+    UUID "{09bfd2a8-a327-4892-bfa0-be2a09721c34}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{773648d7-66c0-47d4-9961-e45ed5585d7e}";
+    UUID "{2d49c7ef-1bcb-40bc-905c-958e2e5cc57b}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{8c6d4788-b076-4c67-bfb0-0448233ba76f}";
+    UUID "{4326ca6a-4203-415d-b841-4ec867adb778}";
 ;
 
   END
-  UUID "{448c6de9-5b5f-426d-b75c-0b296c1d4f10}";;
+  UUID "{44a60052-1b78-42e5-a496-f001152cafb0}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15495,11 +15495,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{ad94f368-6ed5-4d5e-8819-700f98dc3d7e}";
+    UUID "{3fcff3c4-8e6e-40f1-8390-b13bb2dae6c0}";
 ;
 
   END
-  UUID "{b18c1c33-c5e2-46e0-9e3f-e043bbe2e72a}";;
+  UUID "{97a938f0-8b86-42e3-8d7a-1c959ce37fa2}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15510,11 +15510,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7dde0917-b8f5-4130-80ac-4a558ef54f34}";
+    UUID "{ffd99782-c48e-48ff-947d-31591d1fb45d}";
 ;
 
   END
-  UUID "{ac6c0c84-f123-4ed5-9cbf-fec5fa872870}";;
+  UUID "{008e13dd-a461-440e-bf11-470f4aca0069}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15525,11 +15525,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{1f10394e-0511-4bbf-b303-3fc9fe04c8b1}";
+    UUID "{75aaed89-5786-4865-a1cb-f66a698f16f3}";
 ;
 
   END
-  UUID "{b8c87b8a-3302-49c4-bf7a-b672e3c7311f}";;
+  UUID "{ff9d0df9-fcdc-4eba-a0b4-8e49ed75a7ce}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
