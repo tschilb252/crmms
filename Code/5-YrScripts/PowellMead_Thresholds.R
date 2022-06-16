@@ -1,36 +1,17 @@
 # ============================================================================
-# Compare CRMMS-ESP for different CRMMS scenarios 
+# Compare CRMMS-ESP scenarios 
 #   Calculate PE thresholds at Mead and Powell
 #
 # ============================================================================
-rm(list=ls())
+rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
 
 library(tidyverse)
 library(lubridate)
 library(zoo)
 library(RWDataPlyr)
 
-## -- Inputs
-scenario_dir <- c(
-  'Apr2022_v3',
-  # 'Apr2022_v2',
-  'Apr2022_v1',
-  'Mar2022'
-  # 'Feb2022',
-  # 'Jan2022_OG',
-  # 'Jan2022_updatedRegression'
-)
-scenarios <- c(
-  'Apr. 2022 v3',
-  # 'Apr. 2022 v2',
-  'Apr. 2022 v1',  
-  'Mar. 2022'
-  # 'Feb. 2022',
-  # 'Jan. 2022',
-  # 'Jan. 2022 Updated Regres.'
-)
-fig_dir_nm <- 'Aprv1,3_Mar_Compare'
-# ^ script will create directory with this name if it doesn't exist
+## -- Inputs if run alone
+# source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -116,7 +97,6 @@ summ_pwl = df_powl_thresholds %>% ungroup() %>% select(-cnt) %>%
   filter(Yeari <= yrmax) %>%
   pivot_wider(names_from = Yeari, values_from = prob) %>%
   replace (is.na(.), 0) 
-openxlsx::write.xlsx(summ_pwl, file = file.path(fig_dir, paste0('Thresholds_Powell', file_nm_end, '.xlsx')))
 
 # Powell plot thresholds
 summ_pwl %>%
@@ -192,7 +172,6 @@ summ_mead = df_mead_thresholds %>% ungroup() %>% select(-cnt) %>%
   filter(Year <= yrmax) %>%
   pivot_wider(names_from = Year, values_from = prob) %>%
   replace (is.na(.), 0) 
-openxlsx::write.xlsx(summ_mead, file = file.path(fig_dir, paste0('Thresholds_Mead', file_nm_end, '.xlsx')))
 
 
 # MEAD plot thresholds
@@ -246,3 +225,21 @@ df_mead_thresholdsDATE %>% ungroup() %>%
 
 ggsave(file.path(fig_dir, paste0("Thresholds_MeadMonthly",  file_nm_end, ".png")), 
        width = 8.5, height = 8)
+
+## summarize PE quantiles
+pe_summary = df_scens %>%
+  group_by(Variable, Scenario, Date) %>% 
+  summarise(q = list(quantile(Value, probs = seq(0,1, by = 0.1)))) %>% 
+  unnest_wider(q)
+
+## write data to excel doc
+wb1 <- openxlsx::createWorkbook("Thresholds_PEs")
+openxlsx::addWorksheet(wb1, "Powell_Thresholds")
+openxlsx::writeData(wb1, "Powell_Thresholds", summ_pwl)
+openxlsx::addWorksheet(wb1, "Mead_Thresholds")
+openxlsx::writeData(wb1, "Mead_Thresholds", summ_mead)
+openxlsx::addWorksheet(wb1, 'PE_quantiles')
+openxlsx::writeData(wb1, 'PE_quantiles', pe_summary)
+
+# save workbook
+openxlsx::saveWorkbook(wb1, file.path(fig_dir, paste0('Thresholds_PEs', file_nm_end, '.xlsx')), overwrite = T)

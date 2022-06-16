@@ -1,9 +1,10 @@
 # ============================================================================
-# Compare Last official CRMMS-ESP run 
+# Compare CRMMS-ESP run 
 #   Powell Tiers / Powell TARV / LB Condition
-#   LB uses / ICS bank / MSCP 
+#   
 # ============================================================================
-rm(list=ls())
+rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
+
 library(tidyverse)
 library(lubridate)
 library(zoo)
@@ -11,27 +12,8 @@ library(RWDataPlyr)
 library(CRSSIO)
 library(patchwork)
 
-## -- Inputs
-scenario_dir <- c(
-  'Apr2022_v3',
-  # 'Apr2022_v2',
-  'Apr2022_v1',
-  'Mar2022'
-  # 'Feb2022',
-  # 'Jan2022_OG',
-  # 'Jan2022_updatedRegression'
-)
-scenarios <- c(
-  'Apr. 2022 v3',
-  # 'Apr. 2022 v2',
-  'Apr. 2022 v1',  
-  'Mar. 2022'
-  # 'Feb. 2022',
-  # 'Jan. 2022',
-  # 'Jan. 2022 Updated Regres.'
-)
-fig_dir_nm <- 'Aprv1,3_Mar_Compare'
-# ^ script will create directory with this name if it doesn't exist
+## -- Inputs if run alone
+# source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -51,7 +33,7 @@ slots = c(
   'Shortage.Shortage Flag', 'PowellData.ReleaseTier',
   'PowellData.TargetAnnualReleaseVolume',
   'PowellData.ActualAnnualReleaseVolume', 'DCP BWSCP Flags.LB DCP BWSCP'#,
- # 'MeadData.PEforCondition'#, "PowellData.EffectiveEOCYPoolElevWith823Rel"
+  # 'MeadData.EffectiveEOCYPoolElev', "PowellData.EffectiveEOCYPoolElevWith823Rel"
 )
 rdfs = rep('flags.rdf', length(slots))
 
