@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 11:57 June 16, 2022
+# Created 09:47 June 21, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -1396,16 +1396,16 @@ BEGIN
     NOTES                "";
     BEGIN
 
-      $ "ICS Credits.AvailableDCPICSForDelivery_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := "SetNegativeToZero"( IF ( "IsMeadBelowDCPRecoveryElevation"( @"24:00:00 December Max DayOfMonth, Previous Year" ) )
+      $ "ICS Credits.AvailableDCPICSForDelivery_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := IF ( "IsMeadBelowDCPRecoveryElevation"( @"24:00:00 December Max DayOfMonth, Previous Year" ) )
  THEN
   0.00000000 "acre-ft"
  ELSE
-  $ "ICS Credits.DCPICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedDCPICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"]
- ENDIF - $ "ICS Credits.AnnualDeliveryDCP_Coachella" [@"24:00:00 December Max DayOfMonth, Current Year"] );
+  $ "ICS Credits.DCPICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedDCPICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedDCPICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryDCP_Coachella" [@"24:00:00 December Max DayOfMonth, Current Year"]
+ ENDIF;
 
-      $ "ICS Credits.AvailableECICSForDelivery_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := "SetNegativeToZero"( $ "ICS Credits.ExtraordinaryConservationICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedECICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualConversionPreviousECtoDCP_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] );
+      $ "ICS Credits.AvailableECICSForDelivery_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := "SetNegativeToZero"( $ "ICS Credits.ExtraordinaryConservationICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedECICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedECICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualConversionPreviousECtoDCP_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] );
 
-      $ "ICS Credits.AvailableBICSForDelivery_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.BiNationalICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedBiNationalICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"];
+      $ "ICS Credits.AvailableBICSForDelivery_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.BiNationalICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedBiNationalICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedBiNationalICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
     END
     UUID "{4b51337d-80a6-43df-92a0-e918f99190cf}";;
@@ -1421,12 +1421,12 @@ BEGIN
  THEN
   0.00000000 "acre-ft"
  ELSE
-  $ "ICS Credits.DCPICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedDCPICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"]
+  $ "ICS Credits.DCPICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedDCPICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedDCPICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"]
  ENDIF;
 
-      $ "ICS Credits.AvailableECICSForDelivery_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.ExtraordinaryConservationICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedECICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"];
+      $ "ICS Credits.AvailableECICSForDelivery_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.ExtraordinaryConservationICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedECICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedECICSToBeSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
-      $ "ICS Credits.AvailableBICSForDelivery_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedBiNationalICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"];
+      $ "ICS Credits.AvailableBICSForDelivery_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.VacatedBiNationalICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedBiNationalICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
     END
     UUID "{7e8e761a-11dc-4861-938d-741e1fa973b0}";;
@@ -1452,7 +1452,7 @@ BEGIN
  THEN
   "Current Year NV Tributary ICS Volume Available For Delivery"(  )
  ELSE
-  0.00000000 "acre-ft"
+  "SetNegativeToZero"( "Current Year NV Tributary ICS Volume Available For Delivery"(  ) - ( ICSDeliveryConstraint - $ "ICS Credits.TotalVacatedICSToBeDelivered_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] ) )
  ENDIF) DO
             $ "ICS Credits.SurplusCondition_TribICSDelivery_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := IF ( "IsQuantifiedOrFloodControl"(  ) )
  THEN
@@ -1499,11 +1499,11 @@ BEGIN
 
       $ "ICS Credits.TotalVacatedICSToBeDelivered_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.IntendedECICSCreationToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedDCPICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedECICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedBiNationalICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
-      $ "ICS Credits.TotalVacatedICSToSysWater_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.VacatedDCPICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"];
+      $ "ICS Credits.TotalVacatedICSToSysWater_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.VacatedDCPICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.IntendedECICSCreationToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedECICSToBeSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedBiNationalICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
       $ "ICS Credits.TotalVacatedICSToBeDelivered_CA" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.IntendedECICSCreationToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedDCPICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedECICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedBiNationalICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
-      $ "ICS Credits.TotalVacatedICSToSysWater_CA" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.VacatedDCPICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"];
+      $ "ICS Credits.TotalVacatedICSToSysWater_CA" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.VacatedDCPICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.IntendedECICSCreationToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedECICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedBiNationalICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
       $ "ICS Credits.TotalVacatedICSToBeDelivered_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] := $ "ICS Credits.VacatedDCPICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedTribICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedImpICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.IntendedECICSCreationToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedECICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] + $ "ICS Credits.VacatedBiNationalICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"];
 
@@ -1608,7 +1608,7 @@ BEGIN
 
       WITH_STATEMENT (NUMERIC VacatedICSSpace = $ "ICS Credits.VacatedBankSpace_CA" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC CurrentYearECICSCreationIntoBank = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] )) DO
-            WITH_STATEMENT (LIST VacatedICSList = FOR ( NUMERIC CategoryBalance IN { "Vacating Bank Space - DCP ICS Available For Conversion to System Water"( "MWD" ) , "Vacating Bank Space - DCP ICS Available For Delivery"( "MWD" ) , CurrentYearECICSCreationIntoBank , "Vacating Bank Space - EC ICS Available For Delivery"( "MWD" ) , $ "ICS Credits.BiNationalICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] } ) WITH LIST result = {  } DO
+            WITH_STATEMENT (LIST VacatedICSListFirstPass = FOR ( NUMERIC CategoryBalance IN { "Vacating Bank Space - DCP ICS Available For Conversion to System Water"( "MWD" ) , "Vacating Bank Space - DCP ICS Available For Delivery"( "MWD" ) , CurrentYearECICSCreationIntoBank , "Vacating Bank Space - EC ICS Available For Delivery"( "MWD" ) , $ "ICS Credits.BiNationalICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] } ) WITH LIST result = {  } DO
   WITH NUMERIC RemainingBalance = IF ( ( LENGTH result ) == 0.00000000 )
   THEN
    VacatedICSSpace
@@ -1620,15 +1620,45 @@ BEGIN
    ENDWITH
   ENDWITH
  ENDFOR) DO
-            $ "ICS Credits.IntendedECICSCreationToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 2.00000000 FROM VacatedICSList;
+            WITH_STATEMENT (NUMERIC VacatedICSToBeDelivered = "Sum"( VacatedICSListFirstPass ) - GET @INDEX 0.00000000 FROM VacatedICSListFirstPass) DO
+            WITH_STATEMENT (NUMERIC VolumeToBeRedistributedToSystemWater = "SetNegativeToZero"( "Min"( VacatedICSToBeDelivered, "ICSDeliveryReduction_DCP"( VacatedICSToBeDelivered, "California", "Max Delivery", "California" ) ) )) DO
+            WITH_STATEMENT (LIST RedistributeVacatedICSDeliveryToSystemWater = FOR ( NUMERIC CategoryBalance IN { GET @INDEX 1.00000000 FROM VacatedICSListFirstPass , GET @INDEX 2.00000000 FROM VacatedICSListFirstPass , GET @INDEX 3.00000000 FROM VacatedICSListFirstPass , GET @INDEX 4.00000000 FROM VacatedICSListFirstPass } ) WITH LIST secondpass = {  } DO
+  WITH NUMERIC RemainingVolume = IF ( ( LENGTH secondpass ) == 0.00000000 )
+  THEN
+   VolumeToBeRedistributedToSystemWater
+  ELSE
+   VolumeToBeRedistributedToSystemWater - "Sum"( secondpass )
+  ENDIF DO
+   WITH NUMERIC RedistributedVolume = "Min"( RemainingVolume, CategoryBalance ) DO
+    APPEND RedistributedVolume ONTO secondpass
+   ENDWITH
+  ENDWITH
+ ENDFOR) DO
+          DESCRIPTION          "DCP ICS <br>";
+      $ "ICS Credits.VacatedDCPICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 0.00000000 FROM VacatedICSListFirstPass ) + GET @INDEX 0.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
-            $ "ICS Credits.VacatedDCPICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 0.00000000 FROM VacatedICSList;
+            $ "ICS Credits.VacatedDCPICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 1.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 0.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
-            $ "ICS Credits.VacatedDCPICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 1.00000000 FROM VacatedICSList;
+          DESCRIPTION          "Current Year Intended EC ICS Creation <br>";
+      $ "ICS Credits.IntendedECICSCreationToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 1.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
-            $ "ICS Credits.VacatedECICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 3.00000000 FROM VacatedICSList;
+            $ "ICS Credits.IntendedECICSCreationToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 2.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 1.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
-            $ "ICS Credits.VacatedBiNationalICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 4.00000000 FROM VacatedICSList;
+          DESCRIPTION          "EC ICS Balance <br>";
+      $ "ICS Credits.VacatedECICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 2.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+
+            $ "ICS Credits.VacatedECICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 3.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 2.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+
+          DESCRIPTION          "BiNational ICS Balance <br>";
+      $ "ICS Credits.VacatedBiNationalICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 3.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+
+            $ "ICS Credits.VacatedBiNationalICSToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 4.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 3.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+
+      END_WITH_STATEMENT;
+
+      END_WITH_STATEMENT;
+
+      END_WITH_STATEMENT;
 
       END_WITH_STATEMENT;
 
@@ -1649,7 +1679,7 @@ BEGIN
     BREAKPOINT AFTER_EXEC TRUE;
       WITH_STATEMENT (NUMERIC VacatedICSSpace = $ "ICS Credits.VacatedBankSpace_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC CurrentYearECICSCreationIntoBank = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] )) DO
-            WITH_STATEMENT (LIST VacatedICSList = FOR ( NUMERIC CategoryBalance IN { "Vacating Bank Space - DCP ICS Available For Conversion to System Water"( "CAWCD" ) , "Vacating Bank Space - DCP ICS Available For Delivery"( "CAWCD" ) , CurrentYearECICSCreationIntoBank , "Vacating Bank Space - EC ICS Available For Delivery"( "CAWCD" ) , $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] } ) WITH LIST result = {  } DO
+            WITH_STATEMENT (LIST VacatedICSListFirstPass = FOR ( NUMERIC CategoryBalance IN { "Vacating Bank Space - DCP ICS Available For Conversion to System Water"( "CAWCD" ) , "Vacating Bank Space - DCP ICS Available For Delivery"( "CAWCD" ) , CurrentYearECICSCreationIntoBank , "Vacating Bank Space - EC ICS Available For Delivery"( "CAWCD" ) , $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] } ) WITH LIST result = {  } DO
   WITH NUMERIC RemainingBalance = IF ( ( LENGTH result ) == 0.00000000 )
   THEN
    VacatedICSSpace
@@ -1661,15 +1691,45 @@ BEGIN
    ENDWITH
   ENDWITH
  ENDFOR) DO
-            $ "ICS Credits.IntendedECICSCreationToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 2.00000000 FROM VacatedICSList;
+            WITH_STATEMENT (NUMERIC VacatedICSToBeDelivered = "Sum"( VacatedICSListFirstPass ) - GET @INDEX 0.00000000 FROM VacatedICSListFirstPass) DO
+            WITH_STATEMENT (NUMERIC VolumeToBeRedistributedToSystemWater = "SetNegativeToZero"( "Min"( VacatedICSToBeDelivered, "ICSDeliveryReduction_DCP"( VacatedICSToBeDelivered, "Arizona", "Max Delivery", "Arizona" ) ) )) DO
+            WITH_STATEMENT (LIST RedistributeVacatedICSDeliveryToSystemWater = FOR ( NUMERIC CategoryBalance IN { GET @INDEX 1.00000000 FROM VacatedICSListFirstPass , GET @INDEX 2.00000000 FROM VacatedICSListFirstPass , GET @INDEX 3.00000000 FROM VacatedICSListFirstPass , GET @INDEX 4.00000000 FROM VacatedICSListFirstPass } ) WITH LIST secondpass = {  } DO
+  WITH NUMERIC RemainingVolume = IF ( ( LENGTH secondpass ) == 0.00000000 )
+  THEN
+   VolumeToBeRedistributedToSystemWater
+  ELSE
+   VolumeToBeRedistributedToSystemWater - "Sum"( secondpass )
+  ENDIF DO
+   WITH NUMERIC RedistributedVolume = "Min"( RemainingVolume, CategoryBalance ) DO
+    APPEND RedistributedVolume ONTO secondpass
+   ENDWITH
+  ENDWITH
+ ENDFOR) DO
+          DESCRIPTION          "DCP ICS <br>";
+      $ "ICS Credits.VacatedDCPICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 0.00000000 FROM VacatedICSListFirstPass;
 
-            $ "ICS Credits.VacatedDCPICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 0.00000000 FROM VacatedICSList;
+            $ "ICS Credits.VacatedDCPICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 1.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 0.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
-            $ "ICS Credits.VacatedDCPICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 1.00000000 FROM VacatedICSList;
+          DESCRIPTION          "Current Year Intended EC ICS Creation <br>";
+      $ "ICS Credits.IntendedECICSCreationToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 1.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
-            $ "ICS Credits.VacatedECICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 3.00000000 FROM VacatedICSList;
+            $ "ICS Credits.IntendedECICSCreationToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 2.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 1.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
 
-            $ "ICS Credits.VacatedBiNationalICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 4.00000000 FROM VacatedICSList;
+          DESCRIPTION          "EC ICS Balance <br>";
+      $ "ICS Credits.VacatedECICSToBeSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 2.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+
+            $ "ICS Credits.VacatedECICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 3.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 2.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+
+          DESCRIPTION          "BiNational ICS Balance <br>";
+      $ "ICS Credits.VacatedBiNationalICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := GET @INDEX 3.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+
+            $ "ICS Credits.VacatedBiNationalICSToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] := ( GET @INDEX 4.00000000 FROM VacatedICSListFirstPass ) - GET @INDEX 3.00000000 FROM RedistributeVacatedICSDeliveryToSystemWater;
+
+      END_WITH_STATEMENT;
+
+      END_WITH_STATEMENT;
+
+      END_WITH_STATEMENT;
 
       END_WITH_STATEMENT;
 
@@ -15517,32 +15577,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{01fc7a06-4f1e-42f0-88f1-a5f320897c85}";
+    UUID "{7f35d1a8-d4b6-4752-8b3e-b028121b9d78}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{f4d9f4b0-8b83-4e14-b694-baa444fa9fef}";
+    UUID "{7695925d-00ed-43c4-8d6a-648900faa43d}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{63db605a-27bc-4dd1-b64b-9cf10b93185b}";
+    UUID "{b50c49b2-7167-4af0-a111-f95679ff3740}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{4015678c-1d0c-4273-877c-8cc070626650}";
+    UUID "{7148dc71-a8ca-4393-ba3c-c07db0ba982e}";
 ;
 
   END
-  UUID "{df9b7e11-c1ba-4e1d-8c35-1b2257a626ab}";;
+  UUID "{fd4ad101-77be-4104-93fc-576cb46a4ea2}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15553,11 +15613,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{9a3ac90f-429b-44a8-ab4b-00100610a5ee}";
+    UUID "{556e8fd0-7b90-4219-8aed-a60736eb271e}";
 ;
 
   END
-  UUID "{5a7476c1-09e8-4159-845a-9a3758c319e0}";;
+  UUID "{6677fefb-de00-4d25-a15f-29ecf4736245}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15568,11 +15628,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{025c77ff-7123-4889-bd89-da6194967fe7}";
+    UUID "{9fd381f7-0b66-4485-8b6c-ab477163fbbe}";
 ;
 
   END
-  UUID "{df46252d-af9c-41c8-88b8-f6850a21e361}";;
+  UUID "{c74fe790-bf7e-447d-b8c7-f25e2db92dcf}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15583,11 +15643,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7873503c-b7e8-40b0-992c-3801f32055bb}";
+    UUID "{cb69a924-88cc-4a89-bad6-a5a46a34847a}";
 ;
 
   END
-  UUID "{efb81299-981f-4bc3-803e-cf6a68b73024}";;
+  UUID "{16d7d2d4-474a-4f34-a1bb-bdec19d03682}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
