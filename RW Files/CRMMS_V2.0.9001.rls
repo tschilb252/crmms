@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 09:47 June 21, 2022
+# Created 16:05 June 23, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -607,7 +607,6 @@ BEGIN
     NOTES                "S. Baker, 20200311: Add description. Add function IsDomesticOrQuantifiedOrFloodControl() & IsLBorDCPconditionChanged() to replace Or statement to improve readability. <br>A. Pivarnik, 20200501: Replaced non SNWP water users individually listed with function call. Changed the month percent calculation to be based off volume and not flow. Adjusted logic and run constraint to allow rule to adjust for domestic surplus<br>A. Pivarnik, 20200505: Reorded delivery logic and added notes. Rule now solves for quantified surplus scenarios. Changed run constraint to allow rule to fire in quantified surplus. Refernced Annual Shortage volume slot instead of calculating shortage via table<br>A. PIvarnik, 20200714: Integration effort. Added execution constraint to not fire in start timestep of RC3 in 24MS mode. This rule is different than the 24 MS rule due to MTOM's ruleset structure but accomplishes that same thing. Besides the execution constraint this rule is unchanged<br>";
     BEGIN
 
-    BREAKPOINT AFTER_EXEC TRUE;
       WITH_STATEMENT (NUMERIC NVoffstream = $ "ICS Credits.AnnualNevadaStoredOffstream" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC NVICSDelivery = $ "ICS Credits.AnnualICSDelivery_NV" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
           DESCRIPTION          "SNWADivVol = total yearly volume of diversion for SNWA <br>";
@@ -1445,9 +1444,10 @@ BEGIN
   0.00000000 "acre-ft"
  ENDIF;
 
+    BREAKPOINT AFTER_EXEC TRUE;
       WITH_STATEMENT (NUMERIC BankSpaceForTrib = "Min"( $ "ICS Credits.AnnualNevadaBankSpaceforCurrentYearTribandImpICS" [@"24:00:00 December Max DayOfMonth, Current Year"], "Current Year NV Tributary ICS Volume Available For Delivery"(  ) )) DO
             WITH_STATEMENT (NUMERIC BankSpaceForImp = "Min"( $ "ICS Credits.AnnualNevadaBankSpaceforCurrentYearTribandImpICS" [@"24:00:00 December Max DayOfMonth, Current Year"] - BankSpaceForTrib, "Current Year NV Imported ICS Volume Available For Delivery"(  ) )) DO
-            WITH_STATEMENT (NUMERIC ICSDeliveryConstraint = "Min"( 100000.00000000 "acre-ft", "ICSDeliveryReduction_DCP"( $ "ICS Credits.TotalVacatedICSToBeDelivered_NV" [@"24:00:00 December Max DayOfMonth, Current Year"], "Nevada", "Max Delivery", "NV" ) )) DO
+            WITH_STATEMENT (NUMERIC ICSDeliveryConstraint = "Max"( 100000.00000000 "acre-ft", "ICSDeliveryReduction_DCP"( $ "ICS Credits.TotalVacatedICSToBeDelivered_NV" [@"24:00:00 December Max DayOfMonth, Current Year"], "Nevada", "Max Delivery", "NV" ) )) DO
             WITH_STATEMENT (NUMERIC CurrentYearTribToSysWater = IF ( $ "ICS Credits.TotalVacatedICSToBeDelivered_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] == ICSDeliveryConstraint )
  THEN
   "Current Year NV Tributary ICS Volume Available For Delivery"(  )
@@ -1537,7 +1537,7 @@ BEGIN
  ENDFOR) DO
           DESCRIPTION          "SNWA has indicated that they will not take more than 100 KAF more than their apportionment. <br>This redistrubutes any excess ICS delivery above 100 KAF due to bank adjustments to system <br>water <br>";
       WITH_STATEMENT (NUMERIC VacatedICSToBeDelivered = "Sum"( VacatedICSListFirstPass ) - GET @INDEX 0.00000000 FROM VacatedICSListFirstPass) DO
-            WITH_STATEMENT (NUMERIC VolumeToBeRedistributedToSystemWater = "SetNegativeToZero"( "Min"( VacatedICSToBeDelivered - 100000.00000000 "acre-ft", "ICSDeliveryReduction_DCP"( VacatedICSToBeDelivered, "Nevada", "Max Delivery", "NV" ) ) )) DO
+            WITH_STATEMENT (NUMERIC VolumeToBeRedistributedToSystemWater = "SetNegativeToZero"( VacatedICSToBeDelivered - "Max"( 100000.00000000 "acre-ft", "ICSDeliveryReduction_DCP"( VacatedICSToBeDelivered, "Nevada", "Max Delivery", "NV" ) ) )) DO
             WITH_STATEMENT (LIST RedistributeVacatedICSDeliveryToSystemWater = FOR ( NUMERIC CategoryBalance IN { GET @INDEX 1.00000000 FROM VacatedICSListFirstPass , GET @INDEX 2.00000000 FROM VacatedICSListFirstPass , GET @INDEX 3.00000000 FROM VacatedICSListFirstPass , GET @INDEX 4.00000000 FROM VacatedICSListFirstPass , GET @INDEX 5.00000000 FROM VacatedICSListFirstPass , GET @INDEX 6.00000000 FROM VacatedICSListFirstPass } ) WITH LIST secondpass = {  } DO
   WITH NUMERIC RemainingVolume = IF ( ( LENGTH secondpass ) == 0.00000000 )
   THEN
@@ -1606,6 +1606,7 @@ BEGIN
     NOTES                "";
     BEGIN
 
+    BREAKPOINT AFTER_EXEC TRUE;
       WITH_STATEMENT (NUMERIC VacatedICSSpace = $ "ICS Credits.VacatedBankSpace_CA" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC CurrentYearECICSCreationIntoBank = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_MWD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] )) DO
             WITH_STATEMENT (LIST VacatedICSListFirstPass = FOR ( NUMERIC CategoryBalance IN { "Vacating Bank Space - DCP ICS Available For Conversion to System Water"( "MWD" ) , "Vacating Bank Space - DCP ICS Available For Delivery"( "MWD" ) , CurrentYearECICSCreationIntoBank , "Vacating Bank Space - EC ICS Available For Delivery"( "MWD" ) , $ "ICS Credits.BiNationalICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] } ) WITH LIST result = {  } DO
@@ -1621,7 +1622,7 @@ BEGIN
   ENDWITH
  ENDFOR) DO
             WITH_STATEMENT (NUMERIC VacatedICSToBeDelivered = "Sum"( VacatedICSListFirstPass ) - GET @INDEX 0.00000000 FROM VacatedICSListFirstPass) DO
-            WITH_STATEMENT (NUMERIC VolumeToBeRedistributedToSystemWater = "SetNegativeToZero"( "Min"( VacatedICSToBeDelivered, "ICSDeliveryReduction_DCP"( VacatedICSToBeDelivered, "California", "Max Delivery", "California" ) ) )) DO
+            WITH_STATEMENT (NUMERIC VolumeToBeRedistributedToSystemWater = "SetNegativeToZero"( VacatedICSToBeDelivered - "ICSDeliveryReduction_DCP"( VacatedICSToBeDelivered, "California", "Max Delivery", "CA" ) )) DO
             WITH_STATEMENT (LIST RedistributeVacatedICSDeliveryToSystemWater = FOR ( NUMERIC CategoryBalance IN { GET @INDEX 1.00000000 FROM VacatedICSListFirstPass , GET @INDEX 2.00000000 FROM VacatedICSListFirstPass , GET @INDEX 3.00000000 FROM VacatedICSListFirstPass , GET @INDEX 4.00000000 FROM VacatedICSListFirstPass } ) WITH LIST secondpass = {  } DO
   WITH NUMERIC RemainingVolume = IF ( ( LENGTH secondpass ) == 0.00000000 )
   THEN
@@ -1676,7 +1677,6 @@ BEGIN
     NOTES                "";
     BEGIN
 
-    BREAKPOINT AFTER_EXEC TRUE;
       WITH_STATEMENT (NUMERIC VacatedICSSpace = $ "ICS Credits.VacatedBankSpace_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
             WITH_STATEMENT (NUMERIC CurrentYearECICSCreationIntoBank = "Current Year ECICS into Bank"( $ "ICSProjectionData.AnnualCreationEC_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"], $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] )) DO
             WITH_STATEMENT (LIST VacatedICSListFirstPass = FOR ( NUMERIC CategoryBalance IN { "Vacating Bank Space - DCP ICS Available For Conversion to System Water"( "CAWCD" ) , "Vacating Bank Space - DCP ICS Available For Delivery"( "CAWCD" ) , CurrentYearECICSCreationIntoBank , "Vacating Bank Space - EC ICS Available For Delivery"( "CAWCD" ) , $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] } ) WITH LIST result = {  } DO
@@ -1692,7 +1692,7 @@ BEGIN
   ENDWITH
  ENDFOR) DO
             WITH_STATEMENT (NUMERIC VacatedICSToBeDelivered = "Sum"( VacatedICSListFirstPass ) - GET @INDEX 0.00000000 FROM VacatedICSListFirstPass) DO
-            WITH_STATEMENT (NUMERIC VolumeToBeRedistributedToSystemWater = "SetNegativeToZero"( "Min"( VacatedICSToBeDelivered, "ICSDeliveryReduction_DCP"( VacatedICSToBeDelivered, "Arizona", "Max Delivery", "Arizona" ) ) )) DO
+            WITH_STATEMENT (NUMERIC VolumeToBeRedistributedToSystemWater = "SetNegativeToZero"( VacatedICSToBeDelivered - "ICSDeliveryReduction_DCP"( VacatedICSToBeDelivered, "Arizona", "Max Delivery", "AZ" ) )) DO
             WITH_STATEMENT (LIST RedistributeVacatedICSDeliveryToSystemWater = FOR ( NUMERIC CategoryBalance IN { GET @INDEX 1.00000000 FROM VacatedICSListFirstPass , GET @INDEX 2.00000000 FROM VacatedICSListFirstPass , GET @INDEX 3.00000000 FROM VacatedICSListFirstPass , GET @INDEX 4.00000000 FROM VacatedICSListFirstPass } ) WITH LIST secondpass = {  } DO
   WITH NUMERIC RemainingVolume = IF ( ( LENGTH secondpass ) == 0.00000000 )
   THEN
@@ -1776,11 +1776,25 @@ BEGIN
             WITH_STATEMENT (NUMERIC LeftOverICSCreationSpace = $ "ICS Credits.MeadBankParameters" ["LC Basin", "Max Capacity"] - $ "ICSProjectionData.LowerBasinICSBank_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"]) DO
           DESCRIPTION          "Since there is left over bank space, give additional amount to NV to allow them to store Trib ICS <br>created in the current year.  <br>";
       WITH_STATEMENT (NUMERIC BankSpaceforCurrentYearTribandImpICS_Nevada = "Min"( LeftOverICSCreationSpace, $ "ICS Credits.AnnualCreationTrib_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] * "SystemTaxAdjustment_DCP"(  ) + $ "ICS Credits.AnnualCreationImp_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] * "SystemTaxAdjustment_DCP"(  ) )) DO
-            $ "ICS Credits.AdjustedBankMaxCapacity_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] := "AZPrelimBank"(  );
+            WITH_STATEMENT (LIST SortAdditionalBankSpace = WITH LIST MeadBankParameters = { $ "ICS Credits.MeadBankParameters" ["Arizona", "Max Capacity"] , $ "ICS Credits.MeadBankParameters" ["California", "Max Capacity"] , $ "ICS Credits.MeadBankParameters" ["Nevada", "Max Capacity"] } DO
+  FOR ( NUMERIC StatePrelimBank IN { "AZPrelimBank"(  ) , "CAPrelimBank"(  ) , "NVPrelimBank"(  ) } ) WITH LIST result = {  } DO
+   WITH NUMERIC LeftOverICSBalance = IF ( ( LENGTH result ) == 0.00000000 )
+   THEN
+    LeftOverICSCreationSpace
+   ELSE
+    LeftOverICSCreationSpace - "Sum"( result )
+   ENDIF DO
+    APPEND "SetNegativeToZero"( "Min"( ( GET @INDEX NaNToZero LENGTH result FROM MeadBankParameters ) - StatePrelimBank, LeftOverICSBalance ) ) ONTO result
+   ENDWITH
+  ENDFOR
+ ENDWITH) DO
+            $ "ICS Credits.AdjustedBankMaxCapacity_AZ" [@"24:00:00 December Max DayOfMonth, Current Year"] := "AZPrelimBank"(  ) + GET @INDEX 0.00000000 FROM SortAdditionalBankSpace;
 
-            $ "ICS Credits.AdjustedBankMaxCapacity_CA" [@"24:00:00 December Max DayOfMonth, Current Year"] := "CAPrelimBank"(  ) + LeftOverICSCreationSpace;
+            $ "ICS Credits.AdjustedBankMaxCapacity_CA" [@"24:00:00 December Max DayOfMonth, Current Year"] := "CAPrelimBank"(  ) + GET @INDEX 1.00000000 FROM SortAdditionalBankSpace;
 
-            $ "ICS Credits.AdjustedBankMaxCapacity_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] := "NVPrelimBank"(  );
+            $ "ICS Credits.AdjustedBankMaxCapacity_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] := "NVPrelimBank"(  ) + GET @INDEX 2.00000000 FROM SortAdditionalBankSpace;
+
+      END_WITH_STATEMENT;
 
             $ "ICS Credits.BankAdjustmentFlag" [@"24:00:00 December Max DayOfMonth, Current Year"] := 0.00000000;
 
@@ -12373,7 +12387,6 @@ BEGIN
     END
     UUID "{fb667623-0553-452e-af24-8afa189a5714}";;
 
-    BREAKPOINT AFTER_EXEC TRUE;
     FUNCTION       "ICSAccountingForNV" (  )
     RETURN_TYPE    LIST;
     SCALE_UNITS    "";
@@ -12649,7 +12662,7 @@ BEGIN
    WITH NUMERIC TotalFirmingDelivery = FirmingDeliveryAZ + FirmingDeliveryUS DO
     IF ( "GetYear"( @"t" ) >= 2026.00000000 )
     THEN
-     IF ( "GetProjectedPoolElevation"( "Mead", @"24:00:00 December 31, Previous Year" ) <= $ "DCP.AZFirmingAgreementElevation" [] )
+     IF ( "GetProjectedPoolElevation"( "Mead", @"24:00:00 December 31, Previous Year" ) <= $ "DCP.AZFirmingAgreementElevation" [] AND "GetProjectedPoolElevation"( "Mead", @"24:00:00 December 31, Previous Year" ) >= $ "DCP.MinTakeElevation" [] )
      THEN
       { TotalFirmingDelivery , FirmingDeliveryAZ , FirmingDeliveryUS }
      ELSE
@@ -15577,32 +15590,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7f35d1a8-d4b6-4752-8b3e-b028121b9d78}";
+    UUID "{fa46760a-0df8-4abe-a9fe-a8a0b2c500dc}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7695925d-00ed-43c4-8d6a-648900faa43d}";
+    UUID "{aa1d0478-178b-4952-8170-0227f62205e0}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{b50c49b2-7167-4af0-a111-f95679ff3740}";
+    UUID "{dc20c9ca-e1ea-45ae-aa7b-258ed43adc76}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7148dc71-a8ca-4393-ba3c-c07db0ba982e}";
+    UUID "{d90e506e-c509-4b6b-8612-324a44b77d99}";
 ;
 
   END
-  UUID "{fd4ad101-77be-4104-93fc-576cb46a4ea2}";;
+  UUID "{7f8dd4d2-f024-46fd-b4ee-c1aa3dca2eed}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15613,11 +15626,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{556e8fd0-7b90-4219-8aed-a60736eb271e}";
+    UUID "{bdc34882-77f2-4a86-92ae-59ada7617333}";
 ;
 
   END
-  UUID "{6677fefb-de00-4d25-a15f-29ecf4736245}";;
+  UUID "{fe71b6a4-cda8-4410-ac51-231d4a62c65b}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15628,11 +15641,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{9fd381f7-0b66-4485-8b6c-ab477163fbbe}";
+    UUID "{63202bc3-d870-4ff6-a291-fffbdb94198d}";
 ;
 
   END
-  UUID "{c74fe790-bf7e-447d-b8c7-f25e2db92dcf}";;
+  UUID "{441ad070-e1c3-4d46-a919-593c60fdd97c}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15643,11 +15656,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{cb69a924-88cc-4a89-bad6-a5a46a34847a}";
+    UUID "{671f21cb-be99-42f7-850a-96a4126182cd}";
 ;
 
   END
-  UUID "{16d7d2d4-474a-4f34-a1bb-bdec19d03682}";;
+  UUID "{eb77c4e9-828a-4b01-84e9-5f0d20c93759}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
