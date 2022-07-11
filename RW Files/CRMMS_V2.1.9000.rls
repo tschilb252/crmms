@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 19:37 July 5, 2022
+# Created 09:44 July 11, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -3581,7 +3581,7 @@ BEGIN
 
     DESCRIPTION          "<br>Flaming Gorge <br>";
       IF_STATEMENT ($ "FlamingGorgeData.DROA_Flag" [] == 1.00000000) THEN
-            IF_STATEMENT ("IsDROARecoveryTargetDate"( % "FlamingGorge" ) AND % "FlamingGorge" & "Storage" [] > "ElevationToStorage"( % "FlamingGorge", $ "FlamingGorgeData.May1TargetElevation" [0.00000000, 2.00000000] )) THEN
+            IF_STATEMENT ("IsDROARecoveryTargetDate"( % "FlamingGorge" ) AND % "FlamingGorge" & "Storage" [] > "ElevationToStorage"( % "FlamingGorge", $ "FlamingGorgeData.May1TargetElevation" [3.00000000, 2.00000000] )) THEN
             IF_STATEMENT ("FlamingGorge_DROA_StorageAsFlow"(  ) > 0.00000000 "acre-ft/month") THEN
             WITH_STATEMENT (SLOT transferSupply = $ "Powell FlamingGorgeDROA to Powell System Tran.Supply") DO
             transferSupply [] := IF ( NOT "IsInput"( transferSupply, @"t" ) )
@@ -8134,7 +8134,7 @@ BEGIN
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    NOTES          "20220705,CF: FlamingGorgeData.May1TargetElevation has flipped rows relative to CRSS. Was calling out [3,2], changed to [0,2] = 6027' in GetFGBaseFlowMagnitudeUnconstrained(). This only affected Aug-Dec calcs.  <br><br>CF,20200104:Now take Inflow - EstEvap to account for evaporation. Previous comments I made in MTOM rules about not needing to account for Evap were incorrect.<br><br>CF 20190125: Updated to use TargetHWGivenInflowOneMonth<br><br>CF,20190109: TargetHWGivenInflow now take Inflow - EstEvap to account for evaporation. Jan-Feb now uses GetMay1TargetElevation() according to direction from HP about use of % exceedance to calculate PE target. Mar-April do not use BF targets at Jensen. <br><br>CF,20181010: for FG update adding in baseflow targets for Jensen to GetFGBaseFlowMagnitudeUnconstrained<br><br>AUTHOR, DATE: Unknown";
+    NOTES          "CF,20200104:Now take Inflow - EstEvap to account for evaporation. Previous comments I made in MTOM rules about not needing to account for Evap were incorrect.<br><br>CF 20190125: Updated to use TargetHWGivenInflowOneMonth<br><br>CF,20190109: TargetHWGivenInflow now take Inflow - EstEvap to account for evaporation. Jan-Feb now uses GetMay1TargetElevation() according to direction from HP about use of % exceedance to calculate PE target. Mar-April do not use BF targets at Jensen. <br><br>CF,20181010: for FG update adding in baseflow targets for Jensen to GetFGBaseFlowMagnitudeUnconstrained<br><br>AUTHOR, DATE: Unknown";
     BEGIN
 
       IF ( "MonthIs"( { "January" , "February" } ) )
@@ -8149,11 +8149,11 @@ BEGIN
    THEN
     "Max"( "TargetHWGivenInflowOneMonth"( % "FlamingGorge", @"t", @"24:00:00 April Max DayOfMonth, Current Year", "GetMay1TargetElevation"(  ) COMMENTED_BY "CF: This has been changed to a hydrologic year classification calculated target as per HP. <br>Previously was a static target. <br>", "PredictedFGInflow"( @"t", @"24:00:00 April Max DayOfMonth, Current Year" ) - "EstimateEvaporation"( % "FlamingGorge", $ "FlamingGorge.Storage" [@"t - 1"], "ElevationToStorage"( % "FlamingGorge", "GetMay1TargetElevation"(  ) ), @"t", @"24:00:00 April Max DayOfMonth, Current Year" ), $ "FlamingGorge.Storage" [@"t - 1"] ) COMMENTED_BY "CF, 20190107: Changed to use Evap. <br>", $ "FlamingGorgeData.MinFlow" [] )
    ELSE
-    "Max"( "TargetHWGivenInflow"( % "FlamingGorge", @"t", @"24:00:00 April Max DayOfMonth, Next Year", $ "FlamingGorgeData.May1TargetElevation" [0.00000000, 2.00000000] COMMENTED_BY "CF: This is the May 1 drawdown level of 6027ft. In Aug - Dec this the the target elevation from <br>the to EIS. This is the target until Jan when the hydrologic year classification can be calculated.   <br>", "PredictedFGInflow"( @"t", @"24:00:00 April Max DayOfMonth, Next Year" ) - IF ( @"24:00:00 April Max DayOfMonth, Next Year" < "RunEndDate"(  ) )
+    "Max"( "TargetHWGivenInflow"( % "FlamingGorge", @"t", @"24:00:00 April Max DayOfMonth, Next Year", $ "FlamingGorgeData.May1TargetElevation" [3.00000000, 2.00000000] COMMENTED_BY "CF: This is the May 1 drawdown level of 6027ft. In Aug - Dec this the the target elevation from <br>the to EIS. This is the target until Jan when the hydrologic year classification can be calculated.   <br>", "PredictedFGInflow"( @"t", @"24:00:00 April Max DayOfMonth, Next Year" ) - IF ( @"24:00:00 April Max DayOfMonth, Next Year" < "RunEndDate"(  ) )
     THEN
-     "EstimateEvaporation"( % "FlamingGorge", $ "FlamingGorge.Storage" [@"t - 1"], "ElevationToStorage"( % "FlamingGorge", $ "FlamingGorgeData.May1TargetElevation" [0.00000000, 2.00000000] ), @"t", @"24:00:00 April Max DayOfMonth, Next Year" )
+     "EstimateEvaporation"( % "FlamingGorge", $ "FlamingGorge.Storage" [@"t - 1"], "ElevationToStorage"( % "FlamingGorge", $ "FlamingGorgeData.May1TargetElevation" [3.00000000, 2.00000000] ), @"t", @"24:00:00 April Max DayOfMonth, Next Year" )
     ELSE
-     "EstimateEvaporation"( % "FlamingGorge", $ "FlamingGorge.Storage" [@"t - 1"], "ElevationToStorage"( % "FlamingGorge", $ "FlamingGorgeData.May1TargetElevation" [0.00000000, 2.00000000] ), "OffsetDate"( @"t", - 1.00000000, "1 Years" ), "OffsetDate"( @"24:00:00 April Max DayOfMonth, Next Year", - 1.00000000, "1 Years" ) )
+     "EstimateEvaporation"( % "FlamingGorge", $ "FlamingGorge.Storage" [@"t - 1"], "ElevationToStorage"( % "FlamingGorge", $ "FlamingGorgeData.May1TargetElevation" [3.00000000, 2.00000000] ), "OffsetDate"( @"t", - 1.00000000, "1 Years" ), "OffsetDate"( @"24:00:00 April Max DayOfMonth, Next Year", - 1.00000000, "1 Years" ) )
     ENDIF, $ "FlamingGorge.Storage" [@"t - 1"] ), "Max"( ( $ "FlamingGorgeData.BaseFlowMagnitudeLimits" [$ "KNN_MTOM.BaseFlowHClass" [], 2.00000000] - $ "YampaRiverInflow.Yampa_at_Deerlodge" [@"t"] ) COMMENTED_BY "CF: This ensures FG baseflow will be sufficient to meet the lower baseflow limit set for the Green <br>at Jensen by the EIS. The flow at Jensen is the FG baseflow plus the predicted Yampa flow.  <br>", $ "FlamingGorgeData.MinFlow" [] ) ) COMMENTED_BY "CF: May-Dec assume static target of 6027 for May 1, Next Year.  <br>"
    ENDIF
   ENDIF COMMENTED_BY "CF: The EIS has no Jensen targets in March and April, in these months release are used to meet <br>the UDLE.  <br>"
@@ -8169,19 +8169,12 @@ BEGIN
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    NOTES          "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br><br>20220705,CF: This < is the opposite of CRSS's > which means the flipped rows in the models' tables were handled correctly in this function. ";
+    NOTES          "DEVELOPMENT NOTES<br>AUTHOR, DATE: Unknown<br><br>20220711,CF: Changed this function to match CRSS.  ";
     BEGIN
 
-      $ "FlamingGorgeData.May1TargetElevation" [IF ( ( WHILE ( $ "KNN_MTOM.AprJulPercentExceedanceSpringFlow" [] * 100.00000000 < $ "FlamingGorgeData.May1TargetElevation" [result, 1.00000000] COMMENTED_BY "CF: This < is the opposite of CRSS's > which accounts for the flipped rows in the models tables.  <br>" AND result <= 2.00000000 ) WITH NUMERIC result = 0.00000000 DO
+      $ "FlamingGorgeData.May1TargetElevation" [WHILE ( $ "KNN_MTOM.AprJulPercentExceedanceSpringFlow" [] * 100.00000000 > $ "FlamingGorgeData.May1TargetElevation" [result, 1.00000000] AND result <= 2.00000000 ) WITH NUMERIC result = 0.00000000 DO
   result + 1.00000000
- ENDWHILE == 0.00000000 ) COMMENTED_BY "Cycle through indices and if exceedance percentage is greater than all in table, return index of 0; target elevation will be 6,027 ft" )
- THEN
-  0.00000000
- ELSE
-  WHILE ( $ "KNN_MTOM.AprJulPercentExceedanceSpringFlow" [] * 100.00000000 < $ "FlamingGorgeData.May1TargetElevation" [result, 1.00000000] AND result <= 2.00000000 ) WITH NUMERIC result = 0.00000000 DO
-   result + 1.00000000
-  ENDWHILE COMMENTED_BY "Cycle through indices and return index for which exceedance percentage is between lower and upper limit" - 1.00000000
- ENDIF COMMENTED_BY "Find index in May1TargetElevation corresponding to appropriate exceedance level of forecast", 2.00000000];
+ ENDWHILE, 2.00000000];
 
     END
     UUID "{feedee48-9aeb-4d64-8cb9-be26add46c0c}";;
@@ -14859,32 +14852,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7146644c-2176-4aa2-b504-ea4bb5d0631c}";
+    UUID "{1f47b2c4-85d1-4744-bae8-a3bde97bea49}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{ebbf734f-591c-4652-947c-72b0e2126c7e}";
+    UUID "{750a30ac-8ee0-4550-a94a-1558af6cf9ab}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{572c5675-7a48-45d1-983c-fa4751ded69b}";
+    UUID "{9d3bc2e1-5ce2-478a-9225-809c1b87b91a}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{766197b5-b40b-4bc0-808b-54619874e3e0}";
+    UUID "{de128c01-d366-4875-8354-fdc8581cbbea}";
 ;
 
   END
-  UUID "{84917f59-cb08-46e1-8e06-906cf7e5b10d}";;
+  UUID "{b3c4bbb5-1d67-4107-8356-c9b196128538}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14895,11 +14888,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{5b0c3805-5f22-40ad-8a81-953eda062ba3}";
+    UUID "{8c25862c-139d-4914-99dc-6238200d5ff1}";
 ;
 
   END
-  UUID "{1c612f13-9aeb-4a5c-81f7-8454bf0ed989}";;
+  UUID "{69077058-1a1e-4e88-acd4-b57fa7ddbba1}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14910,11 +14903,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{cb7a441f-c874-4685-8b7a-d7573844b840}";
+    UUID "{595753b8-a669-4a44-9fb3-ef56c6372d5c}";
 ;
 
   END
-  UUID "{d537c30f-3d7a-4933-a075-6fddfc1532f1}";;
+  UUID "{731d9a61-b520-48a5-a460-0afb52025694}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14925,11 +14918,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{ee30c040-9981-4f7b-8b9e-d93da3d747f6}";
+    UUID "{c054fea1-9fae-491d-9113-cd22224a1575}";
 ;
 
   END
-  UUID "{82c115a8-1e41-4c3b-a443-702edadaab82}";;
+  UUID "{22f4641a-ccd5-4afa-850a-6cf5b34019b6}";;
 
   REPORT_GROUP "Aspinall Slot Report Group";
   DESCRIPTION  "";
