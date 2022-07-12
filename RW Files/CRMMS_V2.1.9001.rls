@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 16:13 July 12, 2022
+# Created 17:51 July 12, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -4161,25 +4161,10 @@ BEGIN
     DESCRIPTION          "Execution Constraint: April-July <br>  <br>Description: Makes the daily date and flow list using function MakeDailyFlamingGorgeReleaseDateandFlowList and assigns it to the data object.<br><br>SLOTS SET: KNN_MTOM.FlamingGorgeDaily<br>";
     ACTIVE               TRUE;
     RULE_EXEC_CONSTRAINT ( ( "MonthIs"( { "April" , "May" , "June" , "July" } ) AND "GetRunCycleIndex"(  ) == 2.00000000 ) COMMENTED_BY "CF,20190129: Changed to match CRSS. MTOM was only executing this in April or at start <br>timestep which wasn't setting dailyflows in later months.   <br>" );
-    NOTES                "CF,20190129: Changed to match CRSS. MTOM was only executing this in April or at start timestep which wasn't setting dailyflows in later months.  <br><br>AUTHOR, DATE: Unknown<br>MC, 20170503: Should the rule fire for an August Start Timestep? No consideration for August date in rule, but will use July 1 based on logic<br><br>APivarnik 20200706: Added execution constraint for rule to fire only in MTOM mode. No other changes made to rule in the integration effort<br>APivarnik 20200827: Removed execution constraint for rule to fire only in MTOM mode";
+    NOTES                "20220712,CF: <br>- Always start at April 1, do not need startdate argument.<br>- If in a previous timestep you calculated an April 1 release, use that. If you have NaN the release should either be the lower of t-1 or the baseflow for the month. In April (and some May) start months this will give you the release to hit the ULDE. In June and July start months it will give a baseflow, its okay if this wasn't the actual April release since daily releases patterns are only summed up for the current run month, e.g. bad April releases won't be used except in patterning. <br>- If date < FGSpringReleaseStartDate then keep with whatever you calculated for the previous flows<i-1> <br><br>CF,20190129: Changed to match CRSS. MTOM was only executing this in April or at start timestep which wasn't setting dailyflows in later months.  <br><br>AUTHOR, DATE: Unknown<br>MC, 20170503: Should the rule fire for an August Start Timestep? No consideration for August date in rule, but will use July 1 based on logic<br><br>APivarnik 20200706: Added execution constraint for rule to fire only in MTOM mode. No other changes made to rule in the integration effort<br>APivarnik 20200827: Removed execution constraint for rule to fire only in MTOM mode";
     BEGIN
 
-      FOREACH (LIST dateandflow IN "MakeDailyFlamingGorgeReleaseDateandFlowList"( IF ( "MonthIs"( { "April" } ) )
- THEN
-  @"24:00:00 April 1, Current Year"
- ELSE
-  IF ( "MonthIs"( { "May" } ) )
-  THEN
-   @"24:00:00 May 1, Current Year"
-  ELSE
-   IF ( "MonthIs"( { "June" } ) )
-   THEN
-    @"24:00:00 June 1, Current Year"
-   ELSE
-    @"24:00:00 July 1, Current Year" COMMENTED_BY "CF: July  <br>"
-   ENDIF
-  ENDIF
- ENDIF )) DO
+      FOREACH (LIST dateandflow IN "MakeDailyFlamingGorgeReleaseDateandFlowList"(  )) DO
             $ "KNN_MTOM.FlamingGorgeDaily" [GET @INDEX 0.00000000 FROM dateandflow] := GET @INDEX 1.00000000 FROM dateandflow;
 
       ENDFOREACH;
@@ -8650,14 +8635,14 @@ BEGIN
     END
     UUID "{6f245cb9-1741-4b66-8471-8b8a15d09dd7}";;
 
-    FUNCTION       "MakeDailyFlamingGorgeReleaseDateandFlowList" ( DATETIME startdate )
+    FUNCTION       "MakeDailyFlamingGorgeReleaseDateandFlowList" (  )
     RETURN_TYPE    LIST;
     SCALE_UNITS    "";
-    DESCRIPTION    "Arguments: <br>     Startdate between April-July<br>     2nd Disagg Yampa Flows<br>     FG Spring Release Start Date<br><br>Description:<br>    This function is the powerhouse for FG daily disaggregation and calculates the ramp rates, number of days at powerplant capacity, number of days at bypass, and timing of the spring peak. The ramp down takes into account Reach 2 Jensen flows and calculates target flows accordingly. <br><br>Returns:<br>     Daily FG hydrograph in cfs for the April-July period.<br>     	";
+    DESCRIPTION    "Description:<br>    This function is the powerhouse for FG daily disaggregation and calculates the ramp rates, number of days at powerplant capacity, number of days at bypass, and timing of the spring peak. The ramp down takes into account Reach 2 Jensen flows and calculates target flows accordingly. <br><br>Returns:<br>     Daily FG hydrograph in cfs for the April-July period.<br>     	";
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG FALSE;
-    NOTES          "20220705,CF: Change FGSpringReleaseStartDate calculation in MakeDailyFlamingGorgeReleaseDateandFlowList to use old Yampa Peak timing with FindYampa10kcfsBypassDateForYear() and FindYampa14kcfsPPCDateForYear(). Nate doesn't model an LTSP trigger in 24MS when he doesn't have a one from FWS so revert all modeling back to EIS.<br><br>CF 20190125: Updated to use TargetHWGivenInflowOneMonth<br><br>HP, 20170714";
+    NOTES          "20220712,CF: <br>- Always start at April 1, do not need startdate argument.<br>- If in a previous timestep you calculated an April 1 release, use that. If you have NaN the release should either be the lower of t-1 or the baseflow for the month. In April (and some May) start months this will give you the release to hit the ULDE. In June and July start months it will give a baseflow, its okay if this wasn't the actual April release since daily releases patterns are only summed up for the current run month, e.g. bad April releases won't be used except in patterning. <br>- If date < FGSpringReleaseStartDate then keep with whatever you calculated for the previous flows<i-1> <br><br>20220705,CF: Change FGSpringReleaseStartDate calculation in MakeDailyFlamingGorgeReleaseDateandFlowList to use old Yampa Peak timing with FindYampa10kcfsBypassDateForYear() and FindYampa14kcfsPPCDateForYear(). Nate doesn't model an LTSP trigger in 24MS when he doesn't have a one from FWS so revert all modeling back to EIS.<br><br>CF 20190125: Updated to use TargetHWGivenInflowOneMonth<br><br>HP, 20170714";
     BEGIN
 
       WITH LIST DateList = "GetDates"( @"24:00:00 April 1, Current Year", @"t" COMMENTED_BY "Only calculates daily schedule to the end of the current month for computation efficiency.", "1 days" ) DO
@@ -8691,18 +8676,18 @@ BEGIN
          ENDIF COMMENTED_BY "Nate doesn't model an LTSP trigger in 24MS when he doesn't have a one from FWS so revert all <br>modeling back to EIS. <br>", @"24:00:00 August 2, Current Year" - ( DaysAtPPC + RampUpDaysToPPC + DaysToDownRamp + DaysAtBypass / 2.00000000 ) COMMENTED_BY "Estimate total spring flow days...<br>" ), @"24:00:00 April 2, Current Year" ) COMMENTED_BY "Start ramping up using LTSP polynomial, but Apr 2 as a minimum to avoid breaking, and start early <br>enough to end by July 31" DO
           FOR ( DATETIME date IN DateList ) WITH LIST flows = {  } DO
            WITH NUMERIC i = ( date - @"24:00:00 April 1, Current Year" ) / 1.00000000 "day" DO
-            APPEND IF ( date < startdate )
+            APPEND IF ( ( date == @"24:00:00 April 1, Current Year" ) COMMENTED_BY "Always start at April 1, no need for old startdate argument. <br>" )
             THEN
              IF ( IsNaN $ "KNN_MTOM.FlamingGorgeDaily" [date] )
              THEN
-              $ "FlamingGorge.Outflow" [@"t - 1"]
+              "Min"( $ "FlamingGorge.Outflow" [@"t - 1"], "GetFGBaseFlowMagnitude"(  ) ) COMMENTED_BY "In April (and some May) start months this will give you the release to hit the ULDE. In June and <br>July start months it will give a baseflow, its okay if this wasn't the actual April release since daily <br>releases patterns are only summed up for the current run month, e.g. bad April releases won't be <br>used except in patterning.  <br>"
              ELSE
               $ "KNN_MTOM.FlamingGorgeDaily" [date]
-             ENDIF COMMENTED_BY "CF: Change to use Outflow @ t-1 if Flaming Gorge Daily has not been calculated.   <br>"
+             ENDIF
             ELSE
              IF ( ( date < FGSpringReleaseStartDate ) COMMENTED_BY "Before Spring Releases start continue at base flows for the ULDE in March and April that will meet ULDE on May 1" )
              THEN
-              $ "FlamingGorge.Outflow" [@"t - 1"] COMMENTED_BY "CF: Change from a IF April use Outflow[@March&rcub; Else Outflow[@April]  <br>"
+              GET @INDEX i - 1.00000000 FROM flows
              ELSE
               IF ( ( date < FGSpringReleaseStartDate + RampUpDaysToPPC ) COMMENTED_BY "Ramping period up to Flaming Gorge PPC Release (or max release if below PPC)" )
               THEN
