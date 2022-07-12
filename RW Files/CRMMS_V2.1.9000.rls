@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 09:44 July 11, 2022
+# Created 08:26 July 12, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -8778,7 +8778,7 @@ BEGIN
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG FALSE;
-    NOTES          "CF,20190204: Imported from CRSS. ";
+    NOTES          "CF,20220712: logic for Wet changed to MIN(GetNumberOfDaysAtBypass,MaxBypassDays) not MAX().<br><br>CF,20190204: Imported from CRSS. ";
     BEGIN
 
       WITH NUMERIC MaxBypassDays = "Max"( "RoundToNearestDay"( ( $ "FlamingGorge.Storage" [@"t - 1"] - "ElevationToStorage"( % "FlamingGorge", $ "FlamingGorgeData.MaxPE" [] ) + "PredictedFGInflow"( @"t", @"24:00:00 August Max DayOfMonth, Current Year" ) ) / "GetMaxOutflowGivenHW"( % "FlamingGorge", $ "FlamingGorge.Pool Elevation" [], @"t" ) ), 0.00000000 "day" ) DO
@@ -8795,7 +8795,7 @@ BEGIN
    THEN
     0.00000000 "day" COMMENTED_BY "In Dry years never bypass"
    ELSE
-    "Max"( "GetNumberOfDaysAtBypass"( $ "KNN_MTOM.SpringHClass" [] ), MaxBypassDays ) COMMENTED_BY "In wet years always bypass."
+    "Min"( "GetNumberOfDaysAtBypass"( $ "KNN_MTOM.SpringHClass" [] ), MaxBypassDays ) COMMENTED_BY "In wet years always bypass."
    ENDIF
   ENDIF
  ENDWITH COMMENTED_BY "Are we in Mod Dry, Ave, or Mod Wet?";
@@ -14852,32 +14852,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{1f47b2c4-85d1-4744-bae8-a3bde97bea49}";
+    UUID "{7fbb36f7-dde8-4129-84b9-258c017c158d}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{750a30ac-8ee0-4550-a94a-1558af6cf9ab}";
+    UUID "{00c83782-0116-4d9a-aa68-0057f02e415d}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{9d3bc2e1-5ce2-478a-9225-809c1b87b91a}";
+    UUID "{b17242b3-2b76-41b6-88a6-37088c17ef37}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{de128c01-d366-4875-8354-fdc8581cbbea}";
+    UUID "{df295746-58f5-47d0-91ae-aecbc938bb1c}";
 ;
 
   END
-  UUID "{b3c4bbb5-1d67-4107-8356-c9b196128538}";;
+  UUID "{24acb654-af90-4659-b0c4-447fc52f6c72}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14888,11 +14888,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{8c25862c-139d-4914-99dc-6238200d5ff1}";
+    UUID "{da98a2ad-a8e9-4f4f-be01-7457264f75b6}";
 ;
 
   END
-  UUID "{69077058-1a1e-4e88-acd4-b57fa7ddbba1}";;
+  UUID "{ba063788-e8ac-4cd3-a376-c826f415dbac}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14903,11 +14903,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{595753b8-a669-4a44-9fb3-ef56c6372d5c}";
+    UUID "{9c50bdb9-f294-4d84-ad88-d7fd0ab5487b}";
 ;
 
   END
-  UUID "{731d9a61-b520-48a5-a460-0afb52025694}";;
+  UUID "{0b1c5655-2479-43a1-92ca-4b49616f48f6}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14918,11 +14918,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{c054fea1-9fae-491d-9113-cd22224a1575}";
+    UUID "{cbbb0382-4236-42aa-8c3b-4a687ed5dcef}";
 ;
 
   END
-  UUID "{22f4641a-ccd5-4afa-850a-6cf5b34019b6}";;
+  UUID "{425665c9-2a40-4a1c-a966-584c4c8e5f74}";;
 
   REPORT_GROUP "Aspinall Slot Report Group";
   DESCRIPTION  "";
