@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 17:51 July 12, 2022
+# Created 11:17 July 13, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset";
@@ -14837,32 +14837,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{fbdf9e9a-a0fd-4c2c-a74a-25ee676fd823}";
+    UUID "{fd5f440d-8d4f-4bf2-bfc2-cdd690ddd71e}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{ce993d15-f504-4931-a1e0-d732e581b25b}";
+    UUID "{f9e91e16-271b-4015-a4a6-807f081f8ab4}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{c673fe63-6f10-4e5c-8e66-89606cb37cff}";
+    UUID "{6074f562-fcdc-45b7-9eb9-3495a73d1693}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{c984a1d7-0f41-40a9-9297-ad0f5c9ec5fc}";
+    UUID "{7ed3ea70-ab56-4ff6-89be-1c041678ad37}";
 ;
 
   END
-  UUID "{33daa811-fa51-4bbb-b70a-3e38d3ff261f}";;
+  UUID "{fa611381-ee0c-4ea1-b389-1a538bbd82c0}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -14873,11 +14873,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{fa9ee9ff-7283-40cd-a047-e0976f9cf9c8}";
+    UUID "{1646f1c9-1fd4-4600-9ea2-b783771b686b}";
 ;
 
   END
-  UUID "{3c698e86-41d8-4eba-9710-f81fd00e5384}";;
+  UUID "{cdb95856-e2f1-4939-a11d-526e823e506d}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -14888,11 +14888,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{4a8b035e-64d2-43c3-9b3e-215eb6491cd6}";
+    UUID "{9067da1f-5245-4a48-a525-0fc40a053daa}";
 ;
 
   END
-  UUID "{60b14bee-0342-4f89-b4e5-a637698c4fcf}";;
+  UUID "{a8e7f5bf-14fe-449a-be9c-b28520a49291}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -14903,11 +14903,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{2649ec3a-a7e2-41c2-9794-97b945402176}";
+    UUID "{f5032125-78fb-4065-afaf-685e0b08f36b}";
 ;
 
   END
-  UUID "{2d26cd5b-7156-424e-b26a-ef8b09c28bac}";;
+  UUID "{ccda2145-325d-46bf-9369-b9d026a4315b}";;
 
   REPORT_GROUP "Aspinall Slot Report Group";
   DESCRIPTION  "";
