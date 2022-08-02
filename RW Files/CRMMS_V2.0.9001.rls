@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 8.4.4 Patch
-# Created 11:25 July 22, 2022
+# Created 14:43 August 2, 2022
 # 
 RULESET
 NAME "CRMMS Ruleset w/ DROA + Powell Updates";
@@ -1475,6 +1475,8 @@ BEGIN
  ELSE
   "SetNegativeToZero"( ExcessImpICS - CurrentYearImpToSysWater )
  ENDIF COMMENTED_BY "Take delivery of trib ICS creation if in QS or FC <br>";
+
+            $ "ICS Credits.VacatedCurrentYearImpICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] := CurrentYearImpToSysWater;
 
       END_WITH_STATEMENT;
 
@@ -12234,7 +12236,7 @@ BEGIN
       WITH NUMERIC SysEff_CAWCD_Brock = $ "ICS Credits.SystemEfficiencyICS_Brock_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
   WITH NUMERIC SysEff_CAWCD_YDP = $ "ICS Credits.SystemEfficiencyICS_YDP_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_YDP_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
    WITH NUMERIC SysEff_CAWCD = $ "ICS Credits.SystemEfficiencyICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationSysEff_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-    WITH NUMERIC BiNat_CAWCD = $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryBiNat_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+    WITH NUMERIC BiNat_CAWCD = $ "ICS Credits.BiNationalICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryBiNat_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedBiNationalICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
      WITH NUMERIC nontaxableECICScreation = $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
       WITH NUMERIC IntendedECICSCreationConvertedToPretax = "SetNegativeToZero"( $ "ICS Credits.IntendedECICSCreationToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - nontaxableECICScreation ) / "SystemTaxAdjustment_DCP"(  ) + "Min"( $ "ICS Credits.IntendedECICSCreationToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"], nontaxableECICScreation ) DO
        WITH NUMERIC CAWCDpreliminaryECICScreation = $ "ICSProjectionData.AnnualCreationEC_CAWCD_Preliminary" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.IntendedECICSCreationToBeDelivered_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
@@ -12269,7 +12271,7 @@ BEGIN
                        WITH LIST AZFiming = "AZ Firming Agreement"(  ) DO
                         WITH NUMERIC FirmingBalanceAZ = $ "ICS Credits.FirmingAgreementBalance_AZ" [@"24:00:00 December Max DayOfMonth, Previous Year"] - GET @INDEX 1.00000000 FROM AZFiming DO
                          WITH NUMERIC FirmingBalanceUS = $ "ICS Credits.FirmingAgreementBalance_US" [@"24:00:00 December Max DayOfMonth, Previous Year"] - GET @INDEX 2.00000000 FROM AZFiming DO
-                          WITH NUMERIC ECICS_CAWCD = $ "ICS Credits.ExtraordinaryConservationICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + AnnualCreationEC_CAWCDnontaxed + AnnualCreationEC_CAWCDtaxed * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+                          WITH NUMERIC ECICS_CAWCD = $ "ICS Credits.ExtraordinaryConservationICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + AnnualCreationEC_CAWCDnontaxed + AnnualCreationEC_CAWCDtaxed * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryEC_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedECICSToBeSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
                            WITH NUMERIC DCP_CAWCD = $ "ICS Credits.DCPICS_CAWCD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliveryDCP_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] + CAWCDdcpCONTRIBUTIONasDCPICSnontaxed + CAWCDdcpCONTRIBUTIONasDCPICStaxed * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.VacatedDCPICSToSysWater_CAWCD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
                             WITH NUMERIC Bank_CAWCD = DCP_CAWCD + BiNat_CAWCD + ECICS_CAWCD DO
                              WITH NUMERIC TotalICS_CAWCD = ECICS_CAWCD + BiNat_CAWCD + SysEff_CAWCD + DCP_CAWCD DO
@@ -12320,7 +12322,7 @@ BEGIN
       WITH NUMERIC MWD_SysEffICS_Brock = $ "ICS Credits.SystemEfficiencyICS_Brock_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_Brock_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
   WITH NUMERIC MWD_SysEffICS_YDP = $ "ICS Credits.SystemEfficiencyICS_YDP_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_YDP_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
    WITH NUMERIC MWD_SysEffICS = $ "ICS Credits.SystemEfficiencyICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationSysEff_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-    WITH NUMERIC MWD_BiNatICS = $ "ICS Credits.BiNationalICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryBiNat_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+    WITH NUMERIC MWD_BiNatICS = $ "ICS Credits.BiNationalICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryBiNat_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedBiNationalICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
      WITH NUMERIC ConversionofExistingECICSforDCPcontribution = $ "ICS Credits.AnnualConversionPreviousECtoDCP_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
       WITH NUMERIC MWDnontaxeableICScreation = $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
        WITH NUMERIC IntendedECICSCreationConvertedToPretax = "SetNegativeToZero"( $ "ICS Credits.IntendedECICSCreationToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - MWDnontaxeableICScreation ) / "SystemTaxAdjustment_DCP"(  ) + "Min"( $ "ICS Credits.IntendedECICSCreationToBeDelivered_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"], MWDnontaxeableICScreation ) DO
@@ -12357,7 +12359,7 @@ BEGIN
                     WITH NUMERIC AnnualCreationEC_MWDtaxed = GET @INDEX 1.00000000 FROM AnnualCreationEC_MWDlist DO
                      WITH NUMERIC MWDdcpCONTRIBUTIONasDCPICSnontaxed = GET @INDEX 0.00000000 FROM MWDdcpCONTRIBUTIONasDCPICSlist DO
                       WITH NUMERIC MWDdcpCONTRIBUTIONasDCPICStaxed = GET @INDEX 1.00000000 FROM MWDdcpCONTRIBUTIONasDCPICSlist DO
-                       WITH NUMERIC MWD_ECICS = $ "ICS Credits.ExtraordinaryConservationICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + AnnualCreationEC_MWDnontaxed + AnnualCreationEC_MWDtaxed * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - ConversionofExistingECICSforDCPcontribution DO
+                       WITH NUMERIC MWD_ECICS = $ "ICS Credits.ExtraordinaryConservationICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + AnnualCreationEC_MWDnontaxed + AnnualCreationEC_MWDtaxed * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryEC_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - ConversionofExistingECICSforDCPcontribution - $ "ICS Credits.VacatedECICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
                         WITH NUMERIC MWD_DCPICS = $ "ICS Credits.DCPICS_MWD" [@"24:00:00 December Max DayOfMonth, Previous Year"] + ConversionofExistingECICSforDCPcontribution + MWDdcpCONTRIBUTIONasDCPICSnontaxed + MWDdcpCONTRIBUTIONasDCPICStaxed * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryDCP_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryDCP_Coachella" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedDCPICSToSysWater_MWD" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
                          WITH NUMERIC MWD_TotalICS = MWD_ECICS + MWD_SysEffICS + MWD_BiNatICS + MWD_DCPICS DO
                           WITH NUMERIC MWD_ICSBank = MWD_ECICS + MWD_BiNatICS + MWD_DCPICS DO
@@ -12406,7 +12408,7 @@ BEGIN
   WITH NUMERIC SysEffYDP = $ "ICS Credits.SystemEfficiencyICS_YDP_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] - $ "ICS Credits.AnnualDeliverySysEff_YDP_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
    WITH NUMERIC SysEff = $ "ICS Credits.SystemEfficiencyICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationSysEff_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliverySysEff_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
     WITH NUMERIC BiNat = $ "ICS Credits.BiNationalICS_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] + $ "ICS Credits.AnnualCreationBiNat_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.AnnualDeliveryBiNat_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedBiNationalICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
-     WITH NUMERIC Imported = $ "ICS Credits.AnnualCreationImp_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryImp_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
+     WITH NUMERIC Imported = $ "ICS Credits.AnnualCreationImp_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryImp_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedCurrentYearImpICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
       WITH NUMERIC Tributary = $ "ICS Credits.AnnualCreationTrib_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] * "SystemTaxAdjustment_DCP"(  ) - $ "ICS Credits.AnnualDeliveryTrib_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] - $ "ICS Credits.VacatedCurrentYearTribICSToSysWater_SNWA" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
        WITH NUMERIC ConversionofExistingECICSforDCPcontribution = $ "ICS Credits.AnnualConversionPreviousECtoDCP_NV" [@"24:00:00 December Max DayOfMonth, Current Year"] DO
         WITH NUMERIC SNWAnontaxeableICScreation = $ "ICS Credits.AnnualDeliveryEC_NV" [@"24:00:00 December Max DayOfMonth, Previous Year"] DO
@@ -15597,32 +15599,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{d2fabe8e-193f-4f25-971e-9aa93a2375d8}";
+    UUID "{a398d6fb-e4a0-4ce6-944d-79618865a3ab}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{ffbeb557-2b3d-4698-ba7b-347a16d93879}";
+    UUID "{a3b92b96-3191-4210-8383-f66b0d0257dc}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{2c8eb971-febe-45e6-8c87-35a393abfa9b}";
+    UUID "{fbbc8885-6540-48db-a0be-6d6e3f5d0fc6}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{4ac3dd6d-c7bf-4abd-b4a4-46c6de5a581e}";
+    UUID "{1cea299f-31ab-4a8c-b6db-8442cff64341}";
 ;
 
   END
-  UUID "{9c561847-bcf5-42dc-80d4-dfa6bdd68cc9}";;
+  UUID "{fae0a98c-5f04-4eca-9a21-b82e54ee0f95}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15633,11 +15635,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{a8c6abd3-acb8-40c0-b313-4523ddc8f239}";
+    UUID "{40830bb5-0140-4478-aece-b1d38668a3ee}";
 ;
 
   END
-  UUID "{880f8920-bf30-4e0d-92f1-134bf6b6782a}";;
+  UUID "{1d68695b-7fab-48c7-9c14-b969a4f6dbbe}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15648,11 +15650,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{26b29c1b-b005-46da-b336-e339784f68cc}";
+    UUID "{ff78213a-4a5a-4e04-98df-f9d1e4eb0ad2}";
 ;
 
   END
-  UUID "{6efdfe7a-7478-4e82-8009-a5f15bbc6bf8}";;
+  UUID "{0fc3be50-0de9-4050-98d0-5508a4483423}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15663,11 +15665,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{6108f4d0-38e5-4192-8550-a79eb699de1f}";
+    UUID "{fb5cbb91-98f3-4f3b-90fd-e1c96b911910}";
 ;
 
   END
-  UUID "{7e54cb20-1221-4541-a813-e3939800f42f}";;
+  UUID "{30f3c151-5131-4bdc-bc5e-15ff73eb1a7a}";;
 
   REPORT_GROUP "Report Group";
   DESCRIPTION  "";
