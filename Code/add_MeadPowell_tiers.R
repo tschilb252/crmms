@@ -218,3 +218,104 @@ gg_year_range <- function(gg) {
 gg_y_range <- function(gg) {
   layer_scales(gg)$y$range$range
 }
+
+## minus 480
+add_mead_tiers_minus480 <- function(gg, xrange = NULL) {
+  
+  yrs <- gg_year_range(gg)
+  
+  if (2007 %in% yrs) {
+    ig_start <- 2007
+    ig_label <- 2007.1
+  } else {
+    ig_start <- min(yrs)
+    ig_label <- ig_start + 0.1
+  }
+  ann_size <- 2.9
+  line_size <- 0.6
+  
+  max_y <- ceiling(gg_y_range(gg)[2]/50)*50
+  max_yrs = max(yrs)
+  
+  if (!is.null(xrange)) {
+    xminI =  xrange[1]
+    xmaxI =  xrange[2]
+  } else {
+    xminI = ig_start+.01
+    xmaxI = max_yrs-.01
+  }
+  
+  gg <- gg +
+    geom_segment(aes(
+      x = xminI, y = 1140.58, xend = xmaxI, yend = 1140.58), 
+      size = line_size, 
+      color ='#808080', linetype = 3
+    ) + 
+    annotate(
+      "text", x = ig_label, y = 1150.5, 
+      label = "Adjusted Surplus Condition (Adj. >1,145')", 
+      size = ann_size, hjust = 0, fontface = "italic", color = '#505050'
+    ) +
+    geom_segment(aes(
+      x = xminI, y = 1069.01, xend = xmaxI, yend = 1069.01), 
+      size = line_size, 
+      color ='#808080', 
+      linetype = 3
+    ) +
+    annotate(
+      "text", x = ig_label, y = 1115,
+      label = "Adjusted Normal Condition",#\n(1,075' to 1,145')", 
+      size = ann_size, 
+      hjust = 0, 
+      fontface = "italic", 
+      color = '#505050'
+    ) +
+    geom_segment(aes(
+      x = xminI, y = 1043.25, xend = xmaxI, yend = 1043.25), 
+      size = line_size, 
+      color ='#808080', linetype = 3
+    ) +
+    annotate(
+      "text", x = ig_label, y = 1056, 
+      label = "Adjusted Level 1 Shortage Condition", #\n(1,050' to 1,075')", 
+      size = ann_size, 
+      hjust = 0, 
+      fontface = "italic", 
+      color = '#505050'
+    ) +
+    geom_segment(aes(
+      x = xminI, y = 1017.37, xend = xmaxI, yend = 1017.37), 
+      size = line_size, 
+      color ='#808080', linetype = 3
+    ) +
+    annotate(
+      "text", x = ig_label, y = 1029, 
+      label = "Adjusted Level 2 Shortage Condition",#\n(1,025' to 1,050')", 
+      size = ann_size, 
+      hjust = 0, 
+      fontface = "italic", 
+      color = '#505050'
+    ) +
+    annotate(
+      "text", x = ig_label, y = 1015, 
+      label = "Adjusted Level 3 Shortage Condition",#\n(<1,025')", 
+      size = ann_size, 
+      hjust = 0, 
+      fontface = "italic", 
+      color = '#505050'
+    )
+  
+  gg
+}
+
+gg_year_range <- function(gg) {
+  tmp <- layer_scales(gg)$x$range$range
+  tmp <- tmp[1]:tmp[2]
+  
+  tmp
+}
+
+gg_y_range <- function(gg) {
+  layer_scales(gg)$y$range$range
+}
+

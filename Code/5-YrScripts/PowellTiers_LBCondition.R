@@ -1,9 +1,10 @@
 # ============================================================================
-# Compare Last official CRMMS-ESP run 
+# Compare CRMMS-ESP run 
 #   Powell Tiers / Powell TARV / LB Condition
-#   LB uses / ICS bank / MSCP 
+#   
 # ============================================================================
-rm(list=ls())
+rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
+
 library(tidyverse)
 library(lubridate)
 library(zoo)
@@ -11,27 +12,8 @@ library(RWDataPlyr)
 library(CRSSIO)
 library(patchwork)
 
-## -- Inputs
-scenario_dir <- c(
-  'Apr2022_v3',
-  # 'Apr2022_v2',
-  'Apr2022_v1',
-  'Mar2022'
-  # 'Feb2022',
-  # 'Jan2022_OG',
-  # 'Jan2022_updatedRegression'
-)
-scenarios <- c(
-  'Apr. 2022 v3',
-  # 'Apr. 2022 v2',
-  'Apr. 2022 v1',  
-  'Mar. 2022'
-  # 'Feb. 2022',
-  # 'Jan. 2022',
-  # 'Jan. 2022 Updated Regres.'
-)
-fig_dir_nm <- 'Aprv1,3_Mar_Compare'
-# ^ script will create directory with this name if it doesn't exist
+## -- Inputs if run alone
+# source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -51,7 +33,7 @@ slots = c(
   'Shortage.Shortage Flag', 'PowellData.ReleaseTier',
   'PowellData.TargetAnnualReleaseVolume',
   'PowellData.ActualAnnualReleaseVolume', 'DCP BWSCP Flags.LB DCP BWSCP'#,
- # 'MeadData.PEforCondition'#, "PowellData.EffectiveEOCYPoolElevWith823Rel"
+  # 'MeadData.EffectiveEOCYPoolElev', "PowellData.EffectiveEOCYPoolElevWith823Rel"
 )
 rdfs = rep('flags.rdf', length(slots))
 
@@ -143,7 +125,7 @@ g <- ggplot(tiers_pwl, aes(fill=`Powell Tiers`, y=cnt, x=Scenario)) +
   facet_grid(~ Year)
 print(g)
 ggsave(filename = file.path(fig_dir, paste0('Powell_tiers', end_file_nm, '.png')), 
-       width=6, height=6)
+       width=7, height=6)
 
 ## Output Powell difs to excel file
 tier_difs = df_i %>% select(Scenario, Year, Trace, `Powell Tiers`) %>%
@@ -169,6 +151,10 @@ openxlsx::writeData(wb1, 'diffs', diffsCom)
 
 openxlsx::saveWorkbook(wb1, file.path(fig_dir, paste0('Powell_diffs', end_file_nm, '.xlsx')), overwrite = T)
 
+## testing
+# df_i %>% filter(tarv == 7000 & Year == 2023) %>%
+#   select(Scenario, `DCP Contribution`) %>% table()
+
 # LB Shortage
 df_short = df_i %>% select(Scenario, Trace, Year, `Lower Basin Shortage`) %>%
   group_by(Scenario, Year, `Lower Basin Shortage`) %>%
@@ -183,19 +169,25 @@ g <- ggplot(df_short, aes(fill=`Lower Basin Shortage`, y=cnt, x=Scenario)) +
   theme(axis.text.x = element_text(angle = 55,  hjust = 1)) +
   facet_grid(~ Year)
 print(g)
-ggsave(filename = file.path(fig_dir, paste0('LB_shortage', end_file_nm, '.png')), width=6, height=6)
+ggsave(filename = file.path(fig_dir, paste0('LB_shortage', end_file_nm, '.png')), 
+       width=7, height=6)
 
-# LB Shortage/DCP
-g <- ggplot(df_i, aes(Scenario, fill = `DCP Contribution`)) +
+# DCP Contribution
+df_dcp = df_i %>% select(Scenario, Trace, Year, `DCP Contribution`) %>%
+  group_by(Scenario, Year, `DCP Contribution`) %>%
+  summarise(cnt = n()/30*100)
+
+g <- ggplot(df_dcp, aes(fill=`DCP Contribution`, y=cnt, x=Scenario)) +
   bor_theme() +
   scale_fill_manual(values = DCPlab)+
-  geom_bar(stat = "count") +
-  scale_y_continuous(breaks = seq(0,35, by =5), expand = c(0,0)) +
-  labs(x = '', y = 'Number of Traces') +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  geom_bar(stat="identity") +
+  labs(x = '', y = 'Percent of Traces') +
+  scale_y_continuous(breaks = seq(0,100, by =20), expand = c(0,0)) +
+  theme(axis.text.x = element_text(angle = 55,  hjust = 1)) +
   facet_grid(~ Year)
 print(g)
-ggsave(filename = file.path(fig_dir, paste0('LB_DCP_Contribution', end_file_nm, '.png')), width=6, height=6)
+ggsave(filename = file.path(fig_dir, paste0('LB_DCP_Contribution', end_file_nm, '.png')), 
+       width=7, height=6)
 
 ## check Mead difs & save to wb
 tier_difs = df_i %>% select(Scenario, Year, Trace, `DCP Contribution`) %>%
