@@ -19,16 +19,21 @@ fig_dir <- file.path('Output Data', fig_dir_nm)
 data_dir <- file.path('rdfOutput', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
+source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
-max_date = '2026-12' #'2024-12'
+max_date = '2024-12' #'2024-12'
 
 ## Trace Select?
 single_Trace <- FALSE
 
-# single_Trace <- TRUE
-# sel_trace <- c(6)
-# trace_yr = 1991 + sel_trace - 4
+single_Trace <- TRUE
+sel_trace <- c(25)
+
+trace_yr = 1991 + sel_trace - 4
+
+## plot metric units
+metricUnitsPlot = FALSE #TRUE
 
 print(paste('-------- Max Date is:', max_date, ';',
             ifelse(single_Trace, 'Single trace output',
@@ -52,6 +57,7 @@ plot_title = paste('CRMMS-ESP Run Comparison')
 file_nm_end <- ifelse(single_Trace, 
                       paste0('_thru', format(ym(max_date), "%Y"), '_', trace_yr),
                       paste0('_thru', format(ym(max_date), "%Y")))
+if (metricUnitsPlot) { file_nm_end <- paste0(file_nm_end, '_MX') }
 
 ## -- Read in CRMMS results
 
@@ -90,7 +96,6 @@ df_scens <- data.table::as.data.table(df)  %>%
   select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
   filter(Date <= as.yearmon(format(ym(max_date), "%Y-%m"))) %>%
   mutate(Scenario = factor(Scenario, levels = scenarios)) %>%
-  # bring units into line with crss
   mutate(Value = ifelse(Variable %in% c('Mead.Inflow', 'Mead.Storage', "Powell.Outflow",
                                         "Powell.Inflow", "Powell.Storage"),
                         Value * 10^3,
@@ -116,11 +121,25 @@ slots = c(slots, slot_add)
 df_units = rbind.data.frame(df_units,
                             cbind(Variable = slot_add, Unit = slot_units))
 
+## -- Quick filter of data
+test = df_scens %>% 
+  # mutate(Year = year(Date)) %>%
+  filter(month(Date) == 9 & year(Date) == 2022) %>%
+  # mutate(Year = ifelse(month(Date) >= 10,
+  #             year(Date) + 1, year(Date))) %>%
+  # filter(Year == 2023) %>%
+  filter(Variable %in% c('Powell.Storage', 'Mead.Storage')) %>% 
+  group_by(Scenario, Year, Trace) %>%
+  summarise(ann = sum(Value)) %>%
+  filter(Trace == 15) %>%
+  pivot_wider(values_from = 'ann', names_from = Year)
+
+
 
 ## -- Combine and process
 if (single_Trace) {
   df_scens <- df_scens %>%
-    filter(Trace == sel_trace)
+    filter(Trace %in% sel_trace)
 }
 
 df_all <- df_scens %>%
@@ -144,12 +163,12 @@ df_Stat = df_all %>%
                         levels = c("mdl.10", "mdl.50", "mdl.90"),
                         labels = c("10%", "50%", "90%")))
 
-## -- Setup plot
+# ## -- Setup plot
 if (length(scenarios) == 2) {
   custom_Tr_col <- c('#f1c40f', '#8077ab')
 } else {
   custom_Tr_col <- scales::hue_pal()(length(scenarios))
-}
+# }
 custom_cloud <- custom_Tr_col 
 custom_size <- rep(c(1,1.15,1), length(scenarios))
 custom_lt <- rep(c(2,1,4), length(scenarios))
@@ -165,10 +184,9 @@ df_Cloud = df_Cloud %>%
   mutate(Scenario = factor(Scenario, levels = scenarios))
 
 ## loop through slots
-# pdf(file.path(fig_dir, paste0("Compare_monthlyCloud", file_nm_end, ".png")),
-#     width = 11, height = 9)
 for (i in 1:length(slots)) {
   slot_i = slots[i]
+  unit_i = df_units %>% filter(Variable == slot_i)
   
   if (grepl('Pool Elevation', slot_i)) {
     y_breaks <- seq(0, 10025, 25)
@@ -177,7 +195,6 @@ for (i in 1:length(slots)) {
   } else {
     y_breaks <- NULL
     y_breaks2 <- NULL
-    unit_i = df_units %>% filter(Variable == slot_i)
     ylabPE = paste0(sapply(strsplit(slot_i, split= ".", fixed = TRUE), tail, 1L),
                     ' (', unit_i$Unit, ')')
   }
@@ -232,36 +249,74 @@ for (i in 1:length(slots)) {
              fill = guide_legend(nrow = length(scenarios), order = 2))
   }
   
-  # add tiers to Powell and Mead PE
-  if (slot_i == 'Powell.Pool Elevation') {
-    yrange = filter(df_Stat, Variable == slot_i) %>% 
-      mutate(min = min(mdl.min), max = max(mdl.max)) %>% select(min, max) %>% distinct()
-    ymin = ifelse(yrange$min < 3500, yrange$min-15, 3490)
-    ymax = ifelse(yrange$max > 3575, yrange$max+15, 3575)
+  # secondary axis if metric units
+  if (metricUnitsPlot) {
+    if (unit_i[1,2] == 'ft') {
+      unitFunc <- ~ft_to_m(.)
+      units_nm = 'meters'
+    } else if (unit_i[1,2] == 'acre-ft/month') {
+      unitFunc <- ~af_to_cm(.)
+      units_nm = 'cubic meters/month'
+    } else if (unit_i[1,2] == 'acre-ft') {
+      unitFunc <- ~af_to_cm(.)
+      units_nm = 'cubic meters'
+    } else if (unit_i[1,2] == 'maf') {
+      unitFunc <- ~maf_to_bcm(.)
+      units_nm = 'billion cubic meters'
+    } else {
+      stop('unknown unit conversion')
+    }
     
-    g <- gg %>%
-      add_powell_tiers(xrange) +
+    gg <- gg +
       scale_y_continuous(
-        labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
-        limits = c(ymin, ymax), expand = c(0,0))
-    print(g)
-  } else if (slot_i == 'Mead.Pool Elevation') {
-    yrange = filter(df_Stat, Variable == slot_i) %>% 
-      mutate(min = min(mdl.min), max = max(mdl.max)) %>% select(min, max) %>% distinct()
-    ymin = ifelse(yrange$min < 1000, yrange$min*.99, 1000)
-    ymax = ifelse(yrange$max > 1100, yrange$max*1.01, 1100)
-    
-    g <- gg %>%
-      add_mead_tiers(xrange) +
-      scale_y_continuous(
-        labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
-        limits = c(ymin, ymax), expand = c(0,0))
-    print(g)
-  } else {
-    print(gg)
+        labels = scales::comma, 
+        sec.axis = sec_axis(
+          trans = unitFunc,
+          labels = scales::comma,
+          name = paste0("(", units_nm, ")")
+        ))
   }
+  
+  # add tiers to Powell and Mead PE
+  if (slot_i %in% c('Powell.Pool Elevation', 'Mead.Pool Elevation')) {
+    yrange = filter(df_Stat, Variable == slot_i) %>% 
+      mutate(min = min(mdl.min), max = max(mdl.max)) %>% select(min, max) %>% distinct()
+    
+    
+    if (slot_i == 'Powell.Pool Elevation') {
+      ymin = ifelse(yrange$min < 3500, yrange$min-15, 3490)
+      ymax = ifelse(yrange$max > 3575, yrange$max+15, 3575)
+      g <- gg %>%
+        add_powell_tiers(xrange) 
+    } else {
+      ymin = ifelse(yrange$min < 1000, yrange$min*.99, 1000)
+      ymax = ifelse(yrange$max > 1100, yrange$max*1.01, 1100)
+      g <- gg %>%
+        add_mead_tiers(xrange) 
+    }
+    
+    if (metricUnitsPlot) {
+      g <- g +
+        scale_y_continuous(
+          labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
+          limits = c(ymin, ymax), expand = c(0,0),
+          sec.axis = sec_axis(
+            trans = ~ft_to_m(.),
+            breaks = ft_to_m(y_breaks),
+            labels = scales::comma,
+            name = 'Pool Elevation (meters)'
+          ))
+    } else {
+      g <- g +
+        scale_y_continuous(
+          labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
+          limits = c(ymin, ymax), expand = c(0,0))
+    }
+  } else {
+    g <- gg
+  }
+  print(g)
   
   ggsave(file.path(fig_dir, paste0(slot_i, "_mdlComp_monthlyCloud", file_nm_end, ".png")), 
          width = 8.5, height = 7)
 }
-# dev.off()
