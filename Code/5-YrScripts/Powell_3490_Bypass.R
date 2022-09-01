@@ -3,43 +3,24 @@
 #   Powell Bypass Release
 #   Exceedance plot of Vol below 3490 
 # ============================================================================
-rm(list=ls())
+rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
+
 library(tidyverse)
 library(lubridate)
 library(zoo)
 library(RWDataPlyr)
 
-## -- Inputs
-scenario_dir <- c(
-  'Apr2022_v3',
-  # 'Apr2022_v2',
-  'Apr2022_v1',
-  'Mar2022'
-  # 'Feb2022',
-  # 'Jan2022_OG',
-  # 'Jan2022_updatedRegression'
-)
-scenarios <- c(
-  'Apr. 2022 v3',
-  # 'Apr. 2022 v2',
-  'Apr. 2022 v1',  
-  'Mar. 2022'
-  # 'Feb. 2022',
-  # 'Jan. 2022',
-  # 'Jan. 2022 Updated Regres.'
-)
-fig_dir_nm <- 'Aprv1,3_Mar_Compare'
-# ^ script will create directory with this name if it doesn't exist
+## -- Inputs if run alone
+# source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
 fig_dir <- file.path('Output Data', fig_dir_nm)
 data_dir <- file.path('rdfOutput', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
-source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ## Max Date
-max_date = '2026-12' #'2024-12'
+max_date = '2027-12' #'2024-12'
 
 stor_minPP = 3997.1625 # from CRMMS at 3490
 

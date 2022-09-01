@@ -20,11 +20,9 @@ library(patchwork)
 fig_dir <- file.path('Output Data', fig_dir_nm)
 data_dir <- file.path('rdfOutput', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
-source(file.path('Code', 'add_MeadPowell_tiers.R'))
-source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
-max_yr = 2026
+max_yr = 2027
 end_file_nm = paste0('_', max_yr)
 
 ##### ------ Tiers | Powell Release ------ #####
@@ -34,9 +32,11 @@ slots = c(
   'PowellData.ReleaseTier',
   'PowellData.TargetAnnualReleaseVolume',
   'PowellData.ActualAnnualReleaseVolume',
+  'PowellData.ConstrainedLEBT_LowerElevBalancingBranch',
   "Powell.Storage", "Powell.Pool Elevation",
   "PowellInflow.Unregulated"
 )
+
 rdfs = c(rep('flags.rdf', length(slots)-3),
          rep('res.rdf', 2),
          rep('streamflow.rdf', 1))
@@ -54,11 +54,12 @@ rwa1 <- rwd_agg(data.frame(
 ))
 
 # read/process RDFs
-df<- NULL
+df <- NULL
 for (i in 1:length(scenarios)) {
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
-    rdf_dir = data_dir[i]
+    rdf_dir = data_dir[i], 
+    find_all_slots = FALSE
   )
   scen_res$Scenario <- scenarios[i]
   
@@ -82,17 +83,28 @@ PowellTierLab = c('Equalization Tier' = '#a6cee3',
 ## process df
 decSlots = c('PowellData.ReleaseTier',
              'PowellData.TargetAnnualReleaseVolume',
-             'PowellData.ActualAnnualReleaseVolume')
+             'PowellData.ActualAnnualReleaseVolume',
+             'PowellData.ConstrainedLEBT_LowerElevBalancingBranch')
 df_i = df_scens %>% 
   filter(Variable %in% decSlots) %>%
   pivot_wider(names_from = Variable, values_from = Value) %>%
   filter(year(Date) <= max_yr) %>%
   mutate(Year = year(Date),
+         PowellData.ConstrainedLEBT_LowerElevBalancingBranch = 
+           ifelse(is.na(PowellData.ConstrainedLEBT_LowerElevBalancingBranch),
+                  5, PowellData.ConstrainedLEBT_LowerElevBalancingBranch), 
          act_TARV = PowellData.ActualAnnualReleaseVolume/10^3,
          tarv = PowellData.TargetAnnualReleaseVolume/10^3,
          `Powell Tiers` = factor(PowellData.ReleaseTier, 
                                  levels = c(0,1,2,3),
-                                 labels = names(PowellTierLab))) %>%
+                                 labels = names(PowellTierLab)),
+         `ConstLEBT` = factor(PowellData.ConstrainedLEBT_LowerElevBalancingBranch, 
+                              levels = c(0, 1,2,3,5),
+                              labels = c('Other Tier', 'Balancing', 
+                                         'Constrained Bal', 'Rel 7.0', 'No Data')),
+         `IsConstLEBT` = factor(ifelse(PowellData.ConstrainedLEBT_LowerElevBalancingBranch == 2, 
+                                'Constrained', 'Not Constrained'),
+                                levels = c('Constrained', 'Not Constrained'))) %>%
   select(-all_of(decSlots), -Date) 
 
 ## agg streamflow
@@ -133,12 +145,12 @@ df_agg = left_join(df_agg, df_eowy, by = c('Scenario', 'Trace', 'Year'))
 
 
 ## ---plot data
-plot_yr = 2023
+plot_yr = 2024
 df_plot = df_agg %>%
   filter(Year == plot_yr)
 
 ## -- Powell Unreg Inflow vs. TARV
-ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
+ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = IsConstLEBT, 
                     alpha = 0.5, size = 1.5)) +
   geom_point() +
   scale_y_continuous(labels = scales::comma) +
@@ -150,46 +162,11 @@ ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario,
   guides(alpha = 'none', size = 'none') +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
-ggsave(file.path(fig_dir, paste0("PowellRel_unregInflow_",plot_yr, ".png")), 
-       width = 8, height = 7)
-
-## -- Powell Unreg Inflow vs. TARV -- In metric
-breaks_y = seq(7000, 11000, by = 500)
-breaks_y2 = seq(7000, 11000, by = 250)
-breaks_x = seq(0, 20000, by = 1000)
-breaks_x2 = seq(0, 20000, by = 500)
-ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
-                    alpha = 0.5, size = 1.5)) +
-  geom_point() +
-  scale_y_continuous(
-    labels = scales::comma, breaks = breaks_y, minor_breaks = breaks_y2,
-    sec.axis = sec_axis(
-      trans = ~kaf_to_mcm(.)/1000,
-      breaks = kaf_to_mcm(breaks_y)/1000,
-      labels = scales::comma,
-      name = 'WY Annual Release Volume (bcm)'
-    )) +
-  scale_x_continuous(labels = scales::comma, 
-                     breaks = breaks_x, minor_breaks = breaks_x2,
-                     sec.axis = sec_axis(
-                       trans = ~kaf_to_mcm(.)/1000,
-                       breaks = kaf_to_mcm(breaks_x)/1000,
-                       labels = scales::comma,
-                       name = 'WY Annual Unregulated Inflow (bcm)'
-                     )) +
-  theme_bw() +
-  labs(x = 'WY Annual Unregulated Inflow (kaf)',
-       y = 'WY Annual Release Volume (kaf)',
-       title = paste('Powell Unreg. Inflow vs. TARV for WY', plot_yr)) +
-  guides(alpha = 'none', size = 'none') +
-  theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
-        axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
-
-ggsave(file.path(fig_dir, paste0("PowellRel_unregInflow_",plot_yr, "_MX.png")), 
+ggsave(file.path(fig_dir, paste0("PowellRel_unregInflow_ConstLEBT_",plot_yr, ".png")), 
        width = 8, height = 7)
 
 ## -- Powell TARV vs. EOWY PE
-ggplot(df_plot, aes(act_TARV, eowyPE, color = Scenario, shape = Scenario, 
+ggplot(df_plot, aes(act_TARV, eowyPE, color = Scenario, shape = IsConstLEBT, 
                     alpha = 0.5, size = 1.5)) +
   geom_point() +
   scale_x_continuous(labels = scales::comma) +
@@ -200,50 +177,113 @@ ggplot(df_plot, aes(act_TARV, eowyPE, color = Scenario, shape = Scenario,
        title = paste('Powell Comparison', plot_yr))+
   guides(alpha = 'none', size = 'none')
 
-ggsave(file.path(fig_dir, paste0("PowellRel_eowyPE_",plot_yr, ".png")), 
+ggsave(file.path(fig_dir, paste0("PowellRel_eowyPE_ConstLEBT_",plot_yr, ".png")), 
        width = 8, height = 7)
 
-## -- Powell unreg inflow vs. min power pool deficit
-ggplot(df_plot, aes(ann, MinPPDeficit, color = Scenario, shape = Scenario, 
-                    alpha = 0.5,
-                    size = 1.5)) +
-  geom_hline(yintercept = 0, color = 'gray') +
-  geom_point() +
-  # scale_alpha_manual(values = rep(0.2, length(scenarios))) +
-  scale_y_continuous(labels = scales::comma) +
-  scale_x_continuous(labels = scales::comma) +
-  theme_bw() +
-  labs(x = 'WY Annual Unregulated Inflow (kaf)',
-       y = 'WY Minimum Power Pool Deficit (kaf)',
-       title = paste('Powell Unreg. Inflow vs. Volume Below Min Power Pool for WY', plot_yr)) +
-  guides(alpha = 'none', size = 'none')
 
-ggsave(file.path(fig_dir, paste0("PowellMinPP_unregInflow_",plot_yr, ".png")), 
-       width = 8, height = 7)
 
-# ##test
-# df_plot2 = df_agg %>%
-#   select(Scenario, Trace, Year, tarv, ann) %>%
-#   filter(Year %in% 2023:2024) %>%
-#   group_by(Trace, Scenario) %>%
-#   summarise(ann = sum(ann), 
-#             tarv = sum(tarv)) %>%
-#   filter(Scenario != 'Scen. 2')
-# df_2 = df_agg %>%
-#   filter(Year == 2024 & Scenario != 'Scen. 2')%>%
-#   select(Scenario, Trace, `Powell Tiers`) %>% right_join(df_plot2)
+df_agg %>%
+  filter(`Powell Tiers` == 'Lower Elevation\nBalancing Tier') %>%
+  filter(ConstLEBT == 'Constrained Bal')
+df_scens %>%
+  filter(Variable == 'Powell.Pool Elevation' & Trace == 15 & year(Date) == 2024)
+
 # 
-# ggplot(df_2, aes(ann, tarv, color = Scenario, shape = `Powell Tiers`, 
+# 
+# ## -- Powell Unreg Inflow vs. TARV
+# ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
 #                     alpha = 0.5, size = 1.5)) +
 #   geom_point() +
 #   scale_y_continuous(labels = scales::comma) +
 #   scale_x_continuous(labels = scales::comma, breaks = seq(0, 40000, by = 1000)) +
 #   theme_bw()+
 #   labs(x = 'WY Annual Unregulated Inflow (kaf)',
-#        y = 'Target Annual Release Volume (kaf)',
+#        y = 'WY Annual Release Volume (kaf)',
 #        title = paste('Powell Unreg. Inflow vs. TARV for WY', plot_yr))+
 #   guides(alpha = 'none', size = 'none') +
 #   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 # 
-# ggsave(file.path(fig_dir, paste0("TARV_unregInflow_",plot_yr, "3.png")), 
+# ggsave(file.path(fig_dir, paste0("PowellRel_unregInflow_",plot_yr, ".png")), 
 #        width = 8, height = 7)
+# 
+# ## -- Powell Unreg Inflow vs. TARV -- In metric
+# breaks_y = seq(7000, 11000, by = 500)
+# breaks_y2 = seq(7000, 11000, by = 250)
+# breaks_x = seq(0, 20000, by = 1000)
+# breaks_x2 = seq(0, 20000, by = 500)
+# ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
+#                     alpha = 0.5, size = 1.5)) +
+#   geom_point() +
+#   scale_y_continuous(
+#     labels = scales::comma, breaks = breaks_y, minor_breaks = breaks_y2,
+#     sec.axis = sec_axis(
+#       trans = ~kaf_to_mcm(.)/1000,
+#       breaks = kaf_to_mcm(breaks_y)/1000,
+#       labels = scales::comma,
+#       name = 'WY Annual Release Volume (bcm)'
+#     )) +
+#   scale_x_continuous(labels = scales::comma, 
+#                      breaks = breaks_x, minor_breaks = breaks_x2,
+#                      sec.axis = sec_axis(
+#                        trans = ~kaf_to_mcm(.)/1000,
+#                        breaks = kaf_to_mcm(breaks_x)/1000,
+#                        labels = scales::comma,
+#                        name = 'WY Annual Unregulated Inflow (bcm)'
+#                      )) +
+#   theme_bw() +
+#   labs(x = 'WY Annual Unregulated Inflow (kaf)',
+#        y = 'WY Annual Release Volume (kaf)',
+#        title = paste('Powell Unreg. Inflow vs. TARV for WY', plot_yr)) +
+#   guides(alpha = 'none', size = 'none') +
+#   theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
+#         axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
+# 
+# ggsave(file.path(fig_dir, paste0("Rel_unregInflow_",plot_yr, "_MX.png")), 
+#        width = 8, height = 7)
+# 
+# 
+# 
+# ## -- Powell unreg inflow vs. min power pool deficit
+# ggplot(df_plot, aes(ann, MinPPDeficit, color = Scenario, shape = Scenario, 
+#                     alpha = 0.5,
+#                     size = 1.5)) +
+#   geom_hline(yintercept = 0, color = 'gray') +
+#   geom_point() +
+#   # scale_alpha_manual(values = rep(0.2, length(scenarios))) +
+#   scale_y_continuous(labels = scales::comma) +
+#   scale_x_continuous(labels = scales::comma) +
+#   theme_bw() +
+#   labs(x = 'WY Annual Unregulated Inflow (kaf)',
+#        y = 'WY Minimum Power Pool Deficit (kaf)',
+#        title = paste('Powell Unreg. Inflow vs. Volume Below Min Power Pool for WY', plot_yr)) +
+#   guides(alpha = 'none', size = 'none')
+# 
+# ggsave(file.path(fig_dir, paste0("MinPP_unregInflow_",plot_yr, ".png")), 
+#        width = 8, height = 7)
+# 
+# # ##test
+# # df_plot2 = df_agg %>%
+# #   select(Scenario, Trace, Year, tarv, ann) %>%
+# #   filter(Year %in% 2023:2024) %>%
+# #   group_by(Trace, Scenario) %>%
+# #   summarise(ann = sum(ann), 
+# #             tarv = sum(tarv)) %>%
+# #   filter(Scenario != 'Scen. 2')
+# # df_2 = df_agg %>%
+# #   filter(Year == 2024 & Scenario != 'Scen. 2')%>%
+# #   select(Scenario, Trace, `Powell Tiers`) %>% right_join(df_plot2)
+# # 
+# # ggplot(df_2, aes(ann, tarv, color = Scenario, shape = `Powell Tiers`, 
+# #                     alpha = 0.5, size = 1.5)) +
+# #   geom_point() +
+# #   scale_y_continuous(labels = scales::comma) +
+# #   scale_x_continuous(labels = scales::comma, breaks = seq(0, 40000, by = 1000)) +
+# #   theme_bw()+
+# #   labs(x = 'WY Annual Unregulated Inflow (kaf)',
+# #        y = 'Target Annual Release Volume (kaf)',
+# #        title = paste('Powell Unreg. Inflow vs. TARV for WY', plot_yr))+
+# #   guides(alpha = 'none', size = 'none') +
+# #   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+# # 
+# # ggsave(file.path(fig_dir, paste0("TARV_unregInflow_",plot_yr, "3.png")), 
+# #        width = 8, height = 7)

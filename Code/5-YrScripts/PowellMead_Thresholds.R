@@ -21,7 +21,7 @@ dir.create(fig_dir, showWarnings = F)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ## Max Date
-max_date = '2026-12' #'2024-12'
+max_date = '2027-12' #'2024-12'
 
 slots = c("Mead.Pool Elevation", "Powell.Pool Elevation")
 file_nm_end <- paste0('_thru', format(ym(max_date), "%Y"))
@@ -113,7 +113,7 @@ summ_pwl %>%
     y = 'Percent of Traces (%)', x = NULL, 
     color = NULL, 
     linetype = "Powell Elevations", #size = NULL, fill = NULL,
-    title = "Percent of Traces Below Lake Powell Elevations in any month of a year"
+    title = "Percent of Traces Below Lake Powell Elevations in any Month of the Water Year"
   ) 
 ggsave(file.path(fig_dir, paste0("Thresholds_Powell",  file_nm_end, ".png")), 
        width = 7, height = 5)
@@ -143,7 +143,7 @@ df_powell_thresholdsDATE %>% ungroup() %>%
   labs(
     y = 'Percent of Traces (%)', x = NULL, 
     color = NULL, #size = NULL, fill = NULL,
-    title = "Percent of Traces Below Lake powell Elevations in each month"
+    title = "Percent of Traces Below Lake Powell Elevations in each Month"
   ) +
   facet_grid(thresh2 ~ .)
 ggsave(file.path(fig_dir, paste0("Thresholds_PowellMonthly",  file_nm_end, ".png")), 
@@ -189,7 +189,7 @@ summ_mead %>%
     y = 'Percent of Traces (%)', x = NULL, 
     color = NULL, 
     linetype = "Mead Elevations", #size = NULL, fill = NULL,
-    title = "Percent of Traces Below Lake Mead Elevations in any month of a year"
+    title = "Percent of Traces Below Lake Mead Elevations in any Month of the Year"
   ) 
 ggsave(file.path(fig_dir, paste0("Thresholds_Mead",  file_nm_end, ".png")), 
        width = 7, height = 5)
@@ -219,7 +219,7 @@ df_mead_thresholdsDATE %>% ungroup() %>%
   labs(
     y = 'Percent of Traces (%)', x = NULL, 
     color = NULL, #size = NULL, fill = NULL,
-    title = "Percent of Traces Below Lake Mead Elevations in each month"
+    title = "Percent of Traces Below Lake Mead Elevations in each Month"
   ) +
   facet_grid(thresh2 ~ .)
 

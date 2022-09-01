@@ -178,8 +178,11 @@ ggsave(file = file.path(fig_dir, paste0(slots, '_CDF_WY', wyI, '.png')),
 # average of wy annuals
 df_ann %>% 
   group_by(Scenario, wy) %>%
-  # summarise(avgI = mean(ann_wy)) %>% 
-  summarise(avgI = quantile(ann_wy,0.5)) %>% 
+  # summarise(avgI = mean(ann_wy)) %>%
+  # summarise(avgI = quantile(ann_wy,0.5)/9603.392*100) %>% 
+  summarise(avgI = quantile(ann_wy,0.5)) %>%
   ungroup() %>%
   pivot_wider(names_from = Scenario, values_from = avgI)
 
+
+df_ann %>% filter(Trace == 25)
