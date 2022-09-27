@@ -133,24 +133,24 @@ df_agg = left_join(df_agg, df_eowy, by = c('Scenario', 'Trace', 'Year'))
 
 
 ## ---plot data
-plot_yr = 2024
+plot_yr = 2023
 df_plot = df_agg %>%
   filter(Year == plot_yr)
 
 ## -- Powell Unreg Inflow vs. TARV
-ggplot(df_plot, aes(ann, tarv, color = Scenario, shape = Scenario, 
+ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
                     alpha = 0.5, size = 1.5)) +
   geom_point() +
   scale_y_continuous(labels = scales::comma) +
   scale_x_continuous(labels = scales::comma, breaks = seq(0, 40000, by = 1000)) +
   theme_bw()+
   labs(x = 'WY Annual Unregulated Inflow (kaf)',
-       y = 'Target Annual Release Volume (kaf)',
+       y = 'WY Annual Release Volume (kaf)',
        title = paste('Powell Unreg. Inflow vs. TARV for WY', plot_yr))+
   guides(alpha = 'none', size = 'none') +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
-ggsave(file.path(fig_dir, paste0("TARV_unregInflow_",plot_yr, ".png")), 
+ggsave(file.path(fig_dir, paste0("PowellRel_unregInflow_",plot_yr, ".png")), 
        width = 8, height = 7)
 
 ## -- Powell Unreg Inflow vs. TARV -- In metric
@@ -158,7 +158,7 @@ breaks_y = seq(7000, 11000, by = 500)
 breaks_y2 = seq(7000, 11000, by = 250)
 breaks_x = seq(0, 20000, by = 1000)
 breaks_x2 = seq(0, 20000, by = 500)
-ggplot(df_plot, aes(ann, tarv, color = Scenario, shape = Scenario, 
+ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
                     alpha = 0.5, size = 1.5)) +
   geom_point() +
   scale_y_continuous(
@@ -167,7 +167,7 @@ ggplot(df_plot, aes(ann, tarv, color = Scenario, shape = Scenario,
       trans = ~kaf_to_mcm(.)/1000,
       breaks = kaf_to_mcm(breaks_y)/1000,
       labels = scales::comma,
-      name = 'Target Annual Release Volume (bcm)'
+      name = 'WY Annual Release Volume (bcm)'
     )) +
   scale_x_continuous(labels = scales::comma, 
                      breaks = breaks_x, minor_breaks = breaks_x2,
@@ -179,28 +179,28 @@ ggplot(df_plot, aes(ann, tarv, color = Scenario, shape = Scenario,
                      )) +
   theme_bw() +
   labs(x = 'WY Annual Unregulated Inflow (kaf)',
-       y = 'Target Annual Release Volume (kaf)',
+       y = 'WY Annual Release Volume (kaf)',
        title = paste('Powell Unreg. Inflow vs. TARV for WY', plot_yr)) +
   guides(alpha = 'none', size = 'none') +
   theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
         axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
 
-ggsave(file.path(fig_dir, paste0("TARV_unregInflow_",plot_yr, "_MX.png")), 
+ggsave(file.path(fig_dir, paste0("PowellRel_unregInflow_",plot_yr, "_MX.png")), 
        width = 8, height = 7)
 
 ## -- Powell TARV vs. EOWY PE
-ggplot(df_plot, aes(tarv, eowyPE, color = Scenario, shape = Scenario, 
+ggplot(df_plot, aes(act_TARV, eowyPE, color = Scenario, shape = Scenario, 
                     alpha = 0.5, size = 1.5)) +
   geom_point() +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma, breaks = seq(3000, 3700, by = 5)) +
   theme_bw()+
   labs(y = 'EOWY Pool Elevation (ft)',
-       x = 'Target Annual Release Volume (kaf)',
+       x = 'WY Annual Release Volume (kaf)',
        title = paste('Powell Comparison', plot_yr))+
   guides(alpha = 'none', size = 'none')
 
-ggsave(file.path(fig_dir, paste0("TARV_eowyPE_",plot_yr, ".png")), 
+ggsave(file.path(fig_dir, paste0("PowellRel_eowyPE_",plot_yr, ".png")), 
        width = 8, height = 7)
 
 ## -- Powell unreg inflow vs. min power pool deficit
@@ -218,7 +218,7 @@ ggplot(df_plot, aes(ann, MinPPDeficit, color = Scenario, shape = Scenario,
        title = paste('Powell Unreg. Inflow vs. Volume Below Min Power Pool for WY', plot_yr)) +
   guides(alpha = 'none', size = 'none')
 
-ggsave(file.path(fig_dir, paste0("MinPP_unregInflow_",plot_yr, ".png")), 
+ggsave(file.path(fig_dir, paste0("PowellMinPP_unregInflow_",plot_yr, ".png")), 
        width = 8, height = 7)
 
 # ##test

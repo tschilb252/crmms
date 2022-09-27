@@ -23,7 +23,7 @@ dir.create(fig_dir, showWarnings = F)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ## Max Date
-max_yr = 2026
+max_yr = 2027
 end_file_nm = paste0('_', max_yr)
 
 ##### ------ Tiers | Powell Release ------ #####
@@ -200,7 +200,7 @@ openxlsx::writeData(wb, 'MeadDCP', tier_difs)
 
 # check Mead eocy pes and shortage
 tr_dif = tier_difs %>% filter(diff == FALSE) %>% select(Year, Trace)
-pe_difs = df_i %>% select(Scenario, Year, Trace, `DCP Contribution`, tarv)#, MeadPEDeter) #%>%
+pe_difs = df_i %>% select(Scenario, Year, Trace, `DCP Contribution`, act_TARV)#, MeadPEDeter) #%>%
 diffsCom = left_join(tr_dif, pe_difs)
 openxlsx::addWorksheet(wb, 'diffs')
 openxlsx::writeData(wb, 'diffs', diffsCom)
@@ -208,7 +208,7 @@ openxlsx::writeData(wb, 'diffs', diffsCom)
 openxlsx::saveWorkbook(wb, file.path(fig_dir, paste0('MeadDCP_diffs', end_file_nm, '.xlsx')), overwrite = T)
 
 
-# TARV boxplot doplot
+# act_TARV boxplot doplot
 i_breaks = c(seq(1000,7000, by = 500), 7480, seq(8000,20000, by = 500)) 
 g <- ggplot(df_i, aes(Year, act_TARV, fill = Scenario)) +
   bor_theme() +
@@ -221,7 +221,7 @@ g <- ggplot(df_i, aes(Year, act_TARV, fill = Scenario)) +
   theme(legend.position="top") +
   facet_grid(`Powell Tiers` ~ ., scales = 'free_y')
 print(g)
-ggsave(filename = file.path(fig_dir, paste0('Powell_TARVbyTier', end_file_nm, '.png')), width=6, height=7)
+ggsave(filename = file.path(fig_dir, paste0('Powell_RelbyTier', end_file_nm, '.png')), width=6, height=7)
 
 # Total TARV; no facet
 g <- ggplot(df_i, aes(Year, act_TARV, fill = Scenario)) +
@@ -232,11 +232,11 @@ g <- ggplot(df_i, aes(Year, act_TARV, fill = Scenario)) +
   guides(fill = guide_legend(nrow = length(scenarios), order = 2)) +
   theme(legend.position="top")
 print(g)
-ggsave(filename = file.path(fig_dir, paste0('Powell_TARV', end_file_nm, '.png')), width=6, height=7)
+ggsave(filename = file.path(fig_dir, paste0('Powell_Rel', end_file_nm, '.png')), width=6, height=7)
 
 ## 
 # df_i %>% 
 #   filter(`Powell Tiers` == "Lower Elevation\nBalancing Tier") %>%
 #   group_by(Year, Scenario) %>%
-#   filter(tarv < 8230) %>%
+#   filter(act_TARV < 8230) %>%
 #   summarise(tr_les = n()/30)

@@ -21,10 +21,9 @@ dir.create(fig_dir, showWarnings = F)
 source(file.path('Code', '5-YrScripts', '5yr_table_naming.R'))
 
 ## Max Year
-max_yr = '2026' 
 trace_n = 30
 slots = c(coorOps_Powell_slots, coorOps_Mead_slots)
-file_nm_end <- paste0('_thru', max_yr)
+file_nm_end <- ''
 
 ## -- Read in CRMMS results
 

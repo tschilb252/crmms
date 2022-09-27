@@ -22,14 +22,13 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
-max_date = '2024-12' #'2024-12'
+max_date = '2026-12' #'2024-12'
 
 ## Trace Select?
 single_Trace <- FALSE
 
 single_Trace <- TRUE
 sel_trace <- c(25)
-
 trace_yr = 1991 + sel_trace - 4
 
 ## plot metric units
@@ -45,7 +44,7 @@ slots = c(
   "Mead.Outflow", "Powell.Outflow",
   "Mead.Storage", "Powell.Storage",
   # # "Mohave.Outflow", "Havasu.Outflow",
-  # "FlamingGorge.Outflow", "FlamingGorge.Storage",
+  "FlamingGorge.Outflow", "FlamingGorge.Storage",
   # "BlueMesa.Outflow", "BlueMesa.Storage",
   # "Navajo.Outflow", "Navajo.Storage",
   "PowellInflow.Unregulated"
@@ -122,17 +121,17 @@ df_units = rbind.data.frame(df_units,
                             cbind(Variable = slot_add, Unit = slot_units))
 
 ## -- Quick filter of data
-test = df_scens %>% 
-  # mutate(Year = year(Date)) %>%
-  filter(month(Date) == 9 & year(Date) == 2022) %>%
-  # mutate(Year = ifelse(month(Date) >= 10,
-  #             year(Date) + 1, year(Date))) %>%
-  # filter(Year == 2023) %>%
-  filter(Variable %in% c('Powell.Storage', 'Mead.Storage')) %>% 
-  group_by(Scenario, Year, Trace) %>%
-  summarise(ann = sum(Value)) %>%
-  filter(Trace == 15) %>%
-  pivot_wider(values_from = 'ann', names_from = Year)
+test = df_scens %>%
+  mutate(Year = year(Date)) %>%
+# #   filter(month(Date) == 9 & year(Date) == 2022) %>%
+# #   # mutate(Year = ifelse(month(Date) >= 10,
+# #   #             year(Date) + 1, year(Date))) %>%
+  filter(Year %in% 2024) %>%
+  filter(Variable %in% c('Powell.Pool Elevation')) %>%
+  # group_by(Scenario, Year, Trace, Variable) %>%
+  # summarise(ann = sum(Value)) %>%
+  filter(Trace == 25) 
+#   pivot_wider(values_from = 'ann', names_from = Year)
 
 
 
@@ -164,9 +163,9 @@ df_Stat = df_all %>%
                         labels = c("10%", "50%", "90%")))
 
 # ## -- Setup plot
-if (length(scenarios) == 2) {
-  custom_Tr_col <- c('#f1c40f', '#8077ab')
-} else {
+# if (length(scenarios) == 2) {
+#   custom_Tr_col <- c('#f1c40f', '#8077ab')
+# } else {
   custom_Tr_col <- scales::hue_pal()(length(scenarios))
 # }
 custom_cloud <- custom_Tr_col 
