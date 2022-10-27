@@ -330,7 +330,7 @@ ICS Credits.AnnualDeliveryEC_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualDeliverySysEff_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
 ICS Credits.AnnualDeliveryImp_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
 ICS Credits.AnnualICSDelivery_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
-ICS Credits.AnnualDeliveryTrib_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+ICS Credits.AnnualDeliveryCurrentYearTribConserv_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualNevadaStoredOffstream: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
 
 ICS Credits.Bank_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
