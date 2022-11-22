@@ -56,15 +56,13 @@ Crmms_DIR
 	|               |- CRMMS outputs spreadsheet for input into Analysis App 
 	|		|- CRMMS outputs spreadsheet for Monthly CRSS inputs
 	|		|- CRMMS outputs spreadsheet for Yearly CRSS inputs
-	|	
+	|		|- CRMMS outputs CSV file	
+        |
 	|- RW Files
 	|		|- RiverWare model
 	|		|- RiverWare rules
 	|		|- RiverWare model background photo
-	|
-	|- Report Files
-			|- CRMMS report template document
-			|- CRMMS report template slides
+
 
 
 ------------------------USBR POCs--------------------------------------------------------
