@@ -28,8 +28,7 @@ max_date = '2026-12' #'2024-12'
 single_Trace <- FALSE
 
 single_Trace <- TRUE
-sel_trace <- c(25)
-trace_yr = 1991 + sel_trace - 4
+sel_trace <- 1999 #2001, 2011, 1999
 
 ## plot metric units
 metricUnitsPlot = FALSE #TRUE
@@ -44,17 +43,17 @@ slots = c(
   "Mead.Outflow", "Powell.Outflow",
   "Mead.Storage", "Powell.Storage",
   # # "Mohave.Outflow", "Havasu.Outflow",
-  "FlamingGorge.Outflow", "FlamingGorge.Storage",
+  # "FlamingGorge.Outflow", "FlamingGorge.Storage",
   # "BlueMesa.Outflow", "BlueMesa.Storage",
   # "Navajo.Outflow", "Navajo.Storage",
   "PowellInflow.Unregulated"
   
-    # "Vallecito.Outflow", "Vallecito.Storage", "Navajo.Inflow", "Navajo.Pool Elevation",
-    # "NavajoInflow.ModUnregulated"
-  )
+  # "Vallecito.Outflow", "Vallecito.Storage", "Navajo.Inflow", "Navajo.Pool Elevation",
+  # "NavajoInflow.ModUnregulated"
+)
 plot_title = paste('CRMMS-ESP Run Comparison')
 file_nm_end <- ifelse(single_Trace, 
-                      paste0('_thru', format(ym(max_date), "%Y"), '_', trace_yr),
+                      paste0('_thru', format(ym(max_date), "%Y"), '_', sel_trace),
                       paste0('_thru', format(ym(max_date), "%Y")))
 if (metricUnitsPlot) { file_nm_end <- paste0(file_nm_end, '_MX') }
 
@@ -84,6 +83,7 @@ for (i in 1:length(scenarios)) {
   
   # keep only last 30 traces (ESP)
   trces = unique(scen_res$TraceNumber)
+  trces = trces[trces >= 0]
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
@@ -94,11 +94,13 @@ df_scens <- data.table::as.data.table(df)  %>%
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
   select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
   filter(Date <= as.yearmon(format(ym(max_date), "%Y-%m"))) %>%
-  mutate(Scenario = factor(Scenario, levels = scenarios)) %>%
+  mutate(Scenario = factor(Scenario, levels = scenarios),
+         Trace = 1991 + Trace - min(df$TraceNumber)) %>%
   mutate(Value = ifelse(Variable %in% c('Mead.Inflow', 'Mead.Storage', "Powell.Outflow",
                                         "Powell.Inflow", "Powell.Storage"),
                         Value * 10^3,
                         Value))
+# write.csv(df_scens, file.path(fig_dir, 'PowellMeadData.csv'))
 
 df_units = data.table::as.data.table(df) %>%
   select(Variable, Unit) %>% distinct()
@@ -121,17 +123,19 @@ df_units = rbind.data.frame(df_units,
                             cbind(Variable = slot_add, Unit = slot_units))
 
 ## -- Quick filter of data
-test = df_scens %>%
-  mutate(Year = year(Date)) %>%
-# #   filter(month(Date) == 9 & year(Date) == 2022) %>%
-# #   # mutate(Year = ifelse(month(Date) >= 10,
-# #   #             year(Date) + 1, year(Date))) %>%
-  filter(Year %in% 2024) %>%
-  filter(Variable %in% c('Powell.Pool Elevation')) %>%
-  # group_by(Scenario, Year, Trace, Variable) %>%
-  # summarise(ann = sum(Value)) %>%
-  filter(Trace == 25) 
-#   pivot_wider(values_from = 'ann', names_from = Year)
+# test = df_scens %>%
+#   mutate(Year = year(Date)) %>%
+# # #   filter(month(Date) == 9 & year(Date) == 2022) %>%
+# # #   # mutate(Year = ifelse(month(Date) >= 10,
+# # #   #             year(Date) + 1, year(Date))) %>%
+#   filter(Year %in% 2024) %>%
+#   filter(Variable %in% c('Powell.Pool Elevation')) %>%
+#   filter(Value <3450.5
+#          )
+#   # group_by(Scenario, Year, Trace, Variable) %>%
+#   # summarise(ann = sum(Value)) %>%
+#   filter(Trace == 25) 
+# #   pivot_wider(values_from = 'ann', names_from = Year)
 
 
 
@@ -166,7 +170,7 @@ df_Stat = df_all %>%
 # if (length(scenarios) == 2) {
 #   custom_Tr_col <- c('#f1c40f', '#8077ab')
 # } else {
-  custom_Tr_col <- scales::hue_pal()(length(scenarios))
+custom_Tr_col <- scales::hue_pal()(length(scenarios))
 # }
 custom_cloud <- custom_Tr_col 
 custom_size <- rep(c(1,1.15,1), length(scenarios))
@@ -237,6 +241,9 @@ for (i in 1:length(slots)) {
       legend.position = "bottom",
       legend.key.width = unit(1.2, "cm")
     )
+  if (unit_i$Unit == 'maf') {
+    gg <- gg + scale_y_continuous(labels = scales::comma, breaks = seq(0,60,1)) 
+  }
   
   # add specific breaks for pool elevation figs - results in a warning
   if (!single_Trace) {
@@ -283,15 +290,36 @@ for (i in 1:length(slots)) {
     
     
     if (slot_i == 'Powell.Pool Elevation') {
-      ymin = ifelse(yrange$min < 3500, yrange$min-15, 3490)
+      ymin = ifelse(yrange$min > 3500, 3490, ifelse(yrange$min > 3420, yrange$min-15, 3367.5))
       ymax = ifelse(yrange$max > 3575, yrange$max+15, 3575)
       g <- gg %>%
-        add_powell_tiers(xrange) 
+        add_powell_tiers(xrange) +
+        scale_y_continuous(
+          labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
+          limits = c(ymin, ymax), expand = c(0,0), 
+          sec.axis = sec_axis(
+            ~CRSSIO::elevation_to_storage(., "powell"),
+            breaks = CRSSIO::elevation_to_storage(y_breaks, "powell"),
+            labels = scales::comma_format(scale = 1/1000000, accuracy = 0.01),
+            name = "Storage (maf)"
+          )
+        )
+      
     } else {
-      ymin = ifelse(yrange$min < 1000, yrange$min*.99, 1000)
+      ymin = ifelse(yrange$min > 1000, 1000, ifelse(yrange$min > 910, yrange$min*.99, 890))
       ymax = ifelse(yrange$max > 1100, yrange$max*1.01, 1100)
       g <- gg %>%
-        add_mead_tiers(xrange) 
+        add_mead_tiers(xrange)  +
+        scale_y_continuous(
+          labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
+          expand = c(0,0), limits = c(ymin, ymax),
+          sec.axis = sec_axis(
+            ~CRSSIO::elevation_to_storage(., "mead"),
+            breaks = CRSSIO::elevation_to_storage(y_breaks, "mead"),
+            labels = scales::comma_format(scale = 1/1000000, accuracy = 0.01),
+            name = "Storage (maf)"
+          )
+        )
     }
     
     if (metricUnitsPlot) {
@@ -305,12 +333,12 @@ for (i in 1:length(slots)) {
             labels = scales::comma,
             name = 'Pool Elevation (meters)'
           ))
-    } else {
-      g <- g +
-        scale_y_continuous(
-          labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
-          limits = c(ymin, ymax), expand = c(0,0))
-    }
+    } #else {
+    #   g <- g +
+    #     scale_y_continuous(
+    #       labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
+    #       limits = c(ymin, ymax), expand = c(0,0))
+    # }
   } else {
     g <- gg
   }

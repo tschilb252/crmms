@@ -130,24 +130,30 @@ ggsave(filename = file.path(fig_dir, paste0('Powell_tiers', end_file_nm, '.png')
 ## Output Powell difs to excel file
 tier_difs = df_i %>% select(Scenario, Year, Trace, `Powell Tiers`) %>%
   pivot_wider(names_from = Scenario, values_from = `Powell Tiers`) 
-tier_difs$diff = ifelse(tier_difs[,3] == tier_difs[,4],
-                        T,F)
+# tier_difs$diff = ifelse(tier_difs[,3] == tier_difs[,4],
+#                         T,F)
 tarv_difs = df_i %>% select(Scenario, Year, Trace, tarv) %>%
   pivot_wider(names_from = Scenario, values_from = tarv) 
 powell_difs = left_join(tier_difs, tarv_difs, 
                         by = c('Year', 'Trace'),
                         suffix = c('_Tier', '_TARV')) %>%
   as.data.frame()
-powell_difs$TARV_newVog = powell_difs[,7] - powell_difs[,6] 
+arv_difs = df_i %>% select(Scenario, Year, Trace, act_TARV) %>%
+  pivot_wider(names_from = Scenario, values_from = act_TARV) 
+powell_difs = left_join(powell_difs, arv_difs, 
+                        by = c('Year', 'Trace'),
+                        suffix = c('', '_Actual.ARV')) %>%
+  as.data.frame()
+# powell_difs$TARV_newVog = powell_difs[,7] - powell_difs[,6] 
 wb1 <- openxlsx::createWorkbook("PwlDifs")
 openxlsx::addWorksheet(wb1, "PwlDifs")
 openxlsx::writeData(wb1, "PwlDifs", powell_difs)
 
-tr_dif = tier_difs %>% filter(diff == FALSE) %>% select(Year, Trace)
-tier_difs = df_i %>% select(Scenario, Year, Trace, `Powell Tiers`)#, PowellPEDeter)
-diffsCom = left_join(tr_dif, tier_difs)
-openxlsx::addWorksheet(wb1, 'diffs')
-openxlsx::writeData(wb1, 'diffs', diffsCom)
+# tr_dif = tier_difs %>% filter(diff == FALSE) %>% select(Year, Trace)
+# tier_difs = df_i %>% select(Scenario, Year, Trace, `Powell Tiers`)#, PowellPEDeter)
+# diffsCom = left_join(tr_dif, tier_difs)
+# openxlsx::addWorksheet(wb1, 'diffs')
+# openxlsx::writeData(wb1, 'diffs', diffsCom)
 
 openxlsx::saveWorkbook(wb1, file.path(fig_dir, paste0('Powell_diffs', end_file_nm, '.xlsx')), overwrite = T)
 
@@ -192,18 +198,18 @@ ggsave(filename = file.path(fig_dir, paste0('LB_DCP_Contribution', end_file_nm, 
 ## check Mead difs & save to wb
 tier_difs = df_i %>% select(Scenario, Year, Trace, `DCP Contribution`) %>%
   pivot_wider(names_from = Scenario, values_from = `DCP Contribution`) 
-tier_difs$diff = ifelse(tier_difs[,3] == tier_difs[,4],
-                        T,F)
+# tier_difs$diff = ifelse(tier_difs[,3] == tier_difs[,4],
+#                         T,F)
 wb <- openxlsx::createWorkbook("MeadDifs")
 openxlsx::addWorksheet(wb, 'MeadDCP')
 openxlsx::writeData(wb, 'MeadDCP', tier_difs)
 
 # check Mead eocy pes and shortage
-tr_dif = tier_difs %>% filter(diff == FALSE) %>% select(Year, Trace)
-pe_difs = df_i %>% select(Scenario, Year, Trace, `DCP Contribution`, act_TARV)#, MeadPEDeter) #%>%
-diffsCom = left_join(tr_dif, pe_difs)
-openxlsx::addWorksheet(wb, 'diffs')
-openxlsx::writeData(wb, 'diffs', diffsCom)
+# tr_dif = tier_difs %>% filter(diff == FALSE) %>% select(Year, Trace)
+# pe_difs = df_i %>% select(Scenario, Year, Trace, `DCP Contribution`, act_TARV)#, MeadPEDeter) #%>%
+# diffsCom = left_join(tr_dif, pe_difs)
+# openxlsx::addWorksheet(wb, 'diffs')
+# openxlsx::writeData(wb, 'diffs', diffsCom)
 
 openxlsx::saveWorkbook(wb, file.path(fig_dir, paste0('MeadDCP_diffs', end_file_nm, '.xlsx')), overwrite = T)
 
@@ -240,3 +246,4 @@ ggsave(filename = file.path(fig_dir, paste0('Powell_Rel', end_file_nm, '.png')),
 #   group_by(Year, Scenario) %>%
 #   filter(act_TARV < 8230) %>%
 #   summarise(tr_les = n()/30)
+
