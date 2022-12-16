@@ -2,9 +2,9 @@
 bor_theme <- function() {
   theme_bw() + 
     theme(panel.background = element_rect(fill = "transparent", colour = NA),
-    # plot.background = element_rect(fill = "transparent", colour = NA),
-    legend.background = element_rect(fill = "transparent", colour = NA),
-    legend.box.background = element_rect(fill = "transparent", colour = NA)) 
+          # plot.background = element_rect(fill = "transparent", colour = NA),
+          legend.background = element_rect(fill = "transparent", colour = NA),
+          legend.box.background = element_rect(fill = "transparent", colour = NA)) 
 }
 
 eq_tier_df <- function() {
@@ -41,7 +41,7 @@ add_powell_tiers <- function(gg, xrange = NULL) {
     ig_label <- 2007.1
   } else {
     ig_start <- min(yrs)
-    ig_label <- ig_start + 0.1
+    ig_label <- ig_start + (max(yrs) - min(yrs))/35
   }
   ann_size <- 2.9
   line_size <- 0.6
@@ -115,7 +115,20 @@ add_powell_tiers <- function(gg, xrange = NULL) {
       hjust = 0, 
       fontface = "italic", 
       color = '#505050'
-    )
+    ) +
+    geom_segment(aes(
+      x = xminI, y = 3370, xend = xmaxI, yend = 3370), 
+      size = 0.5, #line_size, 
+      color ='gray20', linetype = 2
+    ) +
+    annotate(
+      "text", x = ig_label, y = 3385, 
+      label = "Dead Pool\n(3,370')", 
+      size = ann_size, 
+      hjust = 0, 
+      fontface = "italic", 
+      color = 'gray20'
+    ) 
   
   gg
 }
@@ -129,7 +142,7 @@ add_mead_tiers <- function(gg, xrange = NULL) {
     ig_label <- 2007.1
   } else {
     ig_start <- min(yrs)
-    ig_label <- ig_start + 0.1
+    ig_label <- ig_start + (max(yrs) - min(yrs))/35
   }
   ann_size <- 2.9
   line_size <- 0.6
@@ -203,6 +216,32 @@ add_mead_tiers <- function(gg, xrange = NULL) {
       hjust = 0, 
       fontface = "italic", 
       color = '#505050'
+    ) +
+    geom_segment(aes(
+      x = xminI, y = 950, xend = xmaxI, yend = 950), 
+      size = line_size, 
+      color ='#808080', linetype = 3
+    ) +
+    annotate(
+      "text", x = ig_label, y = 960, 
+      label = "Power Pool\n(950')", 
+      size = ann_size, 
+      hjust = 0, 
+      fontface = "italic", 
+      color = '#505050'
+    ) +
+    geom_segment(aes(
+      x = xminI, y = 895, xend = xmaxI, yend = 895), 
+      size = line_size, 
+      color ='grey20', linetype = 2
+    ) +
+    annotate(
+      "text", x = ig_label, y = 905, 
+      label = "Dead Pool\n(895')", 
+      size = ann_size, 
+      hjust = 0, 
+      fontface = "italic", 
+      color = 'grey20'
     )
   
   gg

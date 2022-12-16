@@ -100,9 +100,9 @@ df_i = df_scens %>%
                                  labels = names(PowellTierLab)),
          `ConstLEBT` = factor(PowellData.ConstrainedLEBT_LowerElevBalancingBranch, 
                               levels = c(0, 1,2,3,5),
-                              labels = c('Other Tier', 'Balancing', 
-                                         'Constrained Bal', 'Rel 7.0', 'No Data')),
-         `IsConstLEBT` = factor(ifelse(PowellData.ConstrainedLEBT_LowerElevBalancingBranch == 2, 
+                              labels = c('Other Tier', 'Standard Balancing', 
+                                         'Constrained Bal', 'Constrained to 7.0', 'No Data')),
+         `IsConstLEBT` = factor(ifelse(PowellData.ConstrainedLEBT_LowerElevBalancingBranch %in% c(2,3), 
                                 'Constrained', 'Not Constrained'),
                                 levels = c('Constrained', 'Not Constrained'))) %>%
   select(-all_of(decSlots), -Date) 
@@ -182,9 +182,10 @@ ggsave(file.path(fig_dir, paste0("PowellRel_eowyPE_ConstLEBT_",plot_yr, ".png"))
 
 
 
-df_agg %>%
+test =df_agg %>%
   filter(`Powell Tiers` == 'Lower Elevation\nBalancing Tier') %>%
-  filter(ConstLEBT == 'Constrained Bal')
+  # filter(ConstLEBT == 'Constrained Bal')
+  filter(IsConstLEBT == 'Constrained')
 df_scens %>%
   filter(Variable == 'Powell.Pool Elevation' & Trace == 15 & year(Date) == 2024)
 

@@ -42,7 +42,7 @@ slots = c(
   'ICS Credits.AnnualCreationEC_NV', 'ICS Credits.AnnualDeliveryEC_NV', 
   'ICS Credits.AnnualCreationSysEff_NV', 'ICS Credits.AnnualDeliverySysEff_NV',
   'ICS Credits.AnnualCreationImp_NV', 'ICS Credits.AnnualDeliveryImp_NV',
-  'ICS Credits.AnnualCreationTrib_NV', 'ICS Credits.AnnualDeliveryTrib_NV',
+  'ICS Credits.AnnualCreationTrib_NV',  'ICS Credits.AnnualDeliveryCurrentYearTribConserv_NV',
   'ICS Credits.AnnualDeliveryBiNat_CA', 'ICS Credits.AnnualDeliveryBiNat_NV'
 )
 rdfs = rep('LB_UseICS.rdf', length(slots))

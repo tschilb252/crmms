@@ -17,7 +17,7 @@ whatsoever to any individual or group entity by reason of any use made thereof.
 	and running it within the interface, or you can run the model via the Batch program 
 	included in this package. 
 - It is imperative that you execute the "1.SetCrmmsDirectory.bat" program to set the 
-	Crmms_DIR Environment Variable on your local machine. The Environment Variable is 
+	CRMMS_DIR Environment Variable on your local machine. The Environment Variable is 
 	referenced within the model to find the required input and output files and 
 	directories.
 - Open the CRMMS RiverWare model located in the "RW Files" directory. In RiverWare, navigate
@@ -25,11 +25,13 @@ whatsoever to any individual or group entity by reason of any use made thereof.
 	Configuration. Click "Start" after first making sure the Excel workbooks with 
 	ensemble forecasts and outputs are closed. This will run the Most Probable and ESP 
 	forecasts. 
-- Model outputs are automatically placed by the model in the "Output Data" directory
-	and runs initiated from the RiverWare interface will output results to the existing
-	files. Open the Excel workbook "Crmms_EnsembleOutput.xlsm", navigate to the "Comparison"
+- Model outputs in excel and csv formats are automatically placed by the model in the "Output Data" 
+	directory and runs initiated from the RiverWare interface will output results to the existing
+	files. Open the Excel workbook "CRMMS_EnsembleOutput.xlsm", navigate to the "Comparison"
 	tab, and check that the Start Timestep is correct. Then click the "Load All Data" button 
-	to load new output traces to the workbook. 
+	to load new output traces to the workbook. Model outputs in rdf format are automatically
+        placed in the rdfOutput folder. These files can be used with custom R scripts or other
+        rdf file porocessing tools, such as GPAT by CADSWES.
 - Model inputs are queried by the model from the "Inflow Forecasts" and "Input Data"
 	directories. The model relies on specific naming conventions so please do not rename 
 	files in these directories.
@@ -38,7 +40,9 @@ whatsoever to any individual or group entity by reason of any use made thereof.
 Crmms_DIR
 	|
 	|- Read Me text file
-	|- Program to set the Crmms_DIR Environment Variable
+	|- Program to set the CRMMS_DIR Environment Variable
+        |- Reference Guide for running CRMMS-ESP
+        |- Model Assumptions and Changes document
 	|
 	|- Inflow Forecasts
 	|		|- Ensemble Forecast input analysis spreadsheet
