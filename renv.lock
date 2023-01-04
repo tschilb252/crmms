@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "3.6.3",
+    "Version": "4.0.5",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -18,28 +18,28 @@
     },
     "CRSSIO": {
       "Package": "CRSSIO",
-      "Version": "0.8.2",
+      "Version": "0.9.1",
       "Source": "GitHub",
       "Remotes": "BoulderCodeHub/CoRiverNF",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "CRSSIO",
       "RemoteUsername": "BoulderCodeHub",
-      "RemoteRef": "master",
-      "RemoteSha": "0d55498d3326c1460713a4de55fe0635babdc003",
-      "Hash": "dbc0f6f7b13b4f8614c876e950bce860"
+      "RemoteRef": "HEAD",
+      "RemoteSha": "75c891f9e208aa9050a062060d7af953a5e630df",
+      "Hash": "96aeee8b32b641abf03cd2a74b48973d"
     },
     "CoRiverNF": {
       "Package": "CoRiverNF",
-      "Version": "0.7.0",
+      "Version": "2019.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "CoRiverNF",
       "RemoteUsername": "BoulderCodeHub",
-      "RemoteRef": "master",
-      "RemoteSha": "7bd2c586a7df9cc00bb55b7621591a9f49cb8feb",
-      "Hash": "200769d1020b86662cb5825d77b92e9b"
+      "RemoteRef": "HEAD",
+      "RemoteSha": "e0fabd23816c500a56f14602fa08019f3bb40752",
+      "Hash": "f42c63bbffb43a708c43da04648d9053"
     },
     "DBI": {
       "Package": "DBI",
@@ -291,10 +291,10 @@
     },
     "fansi": {
       "Package": "fansi",
-      "Version": "0.4.0",
+      "Version": "1.0.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b31d9e5d051553d1177083aeba04b5b9"
+      "Hash": "83a8afdbe71839506baa9f90eebad7ec"
     },
     "farver": {
       "Package": "farver",
@@ -655,10 +655,10 @@
     },
     "ps": {
       "Package": "ps",
-      "Version": "1.3.0",
+      "Version": "1.6.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "919a32c940a25bc95fd464df9998a6ba"
+      "Hash": "32620e2001c1dce1af49c49dccbb9420"
     },
     "purrr": {
       "Package": "purrr",
@@ -741,6 +741,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "202260e1b2c410edc086d5b8f1ed946e"
+    },
+    "rpart": {
+      "Package": "rpart",
+      "Version": "4.1-15",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "9787c1fcb680e655d062e7611cadf78e"
     },
     "rprojroot": {
       "Package": "rprojroot",
