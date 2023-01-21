@@ -16,13 +16,13 @@ library(zoo)
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
-fig_dir <- file.path('Output Data', fig_dir_nm)
-data_dir <- file.path('rdfOutput', scenario_dir)
+fig_dir <- file.path('Results', fig_dir_nm)
+data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
-source(file.path('Code', 'add_MeadPowell_tiers.R'))
+source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
-max_date = '2026-12' #'2024-12'
+max_date = '2027-12' #'2024-12'
 
 slots = c("PowellInflow.Unregulated")
 file_nm_end <- paste0('_thru', format(ym(max_date), "%Y"))
@@ -52,7 +52,8 @@ for (i in 1:length(scenarios)) {
   scen_res$Scenario <- scenarios[i]
   
   # keep only last 30 traces (ESP)
-  trces = unique(scen_res$TraceNumber)
+  trces = sort(unique(scen_res$TraceNumber))
+  trces = trces[trces >= 0]
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
@@ -125,7 +126,6 @@ for (i in 1:length(scenarios)) {
 
 df_ann = df_scens %>%
   group_by(Scenario, Variable, Trace, wy) %>%
-  # summarise(ann_wy = sum(Value)) %>%
   summarise(ann_wy = sum(Value), 
             n = n()) %>%
   left_join(df_clim, by = 'Variable') %>%
@@ -138,51 +138,60 @@ if (any(df_ann$n != 12)) {
   df_ann = df_ann %>% filter(n == 12)
 }
 
+## -- Setup plot
+if (length(scenarios) == 2) {
+  custom_Tr_col <- c('#f1c40f', '#8077ab')
+} else {
+  custom_Tr_col <- scales::hue_pal()(length(scenarios))
+}
+
 ggplot(df_ann, aes(factor(wy), ann_wy, fill = Scenario)) +
   CRSSIO::stat_boxplot_custom() +
+  scale_fill_manual(values = custom_Tr_col) +
+  scale_y_continuous(labels = scales::comma, breaks = seq(0,30000, by = 2000)) +
   bor_theme() +
-  # geom_hline(yintercept = 9603.36, color = 'grey', linetype = 'dashed') +
   labs(y = 'Lake Powell Unreg. Inflow (kaf)', x = 'WY')
 
 ggsave(file = file.path(fig_dir, paste0(slots, '_WY', file_nm_end, '.png')),
        height = 6, width = 7)
 
+# CDF of WYs
+minWY = min(df_ann$wy)
+breaks_x = seq(0, 40000, by = 1000)
+breaks_x2 = seq(0, 40000, by = 500)
+for (i in 0:1) {
+  wyI = minWY + i
+  df_ann %>% 
+    filter(wy == wyI) %>%
+    ggplot() +
+    bor_theme() +
+    stat_ecdf(aes(x=ann_wy, color= Scenario)) +
+    scale_color_manual(values = custom_Tr_col) +
+    labs(y = 'f(x)', x = 'Unregulated Inflow (kaf)',
+         title = paste('CDF of WY', wyI , 'Lake Powell Unregulated Inflow'))+
+    scale_y_continuous(breaks = seq(0,1,by = .1), limits = c(0,1), expand = c(0,0)) +
+    # scale_x_continuous(labels = scales::comma, breaks = seq(0,30000, by = 2000)) +
+    scale_x_continuous(labels = scales::comma, 
+                       breaks = breaks_x, minor_breaks = breaks_x2,
+                       sec.axis = sec_axis(
+                         trans = ~unregkaf_to_poa(.),
+                         breaks = unregkaf_to_poa(breaks_x),
+                         labels = scales::label_percent(),
+                         name = '% of Avg. Unregulated Inflow'
+                       )) 
+  ggsave(file = file.path(fig_dir, paste0(slots, '_CDF_WY', wyI, '.png')),
+         height = 6, width = 8)
+}
 
-## current WY
-df_ann %>% 
-  filter(wy == min(df_ann$wy)) %>%
-  ggplot() +
-  bor_theme() +
-  stat_ecdf(aes(x=ann_wy, color= Scenario)) +
-  labs(y = 'f(x)', x = 'Unregulated Inflow (kaf)',
-       title = paste('CDF of WY', min(df_ann$wy), 'Lake Powell Unregulated Inflow'))+
-  scale_y_continuous(breaks = seq(0,1,by = .1), limits = c(0,1), expand = c(0,0)) +
-  scale_x_continuous(labels = scales::comma) 
-ggsave(file = file.path(fig_dir, paste0(slots, '_CDF_WY', min(df_ann$wy), '.png')),
-       height = 6, width = 8)
-
-# next wy
-wyI = min(df_ann$wy)+1
-df_ann %>% 
-  filter(wy == wyI ) %>%
-  ggplot() +
-  bor_theme() +
-  stat_ecdf(aes(x=ann_wy, color= Scenario)) +
-  labs(y = 'f(x)', x = 'Unregulated Inflow (kaf)',
-       title = paste('CDF of WY', wyI , 'Lake Powell Unregulated Inflow'))+
-  scale_y_continuous(breaks = seq(0,1,by = .1), limits = c(0,1), expand = c(0,0)) +
-  scale_x_continuous(labels = scales::comma) 
-ggsave(file = file.path(fig_dir, paste0(slots, '_CDF_WY', wyI, '.png')),
-       height = 6, width = 8)
 
 # average of wy annuals
-df_ann %>% 
-  group_by(Scenario, wy) %>%
-  # summarise(avgI = mean(ann_wy)) %>%
-  # summarise(avgI = quantile(ann_wy,0.5)/9603.392*100) %>% 
-  summarise(avgI = quantile(ann_wy,0.5)) %>%
-  ungroup() %>%
-  pivot_wider(names_from = Scenario, values_from = avgI)
-
-
-df_ann %>% filter(Trace == 25)
+# df_ann %>% 
+#   group_by(Scenario, wy) %>%
+#   # summarise(avgI = mean(ann_wy)) %>%
+#   # summarise(avgI = quantile(ann_wy,0.5)/9603.392*100) %>% 
+#   summarise(avgI = quantile(ann_wy,0.5)) %>%
+#   ungroup() %>%
+#   pivot_wider(names_from = Scenario, values_from = avgI)
+# 
+# 
+# df_ann %>% filter(Trace == 25)

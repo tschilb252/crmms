@@ -17,10 +17,10 @@ library(patchwork)
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
-fig_dir <- file.path('Output Data', fig_dir_nm)
-data_dir <- file.path('rdfOutput', scenario_dir)
+fig_dir <- file.path('Results', fig_dir_nm)
+data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
-source(file.path('Code', 'add_MeadPowell_tiers.R'))
+source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
 max_yr = 2027
@@ -59,7 +59,8 @@ for (i in 1:length(scenarios)) {
   scen_res$Scenario <- scenarios[i]
   
   # keep only last 30 traces (ESP)
-  trces = unique(scen_res$TraceNumber)
+  trces = sort(unique(scen_res$TraceNumber))
+  trces = trces[trces >= 0]
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
@@ -89,6 +90,11 @@ ShortLabs = c('Normal Condition' = '#a6cee3',
               'Shortage - Level 1' = '#1f78b4',
               'Shortage - Level 2' = '#b2df8a',
               'Shortage - Level 3' = '#cab2d6')
+if (length(scenarios) == 2) {
+  custom_Tr_col <- c('#f1c40f', '#8077ab')
+} else {
+  custom_Tr_col <- scales::hue_pal()(length(scenarios))
+}
 
 ## process df
 df_i = df_scens %>% pivot_wider(names_from = Variable, values_from = Value) %>%
@@ -175,7 +181,7 @@ g <- ggplot(df_short, aes(fill=`Lower Basin Shortage`, y=cnt, x=Scenario)) +
   theme(axis.text.x = element_text(angle = 55,  hjust = 1)) +
   facet_grid(~ Year)
 print(g)
-ggsave(filename = file.path(fig_dir, paste0('LB_shortage', end_file_nm, '.png')), 
+ggsave(filename = file.path(fig_dir, paste0('LB_Shortage', end_file_nm, '.png')), 
        width=7, height=6)
 
 # DCP Contribution
@@ -222,6 +228,7 @@ g <- ggplot(df_i, aes(Year, act_TARV, fill = Scenario)) +
   # geom_violin(position = "dodge") +
   geom_dotplot(binaxis='y', stackdir='center', 
                position=position_dodge(0.8)) +
+  scale_fill_manual(values = custom_Tr_col) +
   scale_y_continuous(labels = scales::comma, breaks = i_breaks) +
   labs(x = 'Year', y = 'Annual Powell Release (kaf)', fill = NULL) +
   theme(legend.position="top") +
@@ -233,17 +240,10 @@ ggsave(filename = file.path(fig_dir, paste0('Powell_RelbyTier', end_file_nm, '.p
 g <- ggplot(df_i, aes(Year, act_TARV, fill = Scenario)) +
   bor_theme() +
   CRSSIO::stat_boxplot_custom(position = "dodge") +
+  scale_fill_manual(values = custom_Tr_col) +
   scale_y_continuous(labels = scales::comma, breaks = i_breaks) +
   labs(x = 'Water Year', y = 'Annual Powell Release (kaf)', fill = NULL) +
   guides(fill = guide_legend(nrow = length(scenarios), order = 2)) +
   theme(legend.position="top")
 print(g)
 ggsave(filename = file.path(fig_dir, paste0('Powell_Rel', end_file_nm, '.png')), width=6, height=7)
-
-## 
-# df_i %>% 
-#   filter(`Powell Tiers` == "Lower Elevation\nBalancing Tier") %>%
-#   group_by(Year, Scenario) %>%
-#   filter(act_TARV < 8230) %>%
-#   summarise(tr_les = n()/30)
-

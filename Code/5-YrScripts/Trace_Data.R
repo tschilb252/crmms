@@ -18,8 +18,8 @@ library(rhdb)
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
-fig_dir <- file.path('Output Data', fig_dir_nm)
-data_dir <- file.path('rdfOutput', scenario_dir)
+fig_dir <- file.path('Results', fig_dir_nm)
+data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
 
 ## Max Date

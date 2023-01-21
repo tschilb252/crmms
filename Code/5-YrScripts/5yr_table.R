@@ -15,8 +15,8 @@ library(RWDataPlyr)
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
-fig_dir <- file.path('Output Data', fig_dir_nm)
-data_dir <- file.path('rdfOutput', scenario_dir)
+fig_dir <- file.path('Results', fig_dir_nm)
+data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
 source(file.path('Code', '5-YrScripts', '5yr_table_naming.R'))
 
@@ -50,7 +50,8 @@ for (i in 1:length(scenarios)) {
   scen_res$Scenario <- scenarios[i]
   
   # keep only last 30 traces (ESP)
-  trces = unique(scen_res$TraceNumber)
+  trces = sort(unique(scen_res$TraceNumber))
+  trces = trces[trces >= 0]
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   

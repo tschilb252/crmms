@@ -15,10 +15,10 @@ library(RWDataPlyr)
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
-fig_dir <- file.path('Output Data', fig_dir_nm)
-data_dir <- file.path('rdfOutput', scenario_dir)
+fig_dir <- file.path('Results', fig_dir_nm)
+data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
-source(file.path('Code', 'add_MeadPowell_tiers.R'))
+source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
 max_date = '2027-12' #'2024-12'
@@ -51,7 +51,8 @@ for (i in 1:length(scenarios)) {
   scen_res$Scenario <- scenarios[i]
   
   # keep only last 30 traces (ESP)
-  trces = unique(scen_res$TraceNumber)
+  trces = sort(unique(scen_res$TraceNumber))
+  trces = trces[trces >= 0]
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
@@ -71,6 +72,11 @@ df_scens <- data.table::as.data.table(df)  %>%
 
 ## -- Calculate thresholds (as long as full ESP)
 yrmax = year(ym(max_date))
+if (length(scenarios) == 2) {
+  custom_Tr_col <- c('#f1c40f', '#8077ab')
+} else {
+  custom_Tr_col <- scales::hue_pal()(length(scenarios))
+}
 
 ## Threshold calcs
 pwl_elevs = c(3525,3490,3375)
@@ -106,6 +112,7 @@ summ_pwl %>%
          name = as.numeric(name)) %>%
   ggplot(aes(name, value, color = factor(Scenario), linetype = factor(thresh2))) +
   geom_line(size = 1.5) +
+  scale_color_manual(values = custom_Tr_col) +
   scale_y_continuous(limits = c(0,100), expand = c(0,0), 
                      breaks = seq(0,100, by =20)) +
   bor_theme() +
@@ -137,6 +144,7 @@ df_powell_thresholdsDATE %>% ungroup() %>%
                           levels = paste0(pwl_elevs, ' ft'))) %>%
   ggplot(aes(Date, prob, color = Scenario)) +
   geom_line(size = 1.5) +
+  scale_color_manual(values = custom_Tr_col) +
   scale_y_continuous(limits = c(0,100), expand = c(0,0), 
                      breaks = seq(0,100, by =20)) +
   bor_theme() +
@@ -182,6 +190,7 @@ summ_mead %>%
          name = as.numeric(name)) %>%
   ggplot(aes(name, value, color = factor(Scenario), linetype = factor(thresh2))) +
   geom_line(size = 1.5) +
+  scale_color_manual(values = custom_Tr_col) +
   scale_y_continuous(limits = c(0,100), expand = c(0,0), 
                      breaks = seq(0,100, by =20)) +
   bor_theme() +
@@ -213,6 +222,7 @@ df_mead_thresholdsDATE %>% ungroup() %>%
                           levels = paste0(mead_elevs, ' ft'))) %>%
   ggplot(aes(Date, prob, color = Scenario)) +
   geom_line(size = 1.5) +
+  scale_color_manual(values = custom_Tr_col) +
   scale_y_continuous(limits = c(0,100), expand = c(0,0), 
                      breaks = seq(0,100, by =20)) +
   bor_theme() +

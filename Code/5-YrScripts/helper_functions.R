@@ -19,3 +19,15 @@ maf_to_bcm <- function(maf) {
 ft_to_m <- function(ft) {
   ft*0.3048
 }
+
+unregkaf_to_poa <- function(unreg, nyrs = 1) {
+  unreg/(9603.392 * nyrs) 
+}
+
+bor_theme <- function() {
+  theme_bw() + 
+    theme(panel.background = element_rect(fill = "transparent", colour = NA),
+          # plot.background = element_rect(fill = "transparent", colour = NA),
+          legend.background = element_rect(fill = "transparent", colour = NA),
+          legend.box.background = element_rect(fill = "transparent", colour = NA)) 
+}

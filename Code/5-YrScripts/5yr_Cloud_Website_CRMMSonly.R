@@ -12,31 +12,27 @@ library(RWDataPlyr)
 library(rhdb)
 
 ## -- Inputs
+# Directory name - all directories stored in Scenario/ folder 
 scenario_dir <- c(
-  'Aug2022'
-  # 'May2022'
-  # 'Feb2022'
+  "2023-01_ESP"
 )
+# Name when plotting
 scenarios <- c(
-  'August 2022'
-  # 'May 2022'
-  # 'March CRMMS-ESP'
-  # 'February CRMMS-ESP'
+  "January 2023"
 )
-
-fig_dir_nm <- 'August2022' 
-# ^ script will create directory with this name if it doesn't exist
+fig_dir_nm <- '2023-01_5-Yr_Fig'
+# ^ script will create directory in Results/ with this name if it doesn't exist
 
 ## Plotting Inputs
-sub_title = 'August 2022 CRMMS-ESP Projection'
+sub_title = 'January 2023 CRMMS-ESP Projection'
 # crmms_nm = 'August 2022 CRMMS-ESP'
-run_date = "2022-08"
+run_date = "2023-01"
 max_yr = 2027
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
-fig_dir <- file.path('Output Data', fig_dir_nm)
-data_dir <- file.path('rdfOutput', scenario_dir)
+fig_dir <- file.path('Results', fig_dir_nm)
+data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
@@ -55,7 +51,7 @@ df_hist <- bind_rows(
   hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", histStart_date, run_date)
 )
 
-## Reorg histrical data
+## Reorg historical data
 df_hist <- df_hist %>%
   mutate(Variable = names(sdis)[match(sdi, sdis)],
          Year = year(time_step),
@@ -92,7 +88,8 @@ for (i in 1:length(scenarios)) {
   scen_res$Scenario <- scenarios[i]
   
   # keep only last 30 traces (ESP)
-  trces = unique(scen_res$TraceNumber)
+  trces = sort(unique(scen_res$TraceNumber))
+  trces = trces[trces >= 0]
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
@@ -103,12 +100,7 @@ for (i in 1:length(scenarios)) {
 df_crmms <- data.table::as.data.table(df)  %>% 
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
   mutate(Scenario = factor(Scenario, levels = scenarios)) %>%
-  dplyr::select(Scenario, Variable, Date, Year, Trace = TraceNumber, Value) %>%
-  # bring units into line with crss
-  mutate(Value = ifelse(Variable %in% c('Mead.Inflow', 'Mead.Storage', "Powell.Outflow",
-                                        "Powell.Inflow", "Powell.Storage"),
-                        Value * 10^3,
-                        Value)) 
+  dplyr::select(Scenario, Variable, Date, Year, Trace = TraceNumber, Value) 
 
 # add historical data from run date to connect
 df_crmms_con = df_hist %>% 
@@ -122,7 +114,7 @@ df_units = data.table::as.data.table(df) %>%
 
 
 ## -- Combine and process
-df_all <- rbind(df_hist, df_crmms) %>%#, df_crss) %>%
+df_all <- rbind(df_hist, df_crmms) %>%
   filter(year(Date) <= max_yr)
 
 df_all2 <- df_all %>%
@@ -168,7 +160,6 @@ breaks_x = df_Stat %>%
   select(Date) %>% distinct()
 
 
-
 ## loop through slots
 for (i in 1:2) {
   slot_i = slots[i]
@@ -191,12 +182,11 @@ for (i in 1:2) {
   ylimmin = min(df_cloud_plot$mdl.min)*0.97
   ylimmax = max(df_cloud_plot$mdl.max)*1.01
   ylimmin = ifelse(slot_i == 'Powell.Pool Elevation' & ylimmin < 3370, 3370, 
-                   ifelse(slot_i == 'Mead.Pool Elevation' & ylimmin < 895, 895,
-                   ylimmin))
+                   ifelse(slot_i == 'Mead.Pool Elevation' & ylimmin < 950, 895,
+                          ylimmin))
   ylimmax = ifelse(slot_i == 'Powell.Pool Elevation' & ylimmax > 3712, 3712, 
                    ifelse(slot_i == 'Mead.Pool Elevation' & ylimmax > 1250, 1025,
                           ylimmax))
-  
   
   ## Plot slot
   gg <-
@@ -217,16 +207,12 @@ for (i in 1:2) {
     scale_x_yearmon(expand = c(0,0), breaks = breaks_x$Date,
                     minor_breaks = unique(df_Stat$Date),
                     limits = c(min(df_Stat$Date), max(df_Stat$Date))) +
-    scale_y_continuous(
-      labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
-      limits = c(ylimmin, ylimmax), expand = c(0,0)) +
     labs(
       y = ylabPE, x = NULL,
       color = NULL, linetype = NULL, size = NULL, fill = NULL,
       title = plot_title[i],
       subtitle = sub_title,
-      caption = "1 - For modeling purposes, simulated years beyond 2026 (shaded region) assume a continuation of the 2007 Interim Guidelines, the 2019 Colorado River Basin Drought\nContingency Plans, and Minute 323, including the Binational Water Scarcity Contingency Plan. Except for certain provisions related to ICS recovery and Upper Basin\ndemand management, operations under these agreements are in effect through 2026. Reclamation anticipates beginning a process in early 2023 to develop operations\nforpost-2026, and the modeling assumptions described here are subject to change for the analysis to be used in that process."
-      # caption = paste0(bquote(""~^1), "For modeling purposes, simulated years beyond 2026 (shaded region) assume a continuation of the 2007 Interim Guidelines, the 2019 Colorado River Basin Drought\nContingency Plans, and Minute 323, including the Binational Water Scarcity Contingency Plan. Except for certain provisions related to ICS recovery and Upper Basin\ndemand management, operations under these agreements are in effect through 2026. Reclamation anticipates beginning a process in early 2023 to develop operations\nforpost-2026, and the modeling assumptions described here are subject to change for the analysis to be used in that process.")
+      caption = "1 - For modeling purposes, simulated years beyond 2026 (shaded region) assume a continuation of the 2007 Interim Guidelines, the 2019 Colorado River Basin Drought\nContingency Plans, and Minute 323, including the Binational Water Scarcity Contingency Plan. Except for certain provisions related to ICS recovery and Upper Basin\ndemand management, operations under these agreements are in effect through 2026. Reclamation anticipates beginning a process in early 2023 to develop operations\nfor post-2026, and the modeling assumptions described here are subject to change for the analysis to be used in that process."
     ) +
     geom_vline(
       xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023",
@@ -260,15 +246,31 @@ for (i in 1:2) {
   # add tiers to Powell and Mead PE
   if (slot_i == 'Powell.Pool Elevation') {
     g <- gg %>%
-      add_powell_tiers(xrange)
-    # print(g)
+      add_powell_tiers(xrange) +
+      scale_y_continuous(
+        labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
+        limits = c(ylimmin, ylimmax), expand = c(0,0), 
+        sec.axis = sec_axis(
+          ~CRSSIO::elevation_to_storage(., "powell"),
+          breaks = CRSSIO::elevation_to_storage(y_breaks, "powell"),
+          labels = scales::comma_format(scale = 1/1000000, accuracy = 0.01),
+          name = "Storage (maf)"
+        )
+      )
   } else if (slot_i == 'Mead.Pool Elevation') {
     g <- gg %>%
-      add_mead_tiers(xrange)
-    # print(g)
+      add_mead_tiers(xrange) +
+      scale_y_continuous(
+        labels = scales::comma, breaks = y_breaks, minor_breaks = y_breaks2,
+        expand = c(0,0), limits = c(ylimmin, ylimmax),
+        sec.axis = sec_axis(
+          ~CRSSIO::elevation_to_storage(., "mead"),
+          breaks = CRSSIO::elevation_to_storage(y_breaks, "mead"),
+          labels = scales::comma_format(scale = 1/1000000, accuracy = 0.01),
+          name = "Storage (maf)"
+        ))
   } else {
     g <- gg
-    # print(gg)
   }
   
   crssplot:::add_logo_vertical(g, .87, .01, .97, .12) # add usbr logo
@@ -276,3 +278,4 @@ for (i in 1:2) {
   ggsave(file.path(fig_dir, paste0(slot_i, "_mdlComp_CRSS.v.CRMMS.png")), 
          width = 11, height = 9.5)
 }
+# Warnings expected 
