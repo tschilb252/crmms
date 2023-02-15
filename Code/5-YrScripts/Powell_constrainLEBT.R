@@ -170,7 +170,7 @@ for (plot_yr in 2023:2024) {
     guides(alpha = 'none', size = 'none') +
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
   
-  ggsave(file.path(fig_dir, paste0("PowellRel_unregInflow_ConstLEBT_",plot_yr, ".png")), 
+  ggsave(file.path(fig_dir, paste0("Scatter_PowellRel_PowellUnreg_ConstLEBT_",plot_yr, ".png")), 
          width = 8, height = 7)
   
   ## -- Powell TARV vs. EOWY PE
@@ -186,6 +186,6 @@ for (plot_yr in 2023:2024) {
          title = paste('Powell Comparison', plot_yr))+
     guides(alpha = 'none', size = 'none')
   
-  ggsave(file.path(fig_dir, paste0("PowellRel_eowyPE_ConstLEBT_",plot_yr, ".png")), 
+  ggsave(file.path(fig_dir, paste0("Scatter_PowellRel_PowellPE_ConstLEBT_",plot_yr, ".png")), 
          width = 8, height = 7)
 }

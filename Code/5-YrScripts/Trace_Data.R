@@ -228,7 +228,7 @@ df_eocy = df_scens %>%
 ## Compact Pt
 sdis <- c("Paria" = 1579, "LeesFerry" = 1578)
 start_date = format(ym("2000-10"), "%Y-%m")
-end_date = format(min(df_scens$Date) - 1/12, "%Y-%m") # assumes all same start month
+end_date = format(max(df_scens$Date) - 1/12, "%Y-%m") # assumes all same start month
 df_hdb <- hdb_query(sdis, "uc", "m", start_date, end_date) %>%
   mutate(Variable = names(sdis)[match(sdi, sdis)],
          Date = as.yearmon(parse_date_time(time_step, "m/d/y H:M:S")),
@@ -252,7 +252,8 @@ df_compt = df_scens %>%  mutate(mon = month(Date)) %>%
 df_histPt = df_hdb %>% select(Date, Year, Variable, value) %>%
   pivot_wider(names_from = Variable, values_from = value) %>%
   mutate(Compt = Paria + LeesFerry) %>%
-  select(Year, Date, Compt) 
+  select(Year, Date, Compt) %>%
+  na.omit()
 
 df_histPt = data.frame(Trace = rep(sort(unique(df_compt$Trace)), each = length(unique(df_hdb$Year))),
                        Year = rep(sort(unique(df_hdb$Year)), times = length(unique(df_compt$Trace)))) %>% 
@@ -307,14 +308,14 @@ df_agg = left_join(df_i, df_flow, by = c('Scenario', 'Trace', 'Year')) %>%
 
 write.csv(df_agg, file.path(fig_dir, "TraceData.csv"))
 
-test = df_agg %>%
-  filter(Year %in% 2023:2024) %>%
-  group_by(Scenario, Trace) %>%
-  summarise(sumRel = sum(act_TARV)) %>% ungroup() %>%
-  filter(sumRel < 14000)
-group_by(Scenario) %>% 
-  summarise(minRel = min(sumRel))
-filter(Trace == 2011)
+# test = df_agg %>%
+#   filter(Year %in% 2023:2024) %>%
+#   group_by(Scenario, Trace) %>%
+#   summarise(sumRel = sum(act_TARV)) %>% ungroup() %>%
+#   filter(sumRel < 14000)
+# group_by(Scenario) %>% 
+#   summarise(minRel = min(sumRel))
+# filter(Trace == 2011)
 
 min(test$`EOWY_Mead.Pool Elevation`)
 
