@@ -18,9 +18,9 @@ library(crssplot)
 ### --- Inputs
 
 ## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2023-01')
-most_mrid <- 3213 
-min_mrid <- 3214
+run_date = c('2023-02')
+most_mrid <- 3216 
+min_mrid <- 3217
 max_mrid <- 3215
 
 ## Directories & Data
@@ -151,9 +151,9 @@ df_stat <- bind_rows(
 
 ## naming for figures
 esp_label <- "CRMMS-ESP Projections \n(30 projections)"
-lab_names <- c("January 2023 Probable Minimum 24-Month Study", 
+lab_names <- c("February 2023 Probable Minimum 24-Month Study", 
                "January 2023 Probable Maximum 24-Month Study", 
-               "January 2023 Most Probable 24-Month Study",
+               "February 2023 Most Probable 24-Month Study",
                "Historical",
                rep(esp_label, 35))
 
@@ -236,7 +236,7 @@ gg <-
     y = "Pool Elevation (ft)", x = NULL, 
     color = NULL, linetype = NULL, size = NULL, fill = NULL,
     title = bquote('Lake Powell End-of-Month'~Elevations^1),
-    subtitle = paste(cloud_model, 'Projections from', format(ym(run_date), "%B %Y")),
+    subtitle = paste(cloud_model, 'Projections from', 'January and February 2023'),
     caption = bquote(' '^1~'Projected Lake Powell end-of-month physical elevations from the latest CRMMS-ESP and 24-Month Study inflow scenarios.                  ')
   ) +
   # tier stuff
@@ -247,7 +247,7 @@ gg <-
   geom_hline(yintercept = 3490, color = 'grey20', linetype = 2) +
   #geom_hline(yintercept = 3490, colour = '#800000', size = 1) +
   geom_vline(
-    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023")), 
+    xintercept = as.yearmon(c("Dec 2022", "Dec 2023", "Dec 2024")), 
     size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
     alpha = 0.8
   ) +
@@ -330,7 +330,7 @@ gg <-
        size = NULL,
        fill = NULL,
        title = bquote('Lake Mead End-of-Month'~Elevations^1),
-       subtitle = paste(cloud_model, 'Projections from', format(ym(run_date), "%B %Y")),
+       subtitle = paste(cloud_model, 'Projections from', 'January and February 2023'),
        caption = bquote(' '^1~'Projected Lake Mead end-of-month physical elevations from the latest CRMMS-ESP and 24-Month Study inflow scenarios.                  ')) +
   # tier stuff
   geom_hline(
@@ -359,7 +359,7 @@ gg <-
            y=1015, label="Level 3 Shortage Condition\n(<1,025')",
            angle=00, size=3, hjust = 0) +
   geom_vline(
-    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023")),
+    xintercept = as.yearmon(c("Dec 2022", "Dec 2023", "Dec 2024")),
     size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
     alpha = 0.8
   ) +
