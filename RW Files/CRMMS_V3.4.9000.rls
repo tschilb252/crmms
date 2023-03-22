@@ -1,5 +1,5 @@
 # RiverWare_Ruleset 9.0.2 Patch
-# Created 10:22 March 22, 2023
+# Created 10:35 March 22, 2023
 # 
 RULESET
 NAME "CRMMS Ruleset v3.4.9000";
@@ -3839,7 +3839,6 @@ BEGIN
     NOTES                "AUTHOR, DATE: Unknown<br>Initial changes: SC 02/02/11;TP 08/20/2014; MC, 20170511; TP 10/13/2017  <br><br>TP: 20171017: Added and set the rule to only set the first water year.<br><br>S.Baker, 20180829: Edited the function 'UpperEleavationBalancingBranchCalculation' to have the correct number of inputs. Edited setting of 'PowellData.UpperElevBalBranch to check if this value is input before trying to set it. This issue was initially causing this rule to exit without setting values. <br>S.Baker, 20180921: Removed run cycle constraint in rule (2nd IF). Removed IF @t = start timestep within rules since this is an execution constraint. Added IsInput(TARV) constraint to execution constraints and removed from each IF statement in rule.<br>APivarnik 20200706: Added execution constraint for rule to fire only in MTOM mode. No other changes made to rule in the integration effort<br>APivarnik 20200827: Removed execution constraint for rule to fire only in MTOM mode<br>S.Baker, 20220429: Adjusted MER Tier release by LB Annual Water in Powell slot. This was only done in the MER Tier because that was the operating tier for 2022 when this logic was used. If this slot is implemented for the first year of the run in the future, similar logic will need to be added to the other statements in this rule. <br>S.Baker, 20220503: Adjust PEs used to include water banked in Powell. This will allow this logic to be used in future years. <br>S.Baker, 20221013: Edited the LEBT statement to set to 7.0 before entering the rule &quot;Set WY1 Lower Balancing Release Volume&quot;, which will set the LEBT release volume.";
     BEGIN
 
-      BREAKPOINT BEFORE_EXEC TRUE;
       IF_STATEMENT ("TierIs"( "Equalization", @"t", TRUE ) COMMENTED_BY "Initial water year, in an Equalization Condition in Start Year <br>") THEN
             $ "PowellData.TargetAnnualReleaseVolume" ["Dec31ofYear"( "RelativeEOWYDate"( @"t" ) )] := "MaxItem"( { GET @INDEX 0.00000000 FROM "EqualizationTierCalculationForRelease"( "DateToCheckEOWYElevation"( @"t", TRUE ) ) , NaNToZero ( $ "PowellData.UserInput_MinAnnualReleaseVolume" ["Dec31ofYear"( "RelativeEOWYDate"( @"t" ) )] ) , 8230000.00000000 "acre-feet" } );
 
@@ -3969,7 +3968,6 @@ BEGIN
     NOTES                "AUTHOR, DATE: Unknown<br><br>SB, 20190712: Edited how carryover is set. Added IF so carryover is only set during EQ or UEBT. This is what is done in CRSS. Carryover was causing this rule to reach max executions when Powell and Mead were at very low pool elevations. <br>APivarnik 20200706: Added execution constraint for rule to fire only in MTOM mode. No other changes made to rule in the integration effort<br>APivarnik 20200827: Removed execution constraint for rule to fire only in MTOM mode";
     BEGIN
 
-      BREAKPOINT BEFORE_EXEC TRUE;
       IF_STATEMENT (@"t" == @"Start Timestep" AND NOT IsNaN $ "PowellData.TargetAnnualReleaseVolume" ["Dec31ofYear"( "RelativeEOWYDate"( GET @INDEX 0.00000000 FROM "WaterYearDatesByGroup"( 1.00000000 ) ) )]) THEN
             WITH_STATEMENT (LIST PowellOutflowsAndCarryover = "GetPowellReleasesCorrectedForBypass"( "GetPowellMonthlyReleases"( "WaterYearDatesByGroup"( 1.00000000 ) ) )) DO
           DESCRIPTION          "Set the outflow for the initial water year, checking for the necessity of bypass based on pool elevations";
@@ -11568,6 +11566,7 @@ BEGIN
     END
     UUID "{021913fb-8e2b-46de-84a7-6bda7b717ac0}";;
 
+    BREAKPOINT AFTER_EXEC TRUE;
     FUNCTION       "EqualizationReleaseWithCarryover" ( DATETIME EOWYDate )
     RETURN_TYPE    NUMERIC;
     SCALE_UNITS    "1000 acre-ft";
@@ -11575,10 +11574,10 @@ BEGIN
     ACTIVE         TRUE;
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    NOTES          "DEVELOPMENT NOTES<br>AUTHOR, DATE: MC, 20160801<br><br>SB, 20220429: Update for changes to out-year balancing with water banked in Powell. ";
+    NOTES          "DEVELOPMENT NOTES<br>AUTHOR, DATE: MC, 20160801<br><br>SB, 20220429: Update for changes to out-year balancing with water banked in Powell. <br><br>20230322, CF: LB Bank Powell slot was looking at the wrong year, change to EOWY";
     BEGIN
 
-      ( $ "PowellData.TargetAnnualReleaseVolume" ["Dec31ofYear"( EOWYDate )] + ( $ "Powell.Storage" [EOWYDate] - NaNToZero ( $ "PowellToMeadData.CarryoverVolume" ["OffsetDate"( "Dec31ofYear"( EOWYDate ), 12.00000000, "1 months" )] ) - NaNToZero ( $ "PowellData.LBBankInPowell" [@"24:00:00 December 31, Current Year"] ) - ( ( $ "Mead.Storage" [EOWYDate] + NaNToZero ( $ "PowellToMeadData.CarryoverVolume" ["OffsetDate"( "Dec31ofYear"( EOWYDate ), 12.00000000, "1 months" )] ) ) + NaNToZero ( $ "PowellData.LBBankInPowell" [@"24:00:00 December 31, Current Year"] ) ) ) / ( 2.00000000 - $ "Powell.Bank Storage Coefficient" [0.00000000, 1.00000000] - $ "Mead.Bank Storage Coefficient" [0.00000000, 0.00000000] ) ) COMMENTED_BY "Add half of the storage difference that would be present if the carryover volume had been moved from Powell to Mead to the annual release volume";
+      ( $ "PowellData.TargetAnnualReleaseVolume" ["Dec31ofYear"( EOWYDate )] + ( $ "Powell.Storage" [EOWYDate] - NaNToZero ( $ "PowellToMeadData.CarryoverVolume" ["OffsetDate"( "Dec31ofYear"( EOWYDate ), 12.00000000, "1 months" )] ) - NaNToZero ( $ "PowellData.LBBankInPowell" ["Dec31ofYear"( EOWYDate )] ) - ( ( $ "Mead.Storage" [EOWYDate] + NaNToZero ( $ "PowellToMeadData.CarryoverVolume" ["OffsetDate"( "Dec31ofYear"( EOWYDate ), 12.00000000, "1 months" )] ) ) + NaNToZero ( $ "PowellData.LBBankInPowell" ["Dec31ofYear"( EOWYDate )] ) ) ) / ( 2.00000000 - $ "Powell.Bank Storage Coefficient" [0.00000000, 1.00000000] - $ "Mead.Bank Storage Coefficient" [0.00000000, 0.00000000] ) ) COMMENTED_BY "Add half of the storage difference that would be present if the carryover volume had been moved from Powell to Mead to the annual release volume";
 
     END
     UUID "{22d86c2e-089c-4dcd-9a1b-63f26ec5440b}";;
@@ -15891,32 +15890,32 @@ BEGIN
     SCALE_UNITS    "1000 acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{d9f582f0-f991-47a3-b782-41c397074ff6}";
+    UUID "{a67332c4-7a2b-4443-a46a-d0cde103263d}";
 ;
 
     PREDEFINED_FUNCTION "Min" ( NUMERIC arg1, NUMERIC arg2 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{3ec9712e-aa3b-4190-bd29-b7f3bdb05532}";
+    UUID "{f29b2ed1-3604-4ad9-874c-f2be848bc4d5}";
 ;
 
     PREDEFINED_FUNCTION "MinItem" ( LIST arg1 )
     SCALE_UNITS    "acre-ft";
     PRE_EXEC_DIAG  FALSE;
     POST_EXEC_DIAG TRUE;
-    UUID "{7237e504-a1cf-4413-a98c-6e23993c313d}";
+    UUID "{056a57a7-9065-4ead-b319-54c90ab09d61}";
 ;
 
     PREDEFINED_FUNCTION "Sum" ( LIST arg1 )
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{af490c8c-f672-4189-a201-28408cdb6b15}";
+    UUID "{c75f8c4d-57cf-4bfe-8ad5-da32e7e868e3}";
 ;
 
   END
-  UUID "{e1c5f800-e823-4ea8-abcf-9395a36a0c45}";;
+  UUID "{7c3ea511-6565-4cf1-8933-def14757e204}";;
 
   PREDEFINED_GROUP "Date / Time";
   DESCRIPTION   "Predefined functions which access and manipulate date/times.";
@@ -15927,11 +15926,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{30fb771e-084a-4c7b-8cab-eac2435c47ff}";
+    UUID "{42ac71ee-386a-4e52-94e1-85d8f3998d8e}";
 ;
 
   END
-  UUID "{c1fee3a9-a43b-4739-836f-8f53fbaed504}";;
+  UUID "{8325cba8-c598-4c4e-95a9-9390ec863271}";;
 
   PREDEFINED_GROUP "Engineering";
   DESCRIPTION   "Predefined functions similar to methods on objects.";
@@ -15942,11 +15941,11 @@ BEGIN
     SCALE_UNITS    "acre-ft/month";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{4a41dd1c-080e-421d-8408-f13f841ca744}";
+    UUID "{aee9276b-e83d-44ff-a495-e7a0715e359a}";
 ;
 
   END
-  UUID "{f5132c50-523d-4c37-8a17-315856150b1f}";;
+  UUID "{641fee1f-22d3-4c91-9734-1325f70b22db}";;
 
   PREDEFINED_GROUP "Workspace";
   DESCRIPTION   "Predefined functions which access information on slots and objects.";
@@ -15957,11 +15956,11 @@ BEGIN
     SCALE_UNITS    "";
     PRE_EXEC_DIAG  TRUE;
     POST_EXEC_DIAG TRUE;
-    UUID "{1d3429fa-e29c-4546-b71c-8c954f308015}";
+    UUID "{44b2854f-c086-43d4-92e0-c8e4ecfe4105}";
 ;
 
   END
-  UUID "{a09ecc2d-657d-4a6c-96c3-46fc26a45ed8}";;
+  UUID "{eea44a27-5681-410a-a139-cc16baed7520}";;
 
   REPORT_GROUP "Aspinall Slot Report Group";
   DESCRIPTION  "";
