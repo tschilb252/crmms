@@ -18,40 +18,30 @@ library(crssplot)
 ### --- Inputs
 
 ## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2023-01')
-most_mrid <- 3213 
-min_mrid <- 3214
-max_mrid <- NA #Use NA for no Max run completed 
-# CF Update Feb 2023: Code now handles runs without a max probable using 3 If statements 
-# Further changes could accommodate a most only run 
-
-# !Be sure to Find and Replace "January 2023" with the most recent run date!
+run_date = c('2023-03')
+most_mrid <- 3218 
+min_mrid <- 3219
+max_mrid <- 3215
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
-data_dir = file.path(getwd(),'Output Data') #'C:/Temp/crmms-cloudFigAddition/Output Data'  # path from current CRMMS directory
+data_dir = file.path(getwd(),'Output Data') # path from current CRMMS directory
 data_fl = 'CRMMS_EnsembleOutput.xlsm'
+
 
 ### --- Process Data
 
 ## SDIs / slots / 24MS trace info
 sdis <- c("Mead.Pool Elevation" = 1930, "Powell.Pool Elevation" = 1928)
 slots <- names(sdis)
-
-##  option to not have Max 24MS
-if(is.na(max_mrid)){ #
-  mrid_to_trace <- c("24MS Min", "24MS Most")
-  names(mrid_to_trace) <- c(min_mrid, most_mrid)
-} else {
-  mrid_to_trace <- c("24MS Min", "24MS Max", "24MS Most")
-  names(mrid_to_trace) <- c(min_mrid, max_mrid, most_mrid)
-}
+mrid_to_trace <- c("24MS Min", "24MS Max", "24MS Most")
+names(mrid_to_trace) <- c(min_mrid, max_mrid, most_mrid)
 
 ## CRMMS-ESP - Read in slots
 setwd(data_dir)
 dfi <- NULL
 for (j in 1:length(slots)) {
-  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,1:34] %>% na.omit()
+  dfj = read_excel(data_fl, sheet = slots[j], skip = 2)[,c(1,5:34)] %>% na.omit()
   dfi = rbind.data.frame(dfi, 
                          cbind.data.frame(run = run_date, slot = slots[j], 
                                           dfj))
@@ -59,15 +49,15 @@ for (j in 1:length(slots)) {
 
 ## Reorg ESP data
 esp_traces = paste('ESP', 1991:2020)
-colnames(dfi)[7:36] <- esp_traces
+colnames(dfi)[4:33] <- esp_traces
 colnames(dfi)[3] <- "Date"
 df_full = dfi %>% 
   mutate(Date = ceiling_date(Date + month(1), "month") - days(1)) %>%
   # keep first 24 months of data
   filter(Date < min(Date) + months(24)) %>%
-  mutate(Date = as.yearmon(Date)) %>%
+  mutate(Date = as.yearmon(Date)) #%>%
   # drop the min/most/max columns from CRMMS-Ensemble Mode
-  dplyr::select(-Trace1, -Trace2, -Trace3)
+  #dplyr::select(-Trace1, -Trace2, -Trace3)
 
 ## Historical data info / end date
 hist_nMons = 7 # keep 7 months before start date
@@ -79,15 +69,10 @@ df_hdb <- bind_rows(
   hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", run_date, end_date, most_mrid),
   hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, most_mrid),
   hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", run_date, end_date, min_mrid),
-  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, min_mrid)
+  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, min_mrid),
+  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", run_date, end_date, max_mrid),
+  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, max_mrid)
 )
-##  option to not have Max 24MS
-if(!is.na(max_mrid)){
-  df_hdb <- bind_rows(df_hdb,
-                      hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", run_date, end_date, max_mrid),
-                      hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", run_date, end_date, max_mrid)
-                      )
-} 
 
 ## Reorg 24-MS data
 df_hdb <- df_hdb %>%
@@ -163,34 +148,24 @@ df_stat <- bind_rows(
 
 
 ### ----------------- PLOTTING
+
 ## naming for figures
-num24ms <- length(mrid_to_trace) #how many
 esp_label <- "CRMMS-ESP Projections \n(30 projections)"
-##  option to not have Max 24MS
-if(is.na(max_mrid)){ 
-  lab_names <- c("January 2023 Probable Minimum 24-Month Study", 
-                 "January 2023 Most Probable 24-Month Study",
-                 "Historical",
-                 rep(esp_label, 35))
-  names(lab_names) <- c("24MS Min", "24MS Most", "Historical", 
-                        esp_traces)
-  ## Min, Most, ESP is order of these colors, size, linetype
-  custom_colors <- c('#DA3139', '#26AE44', 'grey20', 'grey43')
-} else {
-  lab_names <- c("January 2023 Probable Minimum 24-Month Study",
-                 "January 2023 Probable Maximum 24-Month Study",
-                 "January 2023 Most Probable 24-Month Study",
-                 "Historical",
-                 rep(esp_label, 35))
-  names(lab_names) <- c("24MS Min", "24MS Max", "24MS Most", "Historical",
-                        esp_traces)
-  ## Min, Max, Most, ESP is order of these colors, size, linetype
-  custom_colors <- c('#DA3139', '#104E8B', '#26AE44', 'grey20', 'grey43')
-}
-nn <- lab_names[1:(2+ num24ms)]
-custom_size <- c(rep(1.2, num24ms), 1, 0.5)
-custom_lt <- c(rep(2, num24ms), 1, 1)
-custom_alpha <- c(rep(1, (1+num24ms)), 0.35)
+lab_names <- c("March 2023 Probable Minimum 24-Month Study", 
+               "January 2023 Probable Maximum 24-Month Study", 
+               "March 2023 Most Probable 24-Month Study",
+               "Historical",
+               rep(esp_label, 35))
+
+names(lab_names) <- c("24MS Min", "24MS Max", "24MS Most", "Historical", 
+                      esp_traces)
+nn <- lab_names[1:5]
+
+## Min, Max, Most, ESP is order of these colors, size, linetype
+custom_colors <- c('#DA3139', '#104E8B', '#26AE44', 'grey20', 'grey43')
+custom_size <- c(rep(1.2, 3), 1, 0.5)
+custom_lt <- c(rep(2, 3), 1, 1)
+custom_alpha <- c(rep(1, 4), 0.35)
 names(custom_colors) <- names(custom_size) <- names(custom_lt) <- 
   names(custom_alpha) <- nn
 cloud_color <- 'grey85'
@@ -261,7 +236,7 @@ gg <-
     y = "Pool Elevation (ft)", x = NULL, 
     color = NULL, linetype = NULL, size = NULL, fill = NULL,
     title = bquote('Lake Powell End-of-Month'~Elevations^1),
-    subtitle = paste(cloud_model, 'Projections from', format(ym(run_date), "%B %Y")),
+    subtitle = paste(cloud_model, 'Projections from', 'January and March 2023'),
     caption = bquote(' '^1~'Projected Lake Powell end-of-month physical elevations from the latest CRMMS-ESP and 24-Month Study inflow scenarios.                  ')
   ) +
   # tier stuff
@@ -272,7 +247,7 @@ gg <-
   geom_hline(yintercept = 3490, color = 'grey20', linetype = 2) +
   #geom_hline(yintercept = 3490, colour = '#800000', size = 1) +
   geom_vline(
-    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023")), 
+    xintercept = as.yearmon(c("Dec 2022", "Dec 2023", "Dec 2024")), 
     size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
     alpha = 0.8
   ) +
@@ -355,7 +330,7 @@ gg <-
        size = NULL,
        fill = NULL,
        title = bquote('Lake Mead End-of-Month'~Elevations^1),
-       subtitle = paste(cloud_model, 'Projections from', format(ym(run_date), "%B %Y")),
+       subtitle = paste(cloud_model, 'Projections from', 'January and March 2023'),
        caption = bquote(' '^1~'Projected Lake Mead end-of-month physical elevations from the latest CRMMS-ESP and 24-Month Study inflow scenarios.                  ')) +
   # tier stuff
   geom_hline(
@@ -384,7 +359,7 @@ gg <-
            y=1015, label="Level 3 Shortage Condition\n(<1,025')",
            angle=00, size=3, hjust = 0) +
   geom_vline(
-    xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023")),
+    xintercept = as.yearmon(c("Dec 2022", "Dec 2023", "Dec 2024")),
     size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
     alpha = 0.8
   ) +
