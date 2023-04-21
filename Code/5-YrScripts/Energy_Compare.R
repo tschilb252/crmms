@@ -277,7 +277,7 @@ df_fy_all <-  rbind(
                                   "Davis","Parker", 
                                   "Glen Canyon + Hoover",
                                   "Davis + Parker")),
-         Scenario = factor(Scenario, levels = scenarios))
+         Scenario = factor(Scenario, levels = c(scenarios, "Historical")))
 
 ## --- Choose what agg to plot
 df_PM = df_fy_all %>% 
@@ -321,80 +321,80 @@ openxlsx::write.xlsx(test,
 
 
 # ## --- Plot annual cloud with historical data
-# 
-# plottedName = c("Davis + Parker", "Hoover")
-# 
-# for (i in 1:length(plottedName)) {
-#   df_plot = df_fy_all %>% 
-#     filter(name == plottedName[i] & Scenario != 'Historical') %>%
-#     mutate(yr_fy = as.numeric(as.character(yr_fy)))
-#   df_plot_hist = df_fy_all %>% 
-#     filter(name == plottedName[i] & Scenario == 'Historical') %>%
-#     mutate(yr_fy = as.numeric(as.character(yr_fy)))
-#   
-#   # connect hist and projection data
-#   df_i = df_plot %>% select(Scenario, Trace, name) %>% distinct() 
-#   df_ihist = df_plot_hist %>% 
-#     select(-Trace, -Scenario) %>%
-#     filter(yr_fy == min(df_plot$yr_fy)-1)
-#   df_add = left_join(df_i, df_ihist, by = c('name'))
-#   df_plot = rbind(df_add, df_plot)
-#   
-#   df_plot_agg = df_plot %>%
-#     group_by(Scenario, yr_fy, name) %>%
-#     summarise(mdl.max = max(value),
-#               mdl.90 = quantile(value, .9), 
-#               mdl.50 = quantile(value, .5), 
-#               mdl.10 = quantile(value, .1), 
-#               mdl.min = min(value)) %>%
-#     ungroup() 
-#   
-#   df_avg_hist = df_plot_hist %>%
-#     filter(yr_fy %in% 2000:2020) %>%
-#     summarise(avg = mean(value),
-#               min = min(value),
-#               max = max(value))
-#   
-#   df_plot_hist = df_plot_hist
-#   
-#   ggplot() + 
-#     geom_line(data = df_plot_agg,
-#               aes(x = yr_fy, y = mdl.50,
-#                   color = Scenario)) +
-#     geom_line(data = df_plot_hist %>% filter(yr_fy >= 2015),
-#               aes(x = yr_fy, y = value, 
-#                   color = Scenario)) +
-#     scale_color_manual(values = c(custom_col,'black')) +
-#     scale_size_manual(values = 1.15) +
-#     geom_ribbon(data = df_plot_agg, 
-#                 aes(x = yr_fy, 
-#                     ymin = mdl.10, ymax = mdl.90, fill = Scenario), 
-#                 alpha = 0.3) +
-#     scale_fill_manual(values = custom_col)  +
-#     geom_hline(yintercept = df_avg_hist$avg, 
-#                linetype = 'dashed', color = 'black') +
-#     annotate("text", x = 2020,
-#              y=df_avg_hist$avg + (df_avg_hist$max - df_avg_hist$min)*.02, 
-#              label="2000-2020 Average", angle=00, size=3.5, hjust = 0) +
-#     scale_x_continuous(expand = c(0,0), 
-#                        breaks = seq(2010, 2030, by = 1), 
-#                        minor_breaks = NULL) +
-#     scale_y_continuous(labels = scales::comma) +
-#     labs(
-#       y = "Energy (GWh)", x = "FY/WY", 
-#       color = "Historical and\nmedian projections", 
-#       linetype = NULL, size = NULL, 
-#       fill = "10th to 90th\npercentile of\nfull range",
-#       title = paste(plottedName[i], "Energy from CRMMS-ESP")
-#     ) +
-#     # bor_theme() +
-#     theme(
-#       text = element_text(size = 12),
-#       # axis.text.x = element_text(angle = 90, vjust = 0.5), 
-#       legend.position = "right",
-#       legend.key.width = unit(1.2, "cm")
-#     )
-#   
-#   ggsave(file.path(fig_dir, paste0(plottedName[i], '_CloudEnergy', file_nm_end, '.png')), 
-#          width = 10, height = 7)
-# }
+
+plottedName = c("Davis", "Parker", "Davis + Parker", "Hoover")
+
+for (i in 1:length(plottedName)) {
+  df_plot = df_fy_all %>%
+    filter(name == plottedName[i] & Scenario != 'Historical') %>%
+    mutate(yr_fy = as.numeric(as.character(yr_fy)))
+  df_plot_hist = df_fy_all %>%
+    filter(name == plottedName[i] & Scenario == 'Historical') %>%
+    mutate(yr_fy = as.numeric(as.character(yr_fy)))
+
+  # connect hist and projection data
+  df_i = df_plot %>% select(Scenario, Trace, name) %>% distinct()
+  df_ihist = df_plot_hist %>%
+    select(-Trace, -Scenario) %>%
+    filter(yr_fy == min(df_plot$yr_fy)-1)
+  df_add = left_join(df_i, df_ihist, by = c('name'))
+  df_plot = rbind(df_add, df_plot)
+
+  df_plot_agg = df_plot %>%
+    group_by(Scenario, yr_fy, name) %>%
+    summarise(mdl.max = max(value),
+              mdl.90 = quantile(value, .9),
+              mdl.50 = quantile(value, .5),
+              mdl.10 = quantile(value, .1),
+              mdl.min = min(value)) %>%
+    ungroup()
+
+  df_avg_hist = df_plot_hist %>%
+    filter(yr_fy %in% 2000:2020) %>%
+    summarise(avg = mean(value),
+              min = min(value),
+              max = max(value))
+
+  df_plot_hist = df_plot_hist
+
+  ggplot() +
+    geom_line(data = df_plot_hist %>% filter(yr_fy >= 2015),
+              aes(x = yr_fy, y = value,
+                  color = Scenario)) +
+    geom_line(data = df_plot_agg,
+              aes(x = yr_fy, y = mdl.50,
+                  color = Scenario)) +
+    scale_color_manual(values = c('black', custom_col)) +
+    scale_size_manual(values = 1.15) +
+    geom_ribbon(data = df_plot_agg,
+                aes(x = yr_fy,
+                    ymin = mdl.10, ymax = mdl.90, fill = Scenario),
+                alpha = 0.3) +
+    scale_fill_manual(values = custom_col)  +
+    geom_hline(yintercept = df_avg_hist$avg,
+               linetype = 'dashed', color = 'black') +
+    annotate("text", x = 2020,
+             y=df_avg_hist$avg + (df_avg_hist$max - df_avg_hist$min)*.02,
+             label="2000-2020 Average", angle=00, size=3.5, hjust = 0) +
+    scale_x_continuous(expand = c(0,0),
+                       breaks = seq(2010, 2030, by = 1),
+                       minor_breaks = NULL) +
+    scale_y_continuous(labels = scales::comma) +
+    labs(
+      y = "Energy (GWh)", x = "FY/WY",
+      color = "Historical and\nmedian projections",
+      linetype = NULL, size = NULL,
+      fill = "10th to 90th\npercentile of\nfull range",
+      title = paste(plottedName[i], "Energy from CRMMS-ESP")
+    ) +
+    # bor_theme() +
+    theme(
+      text = element_text(size = 12),
+      # axis.text.x = element_text(angle = 90, vjust = 0.5),
+      legend.position = "right",
+      legend.key.width = unit(1.2, "cm")
+    )
+
+  ggsave(file.path(fig_dir, paste0(plottedName[i], '_CloudEnergy', file_nm_end, '.png')),
+         width = 10, height = 7)
+}

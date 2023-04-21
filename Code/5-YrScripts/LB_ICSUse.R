@@ -83,10 +83,9 @@ for (i in 1:length(scenarios)) {
 df_scens <- data.table::as.data.table(df)  %>% 
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
   dplyr::select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
-  mutate(Scenario = factor(Scenario, levels = scenarios))
+  mutate(Scenario = factor(Scenario, levels = scenarios)) %>%
+  filter(year(Date) <= max_yr)
 
-# open pdf to save figs
-# pdf(file.path(fig_dir, paste0('LBAnalysis_compare', end_file_nm, '.pdf')), width=8, height=8)
 
 ## Colors
 if (length(scenarios) == 2) {
@@ -97,7 +96,6 @@ if (length(scenarios) == 2) {
 
 ## LB ICS bank 
 df_i = df_scens %>% pivot_wider(names_from = Variable, values_from = Value) %>%
-  filter(year(Date) <= max_yr) %>%
   mutate(Year = factor(year(Date)),
          MSCPflowRed = (AnnualWaterUse.AZ_BasicApportionment + 
                           AnnualWaterUse.CA_BasicApportionment -
@@ -262,7 +260,7 @@ slots = c(
   "MWDDiversion.Total Diversion", # includes some of MX, should use "MWDDiversion:MWD.Diversion Requested"
   "CAPDiversion.Total Diversion"
 )
-slot_nms = c("SNWA", "MWD (+some TJ-MX)", "CAP")
+slot_nms = c("SNWA", "MWD (+ TJ-MX)", "CAP")
 rdfs = rep('diversion.rdf', length(slots))
 
 # slots/agg to read

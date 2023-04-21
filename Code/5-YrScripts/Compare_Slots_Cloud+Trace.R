@@ -105,27 +105,29 @@ df_scens <- df_scens %>% left_join(TraceTranslate, by = "Scenario") %>%
   select(-Trace_traslate)
   
 
-# write.csv(df_scens, file.path(fig_dir, 'PowellMeadData.csv'))
-
 df_units = data.table::as.data.table(df) %>%
   select(Variable, Unit) %>% distinct()
 
+
 ## -- add total P+M storage as new slot
-slot_add = 'Powell + Mead Storage'
-slot_units = 'maf'
+if ("Powell.Storage" %in% slots & "Mead.Storage" %in% slots) {
+  slot_add = 'Powell + Mead Storage'
+  slot_units = 'maf'
+  
+  df_store = df_scens %>%
+    filter(Variable %in% c("Powell.Storage", "Mead.Storage")) %>%
+    group_by(Scenario, Date, Trace) %>% 
+    summarise(Value = sum(Value)/ 10^6) %>%
+    mutate(Variable = slot_add) %>%
+    select(colnames(df_scens))
+  
+  # add to df
+  df_scens = rbind.data.frame(df_scens, df_store)
+  slots = c(slots, slot_add)
+  df_units = rbind.data.frame(df_units,
+                              cbind(Variable = slot_add, Unit = slot_units))
+}
 
-df_store = df_scens %>%
-  filter(Variable %in% c("Powell.Storage", "Mead.Storage")) %>%
-  group_by(Scenario, Date, Trace) %>% 
-  summarise(Value = sum(Value)/ 10^6) %>%
-  mutate(Variable = slot_add) %>%
-  select(colnames(df_scens))
-
-# add to df
-df_scens = rbind.data.frame(df_scens, df_store)
-slots = c(slots, slot_add)
-df_units = rbind.data.frame(df_units,
-                            cbind(Variable = slot_add, Unit = slot_units))
 
 ## -- Quick filter of data
 # test = df_scens %>%

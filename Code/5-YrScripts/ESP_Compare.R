@@ -178,7 +178,9 @@ for (i in 0:1) {
                          breaks = unregkaf_to_poa(breaks_x),
                          labels = scales::label_percent(),
                          name = '% of Avg. Unregulated Inflow'
-                       )) 
+                       ))  +
+    theme(axis.text.x.bottom = element_text(angle = 45, vjust = 1, hjust = 1), 
+          axis.text.x.top = element_text(angle = 45, vjust = 1, hjust = 1))
   ggsave(file = file.path(fig_dir, paste0(slots, '_CDF_WY', wyI, '.png')),
          height = 6, width = 8)
 }
