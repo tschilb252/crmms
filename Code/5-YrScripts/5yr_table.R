@@ -3,7 +3,7 @@
 #   
 #
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
 
 library(tidyverse)
 library(lubridate)
@@ -14,7 +14,7 @@ library(RWDataPlyr)
 # source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
-# Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
+scenarios = names(scenario_dir)
 fig_dir <- file.path('Results', fig_dir_nm)
 data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)

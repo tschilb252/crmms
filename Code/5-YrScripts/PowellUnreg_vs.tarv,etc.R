@@ -1,9 +1,9 @@
 # ============================================================================
 # Compare CRMMS-ESP run 
-#   Powell Tiers / Powell TARV 
+#   Scatter plots to compare Powell Fcst, Release, EOY Powell/Mead PE 
 #   
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
 
 library(tidyverse)
 library(lubridate)
@@ -16,7 +16,7 @@ library(patchwork)
 # source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
-# Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
+scenarios = names(scenario_dir)
 fig_dir <- file.path('Results', fig_dir_nm)
 data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
@@ -71,10 +71,21 @@ for (i in 1:length(scenarios)) {
   df <- rbind(df, scen_res)
 }
 
+## -- process and combine hydrologies
 df_scens <- data.table::as.data.table(df)  %>% 
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
-  select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
-  mutate(Scenario = factor(Scenario, levels = scenarios))
+  dplyr::select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
+  mutate(Scenario = factor(Scenario, levels = scenarios),
+         Trace = 1991 + Trace - min(df$TraceNumber, na.rm = T),
+         Year = year(Date),
+         WY = ifelse(month(Date)>=10, year(Date) + 1,
+                     year(Date))) %>%
+  filter(Year <= max_yr) 
+
+# df_scens <- data.table::as.data.table(df)  %>% 
+#   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
+#   select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
+  # mutate(Scenario = factor(Scenario, levels = scenarios))
 
 PowellTierLab = c('Equalization Tier' = '#a6cee3', 
                   'Upper Elevation\nBalancing Tier' = '#1f78b4',
@@ -96,61 +107,110 @@ df_i = df_scens %>%
                                  labels = names(PowellTierLab))) %>%
   select(-all_of(decSlots), -Date) 
 
-## agg streamflow
-df_flow = df_scens %>% 
-  filter(Variable %in% c("PowellInflow.Unregulated")) %>%
-  select(-Variable) %>%
-  mutate(Year = ifelse(month(Date)>=10, year(Date) + 1,
-                       year(Date))) %>%
-  filter(Year > min(year(Date))) %>%
-  group_by(Year, Trace, Scenario) %>%
-  summarise(ann = sum(Value))
+## --- agg streamflow with current year of historical data
+
+## Read historical data from hdb
+sdis <- c("PowellInflow.Unregulated" = 1856)
+start_date = format(ym("1990-10"), "%Y-%m")
+dt_fcst = df_scens %>% group_by(Scenario) %>% summarise(dt = min(Date))
+end_date = format(max(dt_fcst$dt) - 1/12, "%Y-%m") 
+
+df_hdb <- bind_rows(
+  hdb_query(sdis["PowellInflow.Unregulated"], "uc", "m", start_date, end_date)
+)
+
+df_hdb <- df_hdb %>%
+  mutate(Variable = names(sdis)[match(sdi, sdis)],
+         Date = as.yearmon(parse_date_time(time_step, "m/d/y H:M:S")),
+         WY = ifelse(month(Date) >= 10,
+                     year(Date) + 1, year(Date)),
+         value = value/1000)
+
+# Add historical data to model projections
+df_flow <- df_scens %>%
+  filter(Variable == "PowellInflow.Unregulated") %>%
+  select("Scenario", "Variable", "Date", "Trace", "Value", "WY" )
+for (i in 1:length(scenarios)) {
+  df_scensI = df_scens %>% filter(Scenario == scenarios[i]) 
+  df_histAdd <- df_hdb %>% 
+    filter(WY %in% min(df_scensI$WY) & 
+             Date < min(df_scensI$Date)) %>%
+    select(Variable, Date, WY, Value = value)
+  
+  df_add <- df_scensI %>% 
+    filter(WY %in% min(df_scensI$WY)) %>% 
+    select(Scenario, Variable, Trace, WY) %>% distinct()
+  
+  addHist = left_join(df_histAdd, df_add, by = c("WY", "Variable")) %>%
+    select(colnames(df_flow))
+  
+  df_flow = rbind.data.frame(df_flow, addHist)
+}
+
+df_flow2 = df_flow %>%
+  group_by(Scenario, Variable, Trace, WY) %>%
+  # summarise(ann_wy = sum(Value)) %>%
+  summarise(ann = sum(Value), 
+            n = n()) %>%
+  filter(n == 12) %>%
+  select(Year = WY, Trace, Scenario, ann)
 
 ## agg Mead outflow
 df_cyOutflow = df_scens %>% 
   filter(Variable %in% "Mead.Outflow") %>%
-  select(-Variable) %>%
+  select(-Variable, -WY) %>%
   mutate(Year = year(Date)) %>%
-  filter(Year > min(year(Date), na.rm = T)) %>%
+  # filter(Year > min(year(Date), na.rm = T)) %>%
   group_by(Year, Trace, Scenario) %>%
-  summarise(MeadOut = sum(Value)/1000)
+  summarise(MeadOut = sum(Value)/1000, 
+            n = n()) %>%
+  filter(n == 12) %>% select(-n)
 
 ## agg storage deficit
-store_3490 = 3742.714 #CRSSIO::elevation_to_storage(3490, 'powell')/1000
+store_3490 = CRSSIO::elevation_to_storage(3490, 'powell')/1000
 df_st = df_scens %>% 
   filter(Variable %in% c("Powell.Storage")) %>%
   select(-Variable) %>%
-  mutate(Year = ifelse(month(Date)>=10, year(Date) + 1,
-                       year(Date))) %>%
+  filter(Year > min(year(Date))) %>%
+  group_by(WY, Trace, Scenario) %>%
+  summarise(MinPPDeficit = store_3490 - min(Value)) %>%
+  rename(Year = WY)
+
+## agg storage deficit
+store_950 = CRSSIO::elevation_to_storage(950, 'mead')/1000
+df_st_mead = df_scens %>% 
+  filter(Variable %in% c("Mead.Storage")) %>%
+  select(-Variable, -WY) %>%
+  mutate(Year = year(Date)) %>%
   filter(Year > min(year(Date))) %>%
   group_by(Year, Trace, Scenario) %>%
-  summarise(MinPPDeficit = store_3490 - min(Value)) 
+  summarise(MinPPDeficitMead = store_950 - min(Value)) 
 
 ## end of WY PE
 df_eowy = df_scens %>% 
   filter(Variable %in% c("Powell.Pool Elevation")) %>%
-  select(-Variable) %>%
-  mutate(Year = ifelse(month(Date)>=10, year(Date) + 1,
-                       year(Date))) %>%
-  filter(Year > min(year(Date)) & month(Date) == 9) %>%
+  select(-Variable, -Year) %>%
+  filter(month(Date) == 9) %>%
   select(-Date) %>%
-  rename(eowyPowellPE = Value)
+  rename(eowyPowellPE = Value) %>%
+  rename(Year = WY)
 
 df_eocy = df_scens %>% 
   filter(Variable %in% c("Mead.Pool Elevation", "Powell.Pool Elevation")) %>%
   pivot_wider(names_from = Variable, values_from = Value) %>%
   mutate(Year = year(Date)) %>%
-  filter(Year > min(year(Date)) & month(Date) == 12) %>%
-  select(-Date) %>%
+  filter(month(Date) == 12) %>%
+  select(-Date, -WY) %>%
   rename(eocyMeadPE = `Mead.Pool Elevation`,
          eocyPowellPE = `Powell.Pool Elevation`)
 
 ## combine data
-df_agg = left_join(df_i, df_flow, by = c('Scenario', 'Trace', 'Year')) %>%
+df_agg = left_join(df_i, df_flow2, by = c('Scenario', 'Trace', 'Year')) %>%
   left_join(df_st, by = c('Scenario', 'Trace', 'Year')) %>%
   left_join(df_eowy, by = c('Scenario', 'Trace', 'Year')) %>%
   left_join(df_eocy, by = c('Scenario', 'Trace', 'Year')) %>%
-  left_join(df_cyOutflow, by = c('Scenario', 'Trace', 'Year'))
+  left_join(df_cyOutflow, by = c('Scenario', 'Trace', 'Year')) %>%
+  left_join(df_st_mead, by = c('Scenario', 'Trace', 'Year'))
 
 
 ## ---plot data
@@ -160,7 +220,9 @@ if (length(scenarios) == 2) {
   custom_Tr_col <- scales::hue_pal()(length(scenarios))
 }
 
-for (plot_yr in 2023:2024) {
+minYr = min(df_agg$Year)
+for (i in 0:1) {
+  plot_yr = minYr + i
   df_plot = df_agg %>%
     filter(Year == plot_yr)
   

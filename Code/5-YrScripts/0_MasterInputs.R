@@ -5,17 +5,13 @@
 rm(list=ls())
 
 ## -- Inputs
-# Directory name - all directories stored in Scenario/ folder 
+# Scenarios: "Name of Scenario" = "Directory name" (all data in Scenario folder)
 scenario_dir <- c(
-  "2023-01_ESP"
-  # "2022-09_ESP"
+  "Apr 2023" = "2023-04_ESP",
+  "Jan 2023" = "2023-01_ESP"
 )
-# Name when plotting
-scenarios <- c(
-  "Jan 2023"
-  # "SEIS"
-)
-fig_dir_nm <- '2023-01_Energy'
+
+fig_dir_nm <- '2023-04,01_5yrCompare_v3'
 # ^ script will create directory in Results/ with this name if it doesn't exist
 
 ## Run Scripts

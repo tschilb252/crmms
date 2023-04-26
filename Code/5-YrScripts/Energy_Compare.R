@@ -1,10 +1,10 @@
 # ============================================================================
-#   Analyses: 
+# Compare CRMMS-ESP run 
 #     Energy at major reservoirs
 #     Last set of figures are produced for LC power group
 #
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
 
 ## Inputs - control file
 library(rhdb)
@@ -19,7 +19,7 @@ library(patchwork)
 # source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
-# Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
+scenarios = names(scenario_dir)
 fig_dir <- file.path('Results', fig_dir_nm)
 data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
@@ -30,7 +30,7 @@ source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 max_date = '2027-12' #'2024-12'
 
 ## Traces to plot (NA = cloud)
-input_traces <- c(NA, 2000, 2002)
+input_traces <- c(NA, 2002)
 
 # slots and associated rdfs
 slots = c(
@@ -233,7 +233,8 @@ for (k in 1:length(input_traces)) {
     gg <- gg +
       theme_bw() +
       scale_y_continuous(labels = scales::comma)  +
-      labs(x = "Fiscal Year", y = 'Energy (GWh)', fill = NULL, color = NULL) +
+      labs(x = "Fiscal Year", y = 'Energy (GWh)', fill = NULL, color = NULL,
+           title = title_i) +
       guides(fill = guide_legend(nrow = length(scenarios), order = 2)) +
       theme(
         legend.position = "bottom",
@@ -323,6 +324,8 @@ openxlsx::write.xlsx(test,
 # ## --- Plot annual cloud with historical data
 
 plottedName = c("Davis", "Parker", "Davis + Parker", "Hoover")
+cols_lines = c('black', custom_col)
+names(cols_lines) <- c('Historical', scenarios)
 
 for (i in 1:length(plottedName)) {
   df_plot = df_fy_all %>%
@@ -347,7 +350,8 @@ for (i in 1:length(plottedName)) {
               mdl.50 = quantile(value, .5),
               mdl.10 = quantile(value, .1),
               mdl.min = min(value)) %>%
-    ungroup()
+    ungroup() %>%
+    mutate(Scenario = factor(Scenario, levels = c('Historical', scenarios)))
 
   df_avg_hist = df_plot_hist %>%
     filter(yr_fy %in% 2000:2020) %>%
@@ -355,16 +359,17 @@ for (i in 1:length(plottedName)) {
               min = min(value),
               max = max(value))
 
-  df_plot_hist = df_plot_hist
+  df_plot_hist_i = df_plot_hist %>%
+    mutate(Scenario = factor(Scenario, levels = c('Historical', scenarios)))
 
   ggplot() +
-    geom_line(data = df_plot_hist %>% filter(yr_fy >= 2015),
+    geom_line(data = df_plot_hist_i %>% filter(yr_fy >= 2015),
               aes(x = yr_fy, y = value,
                   color = Scenario)) +
     geom_line(data = df_plot_agg,
               aes(x = yr_fy, y = mdl.50,
                   color = Scenario)) +
-    scale_color_manual(values = c('black', custom_col)) +
+    scale_color_manual(values = cols_lines) +
     scale_size_manual(values = 1.15) +
     geom_ribbon(data = df_plot_agg,
                 aes(x = yr_fy,
@@ -387,7 +392,6 @@ for (i in 1:length(plottedName)) {
       fill = "10th to 90th\npercentile of\nfull range",
       title = paste(plottedName[i], "Energy from CRMMS-ESP")
     ) +
-    # bor_theme() +
     theme(
       text = element_text(size = 12),
       # axis.text.x = element_text(angle = 90, vjust = 0.5),
@@ -395,6 +399,6 @@ for (i in 1:length(plottedName)) {
       legend.key.width = unit(1.2, "cm")
     )
 
-  ggsave(file.path(fig_dir, paste0(plottedName[i], '_CloudEnergy', file_nm_end, '.png')),
+  ggsave(file.path(fig_dir, paste0('Energy', plottedName[i], '_Cloud_', file_nm_end, '.png')),
          width = 10, height = 7)
 }

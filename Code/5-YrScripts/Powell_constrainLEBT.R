@@ -1,9 +1,9 @@
 # ============================================================================
 # Compare CRMMS-ESP run 
-#   Powell Tiers / Powell TARV 
+#   Powell Constrained LEBT 
 #   
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
 
 library(tidyverse)
 library(lubridate)
@@ -16,7 +16,7 @@ library(patchwork)
 # source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
-# Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
+scenarios = names(scenario_dir)
 fig_dir <- file.path('Results', fig_dir_nm)
 data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
@@ -144,6 +144,8 @@ df_eowy = df_scens %>%
 df_agg = left_join(df_i, df_flow, by = c('Scenario', 'Trace', 'Year')) %>%
   left_join(df_st, by = c('Scenario', 'Trace', 'Year')) %>%
   left_join(df_eowy, by = c('Scenario', 'Trace', 'Year'))
+
+df_agg %>% filter(IsConstLEBT != 'Not Constrained')
 
 
 ## ---plot data
