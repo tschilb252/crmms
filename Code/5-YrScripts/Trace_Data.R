@@ -3,7 +3,7 @@
 #   Powell Tiers / Powell TARV / LB Condition
 #   
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "scenarios", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
 
 library(tidyverse)
 library(lubridate)
@@ -17,9 +17,9 @@ library(rhdb)
 # source(file.path('Code', '0_MasterInputs.R'))
 
 ## Directories & Data
-# Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
-fig_dir <- file.path('Output Data', fig_dir_nm)
-data_dir <- file.path('rdfOutput', scenario_dir)
+scenarios = names(scenario_dir)
+fig_dir <- file.path('Results', fig_dir_nm)
+data_dir <- file.path('Scenario', scenario_dir)
 dir.create(fig_dir, showWarnings = F)
 
 ## Max Date
@@ -228,7 +228,7 @@ df_eocy = df_scens %>%
 ## Compact Pt
 sdis <- c("Paria" = 1579, "LeesFerry" = 1578)
 start_date = format(ym("2000-10"), "%Y-%m")
-end_date = format(min(df_scens$Date) - 1/12, "%Y-%m") # assumes all same start month
+end_date = format(max(df_scens$Date) - 1/12, "%Y-%m") # assumes all same start month
 df_hdb <- hdb_query(sdis, "uc", "m", start_date, end_date) %>%
   mutate(Variable = names(sdis)[match(sdi, sdis)],
          Date = as.yearmon(parse_date_time(time_step, "m/d/y H:M:S")),
@@ -252,7 +252,8 @@ df_compt = df_scens %>%  mutate(mon = month(Date)) %>%
 df_histPt = df_hdb %>% select(Date, Year, Variable, value) %>%
   pivot_wider(names_from = Variable, values_from = value) %>%
   mutate(Compt = Paria + LeesFerry) %>%
-  select(Year, Date, Compt) 
+  select(Year, Date, Compt) %>%
+  na.omit()
 
 df_histPt = data.frame(Trace = rep(sort(unique(df_compt$Trace)), each = length(unique(df_hdb$Year))),
                        Year = rep(sort(unique(df_hdb$Year)), times = length(unique(df_compt$Trace)))) %>% 
@@ -307,20 +308,20 @@ df_agg = left_join(df_i, df_flow, by = c('Scenario', 'Trace', 'Year')) %>%
 
 write.csv(df_agg, file.path(fig_dir, "TraceData.csv"))
 
-test = df_agg %>%
-  filter(Year %in% 2023:2024) %>%
-  group_by(Scenario, Trace) %>%
-  summarise(sumRel = sum(act_TARV)) %>% ungroup() %>%
-  filter(sumRel < 14000)
-group_by(Scenario) %>% 
-  summarise(minRel = min(sumRel))
-filter(Trace == 2011)
+# test = df_agg %>%
+#   filter(Year %in% 2023:2024) %>%
+#   group_by(Scenario, Trace) %>%
+#   summarise(sumRel = sum(act_TARV)) %>% ungroup() %>%
+#   filter(sumRel < 14000)
+# group_by(Scenario) %>% 
+#   summarise(minRel = min(sumRel))
+# filter(Trace == 2011)
 
-min(test$`EOWY_Mead.Pool Elevation`)
-
-## p+M storage
-test2 = df_agg  %>% 
-  mutate(eowy_comb = EOWY_Powell.Storage + EOWY_Mead.Storage,
-         eocy_comb = EOCY_Powell.Storage + EOCY_Mead.Storage)
-test2 %>% filter(Year == 2024) %>% 
-  filter(eowy_comb < 6500)
+# min(test$`EOWY_Mead.Pool Elevation`)
+# 
+# ## p+M storage
+# test2 = df_agg  %>% 
+#   mutate(eowy_comb = EOWY_Powell.Storage + EOWY_Mead.Storage,
+#          eocy_comb = EOCY_Powell.Storage + EOCY_Mead.Storage)
+# test2 %>% filter(Year == 2024) %>% 
+#   filter(eowy_comb < 6500)
