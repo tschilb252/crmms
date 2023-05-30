@@ -30,7 +30,7 @@ end_file_nm = paste0('_', max_yr)
 
 # set up 
 slots = c(
-  'Shortage.Shortage Flag', 'PowellData.ReleaseTier',
+  'Shortage.Shortage Flag', "Surplus.AnnualSurplusFlag", 'PowellData.ReleaseTier',
   'PowellData.TargetAnnualReleaseVolume',
   'PowellData.ActualAnnualReleaseVolume', 'DCP BWSCP Flags.LB DCP BWSCP'#,
   # 'MeadData.EffectiveEOCYPoolElev', "PowellData.EffectiveEOCYPoolElevWith823Rel"
@@ -86,7 +86,8 @@ PowellTierLab = c('Equalization Tier' = '#a6cee3',
                   'Upper Elevation\nBalancing Tier' = '#1f78b4',
                   'Mid Elevation\nRelease Tier' = '#b2df8a',
                   'Lower Elevation\nBalancing Tier' = '#33a02c')
-ShortLabs = c('Normal Condition' = '#a6cee3', 
+ShortLabs = c("Surplus Condition" = 'grey',
+              'Normal Condition' = '#a6cee3', 
               'Shortage - Level 1' = '#1f78b4',
               'Shortage - Level 2' = '#b2df8a',
               'Shortage - Level 3' = '#cab2d6')
@@ -105,8 +106,11 @@ df_i = df_scens %>% pivot_wider(names_from = Variable, values_from = Value) %>%
          `Powell Tiers` = factor(PowellData.ReleaseTier, 
                                  levels = c(0,1,2,3),
                                  labels = names(PowellTierLab)),
-         `Lower Basin Shortage`= factor(`Shortage.Shortage Flag`, 
-                                        levels = c(0,1,2,3),
+         `Lower Basin Condition 1`= ifelse(`Surplus.AnnualSurplusFlag` == 1, 
+                                        10, # new surplus flag number
+                                        `Shortage.Shortage Flag`),
+         `Lower Basin Condition` = factor(`Lower Basin Condition 1`, 
+                                        levels = c(10, 0,1,2,3),
                                         labels = names(ShortLabs)),
          `DCP Contribution` = factor(`DCP BWSCP Flags.LB DCP BWSCP`, 
                                      levels = 8:0, 
@@ -168,11 +172,11 @@ openxlsx::saveWorkbook(wb1, file.path(fig_dir, paste0('Powell_diffs', end_file_n
 #   select(Scenario, `DCP Contribution`) %>% table()
 
 # LB Shortage
-df_short = df_i %>% select(Scenario, Trace, Year, `Lower Basin Shortage`) %>%
-  group_by(Scenario, Year, `Lower Basin Shortage`) %>%
+df_short = df_i %>% select(Scenario, Trace, Year, `Lower Basin Condition`) %>%
+  group_by(Scenario, Year, `Lower Basin Condition`) %>%
   summarise(cnt = n()/30*100)
 
-g <- ggplot(df_short, aes(fill=`Lower Basin Shortage`, y=cnt, x=Scenario)) + 
+g <- ggplot(df_short, aes(fill=`Lower Basin Condition`, y=cnt, x=Scenario)) + 
   bor_theme() +
   scale_fill_manual(values = ShortLabs) +
   geom_bar(stat="identity") +
@@ -181,7 +185,7 @@ g <- ggplot(df_short, aes(fill=`Lower Basin Shortage`, y=cnt, x=Scenario)) +
   theme(axis.text.x = element_text(angle = 55,  hjust = 1)) +
   facet_grid(~ Year)
 print(g)
-ggsave(filename = file.path(fig_dir, paste0('LB_Shortage', end_file_nm, '.png')), 
+ggsave(filename = file.path(fig_dir, paste0('LB_Condition', end_file_nm, '.png')), 
        width=7, height=6)
 
 # DCP Contribution
