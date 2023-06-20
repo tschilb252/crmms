@@ -7,11 +7,11 @@ rm(list=ls())
 ## -- Inputs
 # Scenarios: "Name of Scenario" = "Directory name" (all data in Scenario folder)
 scenario_dir <- c(
-  "May 2023" = "2023-05_ESP",
-  "Apr 2023" = "2023-04_ESP"
+  "Jun 2023" = "2023-06_ESP",
+  "May 2023" = "2023-05_ESP"
 )
 
-fig_dir_nm <- '2023-05_5yrCompare'
+fig_dir_nm <- '2023-06_5yrCompare'
 # ^ script will create directory in Results/ with this name if it doesn't exist
 
 ## Run Scripts
