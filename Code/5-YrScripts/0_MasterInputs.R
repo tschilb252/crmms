@@ -7,11 +7,11 @@ rm(list=ls())
 ## -- Inputs
 # Scenarios: "Name of Scenario" = "Directory name" (all data in Scenario folder)
 scenario_dir <- c(
-  "Jun 2023" = "2023-06_ESP",
-  "May 2023" = "2023-05_ESP"
+  "Jul 2023" = "2023-07_ESP",
+  "Jun 2023" = "2023-06_ESP"
 )
 
-fig_dir_nm <- '2023-06_5yrCompare'
+fig_dir_nm <- '2023-07_5yrCompare'
 # ^ script will create directory in Results/ with this name if it doesn't exist
 
 ## Run Scripts
@@ -23,5 +23,6 @@ source(file.path('Code', '5-YrScripts','PowellMead_Thresholds.R'))
 source(file.path('Code', '5-YrScripts','5yr_table.R'))
 source(file.path('Code', '5-YrScripts','Trace_Data.R'))
 source(file.path('Code', '5-YrScripts','PowellUnreg_vs.tarv,etc.R'))
+source(file.path('Code', '5-YrScripts','Energy_Compare.R'))
 
 

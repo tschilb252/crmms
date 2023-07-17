@@ -19,13 +19,13 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 ### --- Inputs
 
 ## 24-MS MRIDs & Date - UPDATE!
-most_mrid <- 3226 
-min_mrid <- 3227
+most_mrid <- 3228 
+min_mrid <- 3229
 max_mrid <- 3223
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2023-06')
-min_run_date = c('2023-06')
+most_run_date = c('2023-07')
+min_run_date = c('2023-07')
 max_run_date = c('2023-04') 
 
 ## Directories & Data
@@ -244,10 +244,10 @@ gg <-
   labs(
     y = "Pool Elevation (ft)", x = NULL, 
     color = NULL, linetype = NULL, size = NULL, fill = NULL,
-    title = bquote('Lake Powell End-of-Month'~Elevations^1),
-    subtitle = subtitle_in, #paste(cloud_model, 'Projections from', 'April and May 2023'),
-    caption = bquote(' '^1~'Projected Lake Powell end-of-month physical elevations from the latest CRMMS-ESP and 24-Month Study inflow scenarios.                  ')
-  ) +
+    title = bquote('Lake Powell End-of-Month'~Elevations),
+    subtitle = subtitle_in ) + #paste(cloud_model, 'Projections from', 'April and May 2023'),
+    #caption = bquote(' '^1~'Projected Lake Powell end-of-month physical elevations from the latest CRMMS-ESP and 24-Month Study inflow scenarios.                  ')
+ 
   # tier stuff
   geom_hline(
     yintercept = c(3575, 3525), 
@@ -295,7 +295,7 @@ gg <-
     plot.caption = element_text(hjust = 0, size = 10, face = "italic")
   )
 
-crssplot:::add_logo_vertical(gg, .87, .01, .97, .12) # add usbr logo
+#crssplot:::add_logo_vertical(gg, .87, .01, .97, .12) # add usbr logo
 
 ggsave(file.path(data_dir, "crmmsCloud_powell.png"), 
        width = 11, height = 8)
@@ -337,9 +337,9 @@ gg <-
   labs(y = "Pool Elevation (ft)", x = NULL, color = NULL, linetype = NULL,
        size = NULL,
        fill = NULL,
-       title = bquote('Lake Mead End-of-Month'~Elevations^1),
-       subtitle = subtitle_in, #paste(cloud_model, 'Projections from', 'April 2023'),
-       caption = bquote(' '^1~'Projected Lake Mead end-of-month physical elevations from the latest CRMMS-ESP and 24-Month Study inflow scenarios.                  ')) +
+       title = bquote('Lake Mead End-of-Month'~Elevations),
+       subtitle = subtitle_in) + #paste(cloud_model, 'Projections from', 'April 2023'),
+       #caption = bquote(' '^1~'Projected Lake Mead end-of-month physical elevations from the latest CRMMS-ESP and 24-Month Study inflow scenarios.                  ')
   # tier stuff
   geom_hline(
     yintercept = c(1110, 1090, 1045), 
@@ -388,7 +388,7 @@ gg <-
     plot.caption = element_text(hjust = 0, size = 10, face = "italic")
   )
 
-crssplot:::add_logo_vertical(gg, .87, .01, .97, .12) # add usbr logo
+#crssplot:::add_logo_vertical(gg, .87, .01, .97, .12) # add usbr logo
 
 ggsave(file.path(data_dir,"crmmsCloud_mead.png"), 
        width = 11, height = 8)
