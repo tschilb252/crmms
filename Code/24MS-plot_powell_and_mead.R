@@ -291,7 +291,7 @@ gg <-
 ggsave("C:/Temp/crmms24MS_powell.png", 
        width = 11, height = 8)
 crmms_p <- image_read("C:/Temp/crmms24MS_powell.png")
-logo_raw <- image_read("C:/Temp/BofR-vert.png")
+logo_raw <- image_read("https://www.usbr.gov/lc/region/g4000/BofR-vert.png")
 test_plot <- image_composite(crmms_p,image_resize(logo_raw,"325"),offset = "+2860+2060")
 image_write(test_plot, "C:/Temp/crmms24MS_powell_logo.png")
 
@@ -409,7 +409,7 @@ ggsave("C:/Temp/crmms24MS_mead.png",
        width = 11, height = 8)
 
 crmms_m <- image_read("C:/Temp/crmms24MS_mead.png")
-logo_raw <- image_read("C:/Temp/BofR-vert.png")
+logo_raw <- image_read("https://www.usbr.gov/lc/region/g4000/BofR-vert.png")
 test_plot <- image_composite(crmms_m,image_resize(logo_raw,"325"),offset = "+2860+2060")
 image_write(test_plot, "C:/Temp/crmms24MS_mead_logo.png")
 
