@@ -60,7 +60,8 @@ Crmms_DIR
 	|               |- CRMMS outputs spreadsheet for input into Analysis App 
 	|		|- CRMMS outputs spreadsheet for Monthly CRSS inputs
 	|		|- CRMMS outputs spreadsheet for Yearly CRSS inputs
-	|		|- CRMMS outputs CSV file	
+	|		|- CRMMS outputs CSV file
+        |               |- MRM Model Files empty folder for individual MRM models
         |
 	|- RW Files
 	|		|- RiverWare model
