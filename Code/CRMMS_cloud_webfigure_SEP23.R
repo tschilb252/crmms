@@ -14,18 +14,19 @@ library(lubridate)
 library(zoo)
 library(rhdb)
 library(crssplot)
+library(magick)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ### --- Inputs
 
 ## 24-MS MRIDs & Date - UPDATE!
-most_mrid <- 3230 
-min_mrid <- 3231
+most_mrid <- 3234 
+min_mrid <- 3235
 max_mrid <- 3232
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2023-08')
-min_run_date = c('2023-08')
+most_run_date = c('2023-09')
+min_run_date = c('2023-09')
 max_run_date = c('2023-08') 
 
 ## Directories & Data
@@ -161,7 +162,7 @@ df_stat <- bind_rows(
 
 # labeling 24-MS lines
 maxLab_droa = T #ifelse(month(ym(max_run_date)) %in% c(1,4,8), T, F)
-minLab_droa = T #ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
+minLab_droa = F #ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
 
 ## naming for figures
 esp_label <- "CRMMS-ESP Projection \n(30 traces)"
