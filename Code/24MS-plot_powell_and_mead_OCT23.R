@@ -12,20 +12,20 @@ library(magick)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2023-09')
+run_date = c('2023-10')
 
-most_mrid <- 3234 
-min_mrid <- 3235
-max_mrid <- 3232
+most_mrid <- 3236 
+min_mrid <- 3237
+max_mrid <- 3238
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2023-09')
-min_run_date = c('2023-09')
-max_run_date = c('2023-08') 
+most_run_date = c('2023-10')
+min_run_date = c('2023-10')
+max_run_date = c('2023-10') 
 
 ## UPDATE this to add "DROA" to legend
 maxLab_droa = F
-minLab_droa = T
+minLab_droa = F
 
 cloud_model = 'CRMMS'
 
@@ -95,63 +95,63 @@ df_24MS = arrange(df_24MS,Trace)
 
 
 
-# ########## Get Powell WY Releases ###########################################################################
-historical <- hdb_query(1920, "uc", "m", wy_start, format(ym(most_run_date) - months(1), "%Y-%m"))
-
-powRel <- bind_rows(historical,
-                    hdb_query(1920, "uc", "m", most_run_date, wy_end, most_mrid))
-
-powRelmin <- bind_rows(historical,
-                    hdb_query(1920, "uc", "m", min_run_date, wy_end, min_mrid))
-powRelmax <- bind_rows(hdb_query(1920, "uc", "m", wy_start, format(ym(max_run_date) - months(1), "%Y-%m")),
-                       hdb_query(1920, "uc", "m", max_run_date, wy_end, max_mrid))
-
-# powRelWY <- powRel %>%
-#   rename(Date = time_step) %>%
+# # ########## Get Powell WY Releases ###########################################################################
+# historical <- hdb_query(1920, "uc", "m", wy_start, format(ym(most_run_date) - months(1), "%Y-%m"))
+# 
+# powRel <- bind_rows(historical,
+#                     hdb_query(1920, "uc", "m", most_run_date, wy_end, most_mrid))
+# 
+# powRelmin <- bind_rows(historical,
+#                     hdb_query(1920, "uc", "m", min_run_date, wy_end, min_mrid))
+# powRelmax <- bind_rows(hdb_query(1920, "uc", "m", wy_start, format(ym(max_run_date) - months(1), "%Y-%m")),
+#                        hdb_query(1920, "uc", "m", max_run_date, wy_end, max_mrid))
+# 
+# # powRelWY <- powRel %>%
+# #   rename(Date = time_step) %>%
+# #   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
+# #   mutate(WY = ifelse(month(Date)>9,year(Date)+1,year(Date))) %>%
+# #   group_by(WY) %>%
+# #   summarise(WYRelease = sum(value))
+# #
+# # powRelWY[1,2]
+# 
+# powRelmost <- powRel %>%
+#   rename(Date = time_step, Most = value) %>%
 #   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
-#   mutate(WY = ifelse(month(Date)>9,year(Date)+1,year(Date))) %>%
-#   group_by(WY) %>%
-#   summarise(WYRelease = sum(value))
-#
-# powRelWY[1,2]
-
-powRelmost <- powRel %>%
-  rename(Date = time_step, Most = value) %>%
-  mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
-  select(Date, Most)
-
-powRelmin <- powRelmin %>%
-  rename(Date = time_step, Min = value) %>%
-  mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
-  select(Date, Min)
-
-powRelmax <- powRelmax %>%
-  rename(Date = time_step, Max = value) %>%
-  mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
-  select(Date, Max)
-
-powReleaseWY <- inner_join(inner_join(powRelmost,powRelmin, by="Date"),powRelmax, by="Date") %>%
-    mutate(WY = ifelse(month(Date)>9,year(Date)+1,year(Date))) %>%
-    group_by(WY) %>%
-    summarise(MostRel = round(sum(Most)/1000000,2),
-              MinRel = round(sum(Min)/1000000,2),
-              MaxRel = round(sum(Max)/1000000,2))
+#   select(Date, Most)
+# 
+# powRelmin <- powRelmin %>%
+#   rename(Date = time_step, Min = value) %>%
+#   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
+#   select(Date, Min)
+# 
+# powRelmax <- powRelmax %>%
+#   rename(Date = time_step, Max = value) %>%
+#   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
+#   select(Date, Max)
+# 
+# powReleaseWY <- inner_join(inner_join(powRelmost,powRelmin, by="Date"),powRelmax, by="Date") %>%
+#     mutate(WY = ifelse(month(Date)>9,year(Date)+1,year(Date))) %>%
+#     group_by(WY) %>%
+#     summarise(MostRel = round(sum(Most)/1000000,2),
+#               MinRel = round(sum(Min)/1000000,2),
+#               MaxRel = round(sum(Max)/1000000,2))
 
 mostrd <- ym(most_run_date)
 minrd <- ym(min_run_date)
 maxrd <- ym(max_run_date)
 
 mostlab <- paste(month.name[month(mostrd)],year(mostrd), "Most Probable Inflow with a Lake Powell release of",
-                format(powReleaseWY$MostRel[1],nsmall = 2), "maf in WY", powReleaseWY$WY[1], "and", 
-                format(powReleaseWY$MostRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
+                "7.48", "maf in WY", "2024", "and", 
+                "9.00", "maf in WY", "2025")
 
-minlab <- paste(month.name[month(minrd)],year(minrd), ifelse(minLab_droa, 'DROA Probable Minimum', "Probable Minimum"),
-                "Inflow with a Lake Powell release of",  format(powReleaseWY$MinRel[1],nsmall = 2), "maf in WY", 
-                powReleaseWY$WY[1], "and", format(powReleaseWY$MinRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
+minlab <- paste(month.name[month(minrd)],year(minrd), "Probable Minimum Inflow with a Lake Powell release of",
+                "7.48", "maf in WY", "2024", "and", 
+                "7.48", "maf in WY", "2025")
 
-maxlab <- paste(month.name[month(maxrd)],year(maxrd), ifelse(maxLab_droa, 'DROA Probable Maximum', "Probable Maximum"),
-                "Inflow with a Lake Powell release of",  format(powReleaseWY$MaxRel[1],nsmall = 2), "maf in WY", 
-                powReleaseWY$WY[1], "and", format(powReleaseWY$MaxRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
+maxlab <- paste(month.name[month(maxrd)],year(maxrd), "Probable Maximum Inflow with a Lake Powell release of",
+                "7.48", "maf in WY", "2024", "and", 
+                "11.57", "maf in WY", "2025")
 #######################################################################################
 
 lab_names <- c("Historical Elevations",
@@ -231,7 +231,7 @@ gg <-
        size = NULL,
        fill = NULL,
        title = bquote('Lake Powell End-of-Month'~Elevations),
-       subtitle = paste('Projections from', 'August and September 2023 24-Month Study Inflow Scenarios'),
+       subtitle = paste('Projections from', 'October 2023 24-Month Study Inflow Scenarios'),
        caption = "The Drought Response Operations Agreement (DROA) is available online at https://www.usbr.gov/dcp/finaldocs.html.                  "
   ) +
   # tier stuff
@@ -336,7 +336,7 @@ gg <-
        size = NULL,
        fill = NULL,
        title = bquote('Lake Mead End-of-Month'~Elevations),
-       subtitle = paste('Projections from', 'August and September 2023 24-Month Study Inflow Scenarios'),
+       subtitle = paste('Projections from', 'October 2023 24-Month Study Inflow Scenarios'),
        caption = "The Drought Response Operations Agreement (DROA) is available online at https://www.usbr.gov/dcp/finaldocs.html.                  "
        ) +
   # tier stuff
