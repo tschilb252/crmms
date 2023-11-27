@@ -21,7 +21,7 @@ dir.create(fig_dir, showWarnings = F)
 source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
-max_date = '2027-12' #'2024-12'
+max_date = '2028-12' #'2024-12'
 
 slots = c("Mead.Pool Elevation", "Powell.Pool Elevation")
 file_nm_end <- paste0('_thru', format(ym(max_date), "%Y"))

@@ -27,7 +27,7 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
-max_date = '2027-12' #'2024-12'
+max_date = '2028-12' #'2024-12'
 
 ## Traces to plot (NA = cloud)
 input_traces <- c(NA, 2002)

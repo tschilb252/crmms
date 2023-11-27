@@ -9,23 +9,36 @@ library(zoo)
 library(rhdb)
 library(crssplot)
 library(magick)
+library(here)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2023-10')
+run_date = c('2023-11')
 
-most_mrid <- 3236 
-min_mrid <- 3237
+most_mrid <- 3239
+min_mrid <- 3240
 max_mrid <- 3238
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2023-10')
-min_run_date = c('2023-10')
-max_run_date = c('2023-10') 
+most_run_date = c('2023-11')
+min_run_date = c('2023-11')
+max_run_date = c('2023-10')
 
-## UPDATE this to add "DROA" to legend
+## UPDATE! this to add "DROA" to legend. T = add "DROA", F = don't add "DROA"
 maxLab_droa = F
-minLab_droa = F
+minLab_droa = T
+
+## Get month names for chart subheading
+if (month(ym(most_run_date)) == month(ym(max_run_date))) {
+  month_heading = month.name[month(ym(most_run_date))]
+} else {
+  month_heading = paste(month.name[month(ym(max_run_date))], "and", month.name[month(ym(most_run_date))])
+}
+
+# add year to subheading
+month_heading = paste(month_heading, year(ym(most_run_date)))
+
+
 
 cloud_model = 'CRMMS'
 
@@ -36,7 +49,14 @@ wy_end = c(paste0(wy+2,"-09"))
 
 
 hist_nMons = 7 # keep 7 months before start date
-end_date = format(ym(run_date) + months(23), "%Y-%m")
+
+#
+if (month(ym(run_date)) > 10) {
+  end_date = format(ym(run_date) + months(22), "%Y-%m")
+} else {
+  end_date = format(ym(run_date) + months(23), "%Y-%m")
+}
+
 histStart_date = format(ym(run_date) - months(hist_nMons), "%Y-%m")
 sdis <- c("Mead.Pool Elevation" = 1930, "Powell.Pool Elevation" = 1928)
 slots <- names(sdis)
@@ -48,8 +68,8 @@ names(mrid_to_trace) <- c(min_mrid, max_mrid, most_mrid)
 df_hdb <- bind_rows(
   hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", most_run_date, end_date, most_mrid),
   hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", most_run_date, end_date, most_mrid),
-  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", min_run_date, end_date, min_mrid),
-  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", min_run_date, end_date, min_mrid),
+  hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", most_run_date, end_date, min_mrid),
+  hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", most_run_date, end_date, min_mrid),
   hdb_query(sdis["Powell.Pool Elevation"], "uc", "m", most_run_date, end_date, max_mrid),
   hdb_query(sdis["Mead.Pool Elevation"], "lc", "m", most_run_date, end_date, max_mrid)
 )
@@ -95,63 +115,75 @@ df_24MS = arrange(df_24MS,Trace)
 
 
 
-# # ########## Get Powell WY Releases ###########################################################################
+# ########## Get Powell WY Releases ###########################################################################
+
+#If most_run_date month is October, set historical to NULL
+#Else get the historical release data from the beginning of the WY
+
+if (month(ym(most_run_date)) == 10) {
+  historical <- NULL
+} else {
+  historical <- hdb_query(1920, "uc", "m", wy_start, format(ym(most_run_date) - months(1), "%Y-%m"))
+}
+
 # historical <- hdb_query(1920, "uc", "m", wy_start, format(ym(most_run_date) - months(1), "%Y-%m"))
-# 
-# powRel <- bind_rows(historical,
-#                     hdb_query(1920, "uc", "m", most_run_date, wy_end, most_mrid))
-# 
-# powRelmin <- bind_rows(historical,
-#                     hdb_query(1920, "uc", "m", min_run_date, wy_end, min_mrid))
-# powRelmax <- bind_rows(hdb_query(1920, "uc", "m", wy_start, format(ym(max_run_date) - months(1), "%Y-%m")),
-#                        hdb_query(1920, "uc", "m", max_run_date, wy_end, max_mrid))
-# 
-# # powRelWY <- powRel %>%
-# #   rename(Date = time_step) %>%
-# #   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
-# #   mutate(WY = ifelse(month(Date)>9,year(Date)+1,year(Date))) %>%
-# #   group_by(WY) %>%
-# #   summarise(WYRelease = sum(value))
-# #
-# # powRelWY[1,2]
-# 
-# powRelmost <- powRel %>%
-#   rename(Date = time_step, Most = value) %>%
-#   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
-#   select(Date, Most)
-# 
-# powRelmin <- powRelmin %>%
-#   rename(Date = time_step, Min = value) %>%
-#   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
-#   select(Date, Min)
-# 
-# powRelmax <- powRelmax %>%
-#   rename(Date = time_step, Max = value) %>%
-#   mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
-#   select(Date, Max)
-# 
-# powReleaseWY <- inner_join(inner_join(powRelmost,powRelmin, by="Date"),powRelmax, by="Date") %>%
-#     mutate(WY = ifelse(month(Date)>9,year(Date)+1,year(Date))) %>%
-#     group_by(WY) %>%
-#     summarise(MostRel = round(sum(Most)/1000000,2),
-#               MinRel = round(sum(Min)/1000000,2),
-#               MaxRel = round(sum(Max)/1000000,2))
+
+powRel <- bind_rows(historical,
+                    hdb_query(1920, "uc", "m", most_run_date, wy_end, most_mrid))
+
+powRelmin <- bind_rows(historical,
+                    hdb_query(1920, "uc", "m", min_run_date, wy_end, min_mrid))
+
+#If max_run_date month is October, set historical to NULL
+#Else get the historical release data from the beginning of the WY
+
+if (month(ym(max_run_date)) == 10) {
+  maxhistorical <- NULL
+} else {
+  maxhistorical <- hdb_query(1920, "uc", "m", wy_start, format(ym(max_run_date) - months(1), "%Y-%m"))
+}
+
+powRelmax <- bind_rows(maxhistorical,
+                       hdb_query(1920, "uc", "m", max_run_date, wy_end, max_mrid))
+
+
+powRelmost <- powRel %>%
+  rename(Date = time_step, Most = value) %>%
+  mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
+  select(Date, Most)
+
+powRelmin <- powRelmin %>%
+  rename(Date = time_step, Min = value) %>%
+  mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
+  select(Date, Min)
+
+powRelmax <- powRelmax %>%
+  rename(Date = time_step, Max = value) %>%
+  mutate(Date = as.yearmon(parse_date_time(Date, "m/d/y H:M:S"))) %>%
+  select(Date, Max)
+
+powReleaseWY <- inner_join(inner_join(powRelmost,powRelmin, by="Date"),powRelmax, by="Date") %>%
+    mutate(WY = ifelse(month(Date)>9,year(Date)+1,year(Date))) %>%
+    group_by(WY) %>%
+    summarise(MostRel = round(sum(Most)/1000000,2),
+              MinRel = round(sum(Min)/1000000,2),
+              MaxRel = round(sum(Max)/1000000,2))
 
 mostrd <- ym(most_run_date)
 minrd <- ym(min_run_date)
 maxrd <- ym(max_run_date)
 
 mostlab <- paste(month.name[month(mostrd)],year(mostrd), "Most Probable Inflow with a Lake Powell release of",
-                "7.48", "maf in WY", "2024", "and", 
-                "9.00", "maf in WY", "2025")
+                format(powReleaseWY$MostRel[1],nsmall = 2), "maf in WY", powReleaseWY$WY[1], "and", 
+                format(powReleaseWY$MostRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
 
-minlab <- paste(month.name[month(minrd)],year(minrd), "Probable Minimum Inflow with a Lake Powell release of",
-                "7.48", "maf in WY", "2024", "and", 
-                "7.48", "maf in WY", "2025")
+minlab <- paste(month.name[month(minrd)],year(minrd), ifelse(minLab_droa, 'DROA Probable Minimum', "Probable Minimum"),
+                "Inflow with a Lake Powell release of",  format(powReleaseWY$MinRel[1],nsmall = 2), "maf in WY", 
+                powReleaseWY$WY[1], "and", format(powReleaseWY$MinRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
 
-maxlab <- paste(month.name[month(maxrd)],year(maxrd), "Probable Maximum Inflow with a Lake Powell release of",
-                "7.48", "maf in WY", "2024", "and", 
-                "11.57", "maf in WY", "2025")
+maxlab <- paste(month.name[month(maxrd)],year(maxrd), ifelse(maxLab_droa, 'DROA Probable Maximum', "Probable Maximum"),
+                "Inflow with a Lake Powell release of",  format(powReleaseWY$MaxRel[1],nsmall = 2), "maf in WY", 
+                powReleaseWY$WY[1], "and", format(powReleaseWY$MaxRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
 #######################################################################################
 
 lab_names <- c("Historical Elevations",
@@ -231,7 +263,7 @@ gg <-
        size = NULL,
        fill = NULL,
        title = bquote('Lake Powell End-of-Month'~Elevations),
-       subtitle = paste('Projections from', 'October 2023 24-Month Study Inflow Scenarios'),
+       subtitle = paste('Projections from', month_heading, '24-Month Study Inflow Scenarios'),
        caption = "The Drought Response Operations Agreement (DROA) is available online at https://www.usbr.gov/dcp/finaldocs.html.                  "
   ) +
   # tier stuff
@@ -288,12 +320,16 @@ gg <-
     legend.text = element_text(size=10)
   )
 
-ggsave("C:/Temp/crmms24MS_powell.png", 
+ggsave(here::here("Powell24MS.png"), 
        width = 11, height = 8)
-crmms_p <- image_read("C:/Temp/crmms24MS_powell.png")
+
+crmms_p <- image_read(here::here("Powell24MS.png"))
 logo_raw <- image_read("https://www.usbr.gov/lc/region/g4000/BofR-vert.png")
 test_plot <- image_composite(crmms_p,image_resize(logo_raw,"325"),offset = "+2860+2060")
-image_write(test_plot, "C:/Temp/Powell24MS.png")
+image_write(test_plot, here::here("Powell24MS.png"))
+
+
+
 
 
 ## Mead -------------------------------------------------------------------------
@@ -310,11 +346,7 @@ gg <-
             aes(x = Date, y = value, color = trace_labels, 
                 alpha = trace_labels, group = trace_labels,
                 linetype = trace_labels, size = trace_labels)) +
-  # geom_line(data = filter(df_24MS_m, trace_labels != esp_label), 
-  #           aes(x = Date, y = value, color = trace_labels, 
-  #               alpha = trace_labels, group = Trace,
-  #               linetype = trace_labels, size = trace_labels)) +
-  
+ 
   scale_color_manual(values = custom_colors) +
   scale_linetype_manual(values = custom_lt) +
   scale_size_manual(values = custom_size) +
@@ -336,7 +368,7 @@ gg <-
        size = NULL,
        fill = NULL,
        title = bquote('Lake Mead End-of-Month'~Elevations),
-       subtitle = paste('Projections from', 'October 2023 24-Month Study Inflow Scenarios'),
+       subtitle = paste('Projections from', month_heading, '24-Month Study Inflow Scenarios'),
        caption = "The Drought Response Operations Agreement (DROA) is available online at https://www.usbr.gov/dcp/finaldocs.html.                  "
        ) +
   # tier stuff
@@ -405,11 +437,11 @@ gg <-
 
 # crssplot:::add_logo_vertical(gg, .87, .01, .97, .13) # add usbr logo
 
-ggsave("C:/Temp/crmms24MS_mead.png", 
+ggsave(here::here("Mead24MS.png"), 
        width = 11, height = 8)
 
-crmms_m <- image_read("C:/Temp/crmms24MS_mead.png")
+crmms_m <- image_read(here::here("Mead24MS.png"))
 logo_raw <- image_read("https://www.usbr.gov/lc/region/g4000/BofR-vert.png")
 test_plot <- image_composite(crmms_m,image_resize(logo_raw,"325"),offset = "+2860+2060")
-image_write(test_plot, "C:/Temp/Mead24MS.png")
+image_write(test_plot, here::here("Mead24MS.png"))
 
