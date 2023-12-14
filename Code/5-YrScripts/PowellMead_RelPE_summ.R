@@ -3,7 +3,7 @@
 #   Powell + Mead Summary Boxplots: PE and Outflow
 #   
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm", "custom_Tr_col")))
 
 library(tidyverse)
 library(lubridate)
@@ -24,11 +24,9 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
-year_range = 2023:2026
-max_yr = 2026
+year_range = 2024:2028
+max_yr = max(year_range)
 end_file_nm = paste0('_', max_yr)
-MultESP_PlotTogether = T # plot multiple ESP forecasts together (names sep by '-')
-custom_colors <- c('#f1c40f', '#8077ab')
 
 ##### ------ Tiers | Powell Release ------ #####
 
@@ -55,6 +53,10 @@ rwa1 <- rwd_agg(data.frame(
 # read/process RDFs
 df <- NULL
 for (i in 1:length(scenarios)) {
+  
+  # check that directory exists
+  if (!dir.exists(data_dir[i])) { stop(paste("Data directory does not exist:", data_dir[i]))}
+  
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
     rdf_dir = data_dir[i],
@@ -81,45 +83,27 @@ df_scens <- data.table::as.data.table(df)  %>%
          Year = year(Date)) %>%
   filter(Year <= max_yr) 
 
-if (MultESP_PlotTogether) {
-  sep_scen = str_split_fixed(as.character(df_scens$Scenario), "-", 2)
-  sep_scen_nm = unique(str_split_fixed(scenarios, "-", 2)[,1])
-  df_scens = df_scens %>% 
-    mutate(Scenario = factor(sep_scen[,1], levels = sep_scen_nm),
-           Trace = paste0(Trace, sep_scen[,2] ))
-  ESP_type = paste0(unique( sep_scen[,2]), collapse =",")
-  scenarios_2 = sep_scen_nm
-} else {
-  scenarios_2 = scenarios
-  ESP_type =""
-}
-
-# Plot colors
-if (length(scenarios_2) <= length(custom_colors)) {
-  custom_Tr_col <- custom_colors[1:length(scenarios_2)] 
-} else {
-  custom_Tr_col <- scales::hue_pal()(length(scenarios_2)) # use show_col() to view
-}
-
-df_i = df_scens %>%
-  filter(Variable == 'Mead.Outflow') %>%
+df_cy = df_scens %>%
+  filter(Variable %in% c('Mead.Outflow', 'Mohave.Outflow', 'Havasu.Outflow')) %>%
   mutate(Year = year(Date)) %>%
   filter(Year %in% year_range) %>%
-  group_by(Year, Trace, Scenario) %>%
-  summarise(Value = sum(Value)/1000)
+  group_by(Year, Trace, Scenario, Variable) %>%
+  summarise(Value = sum(Value)/1000, 
+            n = n()) %>%
+  filter(n == 12)
 
 ## -- Mead Release
-ggplot(df_i, aes(factor(Year), Value, fill = Scenario )) +
+ggplot(df_cy %>% filter(Variable == 'Mead.Outflow'), 
+       aes(factor(Year), Value, fill = Scenario )) +
   bor_theme() +
   stat_boxplot_custom(position = "dodge") +
   geom_point(position = position_dodge(0.75), size = 0.75) +
   scale_fill_manual(values = custom_Tr_col) +
-  scale_y_continuous(labels = scales::comma, breaks = seq(0, 10000, by =1000)) +
-  labs(x = 'Year', y = 'Annual CY Release (kaf)', fill = NULL,
-       title = paste('Releases at Lake Mead'),
-       subtitle = ESP_type) +
+  scale_y_continuous(labels = scales::comma, breaks = seq(0, 10000, by = 500)) +
+  labs(x = 'Year', y = 'Annual Release (kaf)', fill = NULL,
+       title = paste('Lake Mead Calendar Year Releases')) +
   theme(legend.position="right") +
-  guides(fill = guide_legend(nrow = length(scenarios_2), order = 2)) 
+  guides(fill = guide_legend(nrow = length(scenarios), order = 2)) 
 
 ggsave(filename = file.path(fig_dir, paste0('Rel_Mead_box', end_file_nm, '.png')), 
        width=6+0.5*length(unique(df_i$Scenario)), height=6)
@@ -127,14 +111,16 @@ ggsave(filename = file.path(fig_dir, paste0('Rel_Mead_box', end_file_nm, '.png')
 
 
 ## -- Powell Release
-df_i = df_scens %>%
+df_wy_pow = df_scens %>%
   filter(Variable == 'Powell.Outflow') %>%
   mutate(Year = ifelse(month(Date)>=10, year(Date) + 1, year(Date))) %>%
   filter(Year %in% year_range) %>%
   group_by(Year, Trace, Scenario) %>%
-  summarise(Value = sum(Value))
+  summarise(Value = sum(Value), 
+            n = n()) %>%
+  filter(n == 12)
 
-ggplot(df_i, 
+ggplot(df_wy_pow, 
        aes(factor(Year), Value, fill = Scenario)) +
   bor_theme() +
   stat_boxplot_custom(position = "dodge") +
@@ -143,57 +129,42 @@ ggplot(df_i,
   # geom_violin(position = "dodge") +
   # geom_dotplot(binaxis='y', stackdir='center', 
   #              position=position_dodge(0.8)) +
-  scale_y_continuous(labels = scales::comma, breaks = seq(0, 50000, by =1000)) +
-  labs(x = 'Water Year', y = 'Annual WY Release (kaf)', fill = NULL,
-       title = paste('Releases at Lake Powell'),
-       subtitle = ESP_type) +
+  scale_y_continuous(labels = scales::comma, breaks = seq(0, 50000, by = 1000)) +
+  labs(x = 'Water Year', y = 'Annual Release (kaf)', fill = NULL,
+       title = paste('Lake Powell Water Year Releases')) +
   theme(legend.position="right") +
-  guides(fill = guide_legend(nrow = length(scenarios_2), order = 2)) 
+  guides(fill = guide_legend(nrow = length(scenarios), order = 2)) 
 ggsave(filename = file.path(fig_dir, paste0('Rel_Powell_box', end_file_nm, '.png')), 
        width=6+0.5*length(unique(df_i$Scenario)), height=6)
 
 ## -- Mohave Release
-df_i = df_scens %>%
-  filter(Variable == 'Mohave.Outflow') %>%
-  mutate(Year = year(Date)) %>%
-  filter(Year %in% year_range) %>%
-  group_by(Year, Trace, Scenario) %>%
-  summarise(Value = sum(Value)/1000)
-
-ggplot(df_i, aes(factor(Year), Value, fill = Scenario )) +
+ggplot(df_cy %>% filter(Variable == 'Mohave.Outflow'), 
+       aes(factor(Year), Value, fill = Scenario )) +
   bor_theme() +
   stat_boxplot_custom(position = "dodge") +
   geom_point(position = position_dodge(0.75), size = 0.75) +
   scale_fill_manual(values = custom_Tr_col) +
-  scale_y_continuous(labels = scales::comma, breaks = seq(0, 10000, by =1000)) +
-  labs(x = 'Year', y = 'Annual CY Release (kaf)', fill = NULL,
-       title = paste('Releases at Lake Mohave'),
-       subtitle = ESP_type) +
+  scale_y_continuous(labels = scales::comma, breaks = seq(0, 10000, by = 500)) +
+  labs(x = 'Year', y = 'Annual Release (kaf)', fill = NULL,
+       title = paste('Lake Mohave Calendar Year Releases')) +
   theme(legend.position="right") +
-  guides(fill = guide_legend(nrow = length(scenarios_2), order = 2)) 
+  guides(fill = guide_legend(nrow = length(scenarios), order = 2)) 
 
 ggsave(filename = file.path(fig_dir, paste0('Rel_Mohave_box', end_file_nm, '.png')), 
        width=6+0.5*length(unique(df_i$Scenario)), height=6)
 
 ## -- Havasu Release
-df_i = df_scens %>%
-  filter(Variable == 'Havasu.Outflow') %>%
-  mutate(Year = year(Date)) %>%
-  filter(Year %in% year_range) %>%
-  group_by(Year, Trace, Scenario) %>%
-  summarise(Value = sum(Value)/1000)
-
-ggplot(df_i, aes(factor(Year), Value, fill = Scenario )) +
+ggplot(df_cy %>% filter(Variable == "Havasu.Outflow"), 
+       aes(factor(Year), Value, fill = Scenario )) +
   bor_theme() +
   stat_boxplot_custom(position = "dodge") +
   geom_point(position = position_dodge(0.75), size = 0.75) +
   scale_fill_manual(values = custom_Tr_col) +
-  scale_y_continuous(labels = scales::comma, breaks = seq(0, 10000, by =1000)) +
-  labs(x = 'Year', y = 'Annual CY Release (kaf)', fill = NULL,
-       title = paste('Releases at Lake Havasu'),
-       subtitle = ESP_type) +
+  scale_y_continuous(labels = scales::comma, breaks = seq(0, 10000, by = 500)) +
+  labs(x = 'Year', y = 'Annual Release (kaf)', fill = NULL,
+       title = paste('Lake Havasu Calendar Year Releases')) +
   theme(legend.position="right") +
-  guides(fill = guide_legend(nrow = length(scenarios_2), order = 2)) 
+  guides(fill = guide_legend(nrow = length(scenarios), order = 2)) 
 
 ggsave(filename = file.path(fig_dir, paste0('Rel_Havasu_box', end_file_nm, '.png')), 
        width=6+0.5*length(unique(df_i$Scenario)), height=6)
@@ -205,8 +176,7 @@ df_i = df_scens %>%
   filter(Year %in% year_range) %>%
   group_by(Year, Trace, Scenario) 
 
-ig_label= '2023'; ann_size=2.9
-ggplot(df_i %>% filter(Year %in% 2024:2026), 
+ggplot(df_i %>% filter(Year %in% year_range), 
        aes(factor(Year), Value, fill = Scenario)) +
   bor_theme()   +
   geom_hline(yintercept = 3490, color ='#808080', linetype = 3 ) +
@@ -217,13 +187,12 @@ ggplot(df_i %>% filter(Year %in% 2024:2026),
   scale_y_continuous(labels = scales::comma, breaks = seq(0, 50000, by =25),
                      limits = c(3370, 3700), expand = c(0,0)) +
   labs(x = 'Water Year', y = 'End-of-WY Powell Elevation (ft)', fill = NULL,
-       title = paste('End-of-WY Powell Elevation'),
-       subtitle = ESP_type) +
+       title = paste('End-of-Water Year Powell Elevation')) +
   theme(legend.position="right") +
-  guides(fill = guide_legend(nrow = length(scenarios_2), order = 2))
+  guides(fill = guide_legend(nrow = length(scenarios), order = 2))
 
 ggsave(filename = file.path(fig_dir, paste0('Powell_EOWY_box', end_file_nm, '.png')), 
-       width=6+0.5*length(scenarios_2), height=6)
+       width=6+0.5*length(scenarios), height=6)
 
 ## -- Mead PE
 df_i = df_scens %>%
@@ -243,12 +212,11 @@ ggplot(df_i, aes(factor(Year), Value, fill = Scenario)) +
                      limits = c(895, max(df_i$Value)+15),
                      expand = c(0,0))+
   labs(x = 'Year', y = 'End-of-CY Mead Elevation (ft)', fill = NULL,
-       title = paste('End-of-CY Mead Elevation'),
-       subtitle = ESP_type) +
+       title = paste('End-of-Calendar Year Mead Elevation')) +
   theme(legend.position="right") +
-  guides(fill = guide_legend(nrow = length(scenarios_2), order = 2)) 
+  guides(fill = guide_legend(nrow = length(scenarios), order = 2)) 
 ggsave(filename = file.path(fig_dir, paste0('Mead_EOCY_box', end_file_nm, '.png')), 
-       width=6+0.5*length(scenarios_2), height=6)
+       width=6+0.5*length(scenarios), height=6)
 
 ## Summary
 # df_i %>%
