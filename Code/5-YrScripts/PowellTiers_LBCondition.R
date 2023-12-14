@@ -3,7 +3,7 @@
 #   Powell Tiers / Powell TARV / LB Condition
 #   
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm", "custom_Tr_col")))
 
 library(tidyverse)
 library(lubridate)
@@ -52,6 +52,10 @@ rwa1 <- rwd_agg(data.frame(
 # read/process RDFs
 df<- NULL
 for (i in 1:length(scenarios)) {
+  
+  # check that directory exists
+  if (!dir.exists(data_dir[i])) { stop(paste("Data directory does not exist:", data_dir[i]))}
+  
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
     rdf_dir = data_dir[i]
@@ -91,11 +95,6 @@ ShortLabs = c("Surplus Condition" = 'grey',
               'Shortage - Level 1' = '#1f78b4',
               'Shortage - Level 2' = '#b2df8a',
               'Shortage - Level 3' = '#cab2d6')
-if (length(scenarios) == 2) {
-  custom_Tr_col <- c('#f1c40f', '#8077ab')
-} else {
-  custom_Tr_col <- scales::hue_pal()(length(scenarios))
-}
 
 ## process df
 df_i = df_scens %>% pivot_wider(names_from = Variable, values_from = Value) %>%
@@ -154,7 +153,6 @@ powell_difs = left_join(powell_difs, arv_difs,
                         by = c('Year', 'Trace'),
                         suffix = c('', '_Actual.ARV')) %>%
   as.data.frame()
-# powell_difs$TARV_newVog = powell_difs[,7] - powell_difs[,6] 
 wb1 <- openxlsx::createWorkbook("PwlDifs")
 openxlsx::addWorksheet(wb1, "PwlDifs")
 openxlsx::writeData(wb1, "PwlDifs", powell_difs)
@@ -167,9 +165,6 @@ openxlsx::writeData(wb1, "PwlDifs", powell_difs)
 
 openxlsx::saveWorkbook(wb1, file.path(fig_dir, paste0('Powell_diffs', end_file_nm, '.xlsx')), overwrite = T)
 
-## testing
-# df_i %>% filter(tarv == 7000 & Year == 2023) %>%
-#   select(Scenario, `DCP Contribution`) %>% table()
 
 # LB Shortage
 df_short = df_i %>% select(Scenario, Trace, Year, `Lower Basin Condition`) %>%
@@ -208,8 +203,6 @@ ggsave(filename = file.path(fig_dir, paste0('LB_DCP_Contribution', end_file_nm, 
 ## check Mead difs & save to wb
 tier_difs = df_i %>% select(Scenario, Year, Trace, `DCP Contribution`) %>%
   pivot_wider(names_from = Scenario, values_from = `DCP Contribution`) 
-# tier_difs$diff = ifelse(tier_difs[,3] == tier_difs[,4],
-#                         T,F)
 wb <- openxlsx::createWorkbook("MeadDifs")
 openxlsx::addWorksheet(wb, 'MeadDCP')
 openxlsx::writeData(wb, 'MeadDCP', tier_difs)
