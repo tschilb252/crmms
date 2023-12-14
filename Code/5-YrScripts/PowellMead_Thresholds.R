@@ -3,7 +3,7 @@
 #   Calculate PE thresholds at Mead and Powell
 #
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm", "custom_Tr_col")))
 
 library(tidyverse)
 library(lubridate)
@@ -43,6 +43,10 @@ rwa1 <- rwd_agg(data.frame(
 # read/process RDFs
 df <- NULL
 for (i in 1:length(scenarios)) {
+  
+  # check that directory exists
+  if (!dir.exists(data_dir[i])) { stop(paste("Data directory does not exist:", data_dir[i]))}
+  
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
     rdf_dir = data_dir[i],
@@ -72,11 +76,6 @@ df_scens <- data.table::as.data.table(df)  %>%
 
 ## -- Calculate thresholds (as long as full ESP)
 yrmax = year(ym(max_date))
-if (length(scenarios) == 2) {
-  custom_Tr_col <- c('#f1c40f', '#8077ab')
-} else {
-  custom_Tr_col <- scales::hue_pal()(length(scenarios))
-}
 
 ## Threshold calcs
 pwl_elevs = c(3525,3490,3375)
