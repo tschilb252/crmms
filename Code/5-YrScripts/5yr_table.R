@@ -119,6 +119,65 @@ tbl_out = tbl_base %>%
   mutate(across(3:ncol(tbl_base), round, 0),
          Variable = factor(Variable, 
                            labels = c(coorOps_Powell_out, coorOps_Mead_out)))
-openxlsx::write.xlsx(tbl_out, file = file.path(fig_dir, paste0('5yr_Table', file_nm_end, '.xlsx')))
 
+wb <- openxlsx::createWorkbook("5YrTable")
+openxlsx::addWorksheet(wb, '5YrTable')
+openxlsx::writeData(wb, '5YrTable', tbl_out)
 
+## --- April Adjustment to equalization from UEBT
+# slots/agg to read
+rwa1 <- rwd_agg(data.frame(
+  file = "flags.rdf",
+  slot = "PowellData.UpperElevBalBranch", 
+  period = rep("asis", 1),
+  summary = rep(NA, 1),
+  eval = rep(NA, 1),
+  t_s = rep(NA, 1),
+  variable = "PowellData.UpperElevBalBranch",
+  stringsAsFactors = FALSE
+))
+
+# read/process RDFs
+df <- NULL
+for (i in 1:length(scenarios)) {
+  
+  # check that directory exists
+  if (!dir.exists(data_dir[i])) { stop(paste("Data directory does not exist:", data_dir[i]))}
+  
+  scen_res <- rdf_aggregate(  
+    agg = rwa1, 
+    rdf_dir = data_dir[i],
+    keep_cols = 'Unit'
+  )
+  scen_res$Scenario <- scenarios[i]
+  
+  # keep only last 30 traces (ESP)
+  trces = sort(unique(scen_res$TraceNumber))
+  trces = trces[trces >= 0]
+  tr_keep = trces[(length(trces)-29):length(trces)]
+  scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
+  
+  df <- rbind(df,
+              scen_res %>%
+                mutate(TraceNumber = 1991 + TraceNumber - 
+                         min(scen_res$TraceNumber, na.rm = T)))
+}
+
+df_scens <- data.table::as.data.table(df)  %>% 
+  # mutate(Date = as.yearmon(paste0(Month, Year), "%Y")) %>%
+  select(Scenario, Variable, Year, Trace = TraceNumber, Value) %>%
+  mutate(UEBtoEQ = factor(ifelse(Value == 1.3, 'UEBtoEQ',
+                          ifelse(Value == 999, 'OtherTier', 
+                                 'UEB')))) %>%
+  select(Scenario, Year, Trace, UEBtoEQ) 
+
+df_out = df_scens %>%
+  group_by(Scenario, Year, UEBtoEQ) %>%
+  summarise(nTraces = n()) %>%
+  mutate(percent = nTraces/30)
+         
+openxlsx::addWorksheet(wb, 'UEBtoEQ')
+openxlsx::writeData(wb, 'UEBtoEQ', df_out)
+
+openxlsx::saveWorkbook(wb, file.path(fig_dir, paste0('5yr_Table', file_nm_end, '.xlsx')), 
+                       overwrite = T)
