@@ -80,15 +80,17 @@ for (i in 1:length(scenarios)) {
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
-  df <- rbind(df, scen_res)
+  df <- rbind(df,
+              scen_res %>%
+                mutate(TraceNumber = 1991 + TraceNumber - 
+                         min(scen_res$TraceNumber, na.rm = T)))
 }
 
 df_scens <- data.table::as.data.table(df)  %>% 
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
   select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
   filter(Date <= as.yearmon(format(ym(max_date), "%Y-%m"))) %>%
-  mutate(Scenario = factor(Scenario, levels = scenarios),
-         Trace = 1991 + Trace - min(df$TraceNumber)) %>%
+  mutate(Scenario = factor(Scenario, levels = scenarios)) %>%
   mutate(Value = ifelse(Variable %in% c('Mead.Inflow', 'Mead.Storage', "Powell.Outflow",
                                         "Powell.Inflow", "Powell.Storage"),
                         Value * 10^3,

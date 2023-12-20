@@ -246,8 +246,8 @@ for (i in 0:1) {
          width = 8, height = 7)
   
   ## -- Powell Unreg Inflow vs. TARV -- In metric
-  breaks_y = seq(1000, 11000, by = 500)
-  breaks_y2 = seq(1000, 11000, by = 250)
+  breaks_y = seq(1000, 17000, by = 500)
+  breaks_y2 = seq(1000, 17000, by = 250)
   breaks_x = seq(0, 200000, by = 1000)
   breaks_x2 = seq(0, 200000, by = 500)
   ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 

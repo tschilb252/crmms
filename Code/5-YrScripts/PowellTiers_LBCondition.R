@@ -232,16 +232,3 @@ g <- ggplot(df_i, aes(Year, act_TARV, fill = Scenario)) +
   facet_grid(`Powell Tiers` ~ ., scales = 'free_y')
 print(g)
 ggsave(filename = file.path(fig_dir, paste0('Powell_RelbyTier', end_file_nm, '.png')), width=6, height=7)
-
-# Total TARV; no facet
-g <- ggplot(df_i, aes(Year, act_TARV, fill = Scenario)) +
-  bor_theme() +
-  CRSSIO::stat_boxplot_custom(position = "dodge") +
-  scale_fill_manual(values = custom_Tr_col) +
-  scale_y_continuous(labels = scales::comma, breaks = i_breaks) +
-  labs(x = 'Water Year', y = 'Annual Powell Release (kaf)', fill = NULL) +
-  guides(fill = guide_legend(nrow = length(scenarios), order = 2)) +
-  theme(legend.position="top")
-print(g)
-ggsave(filename = file.path(fig_dir, paste0('Powell_Rel', end_file_nm, '.png')), width=6, height=7)
-

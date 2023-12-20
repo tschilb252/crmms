@@ -34,9 +34,10 @@ end_file_nm = paste0('_', max_yr)
 slots = c(
   "Powell.Pool Elevation", "Mead.Pool Elevation", 
   "Powell.Outflow", "Mead.Outflow",
-  'Mohave.Outflow', 'Havasu.Outflow'
+  'Mohave.Outflow', 'Havasu.Outflow',
+  'PowellData.ActualAnnualReleaseVolume'
 )
-rdfs = rep('res.rdf', length(slots))
+rdfs = c(rep('res.rdf', length(slots)-1), 'flags.rdf')
 
 # slots/agg to read
 rwa1 <- rwd_agg(data.frame(
@@ -106,19 +107,14 @@ ggplot(df_cy %>% filter(Variable == 'Mead.Outflow'),
   guides(fill = guide_legend(nrow = length(scenarios), order = 2)) 
 
 ggsave(filename = file.path(fig_dir, paste0('Rel_Mead_box', end_file_nm, '.png')), 
-       width=6+0.5*length(unique(df_i$Scenario)), height=6)
-
+       width=6+0.5*length(unique(df_cy$Scenario)), height=6)
 
 
 ## -- Powell Release
 df_wy_pow = df_scens %>%
-  filter(Variable == 'Powell.Outflow') %>%
-  mutate(Year = ifelse(month(Date)>=10, year(Date) + 1, year(Date))) %>%
+  filter(Variable == 'PowellData.ActualAnnualReleaseVolume') %>%
   filter(Year %in% year_range) %>%
-  group_by(Year, Trace, Scenario) %>%
-  summarise(Value = sum(Value), 
-            n = n()) %>%
-  filter(n == 12)
+  mutate(Value = Value/1000)
 
 ggplot(df_wy_pow, 
        aes(factor(Year), Value, fill = Scenario)) +
@@ -135,7 +131,7 @@ ggplot(df_wy_pow,
   theme(legend.position="right") +
   guides(fill = guide_legend(nrow = length(scenarios), order = 2)) 
 ggsave(filename = file.path(fig_dir, paste0('Rel_Powell_box', end_file_nm, '.png')), 
-       width=6+0.5*length(unique(df_i$Scenario)), height=6)
+       width=6+0.5*length(unique(df_cy$Scenario)), height=6)
 
 ## -- Mohave Release
 ggplot(df_cy %>% filter(Variable == 'Mohave.Outflow'), 
@@ -151,7 +147,7 @@ ggplot(df_cy %>% filter(Variable == 'Mohave.Outflow'),
   guides(fill = guide_legend(nrow = length(scenarios), order = 2)) 
 
 ggsave(filename = file.path(fig_dir, paste0('Rel_Mohave_box', end_file_nm, '.png')), 
-       width=6+0.5*length(unique(df_i$Scenario)), height=6)
+       width=6+0.5*length(unique(df_cy$Scenario)), height=6)
 
 ## -- Havasu Release
 ggplot(df_cy %>% filter(Variable == "Havasu.Outflow"), 
@@ -167,7 +163,7 @@ ggplot(df_cy %>% filter(Variable == "Havasu.Outflow"),
   guides(fill = guide_legend(nrow = length(scenarios), order = 2)) 
 
 ggsave(filename = file.path(fig_dir, paste0('Rel_Havasu_box', end_file_nm, '.png')), 
-       width=6+0.5*length(unique(df_i$Scenario)), height=6)
+       width=6+0.5*length(unique(df_cy$Scenario)), height=6)
 
 ## -- Powell PE
 df_i = df_scens %>%
