@@ -27,14 +27,8 @@ source(file.path('Code', '5-YrScripts','LB_ICSUse.R'))
 source(file.path('Code', '5-YrScripts','Compare_Slots_Cloud+Trace.R'))
 source(file.path('Code', '5-YrScripts','PowellTiers_LBCondition.R'))
 source(file.path('Code', '5-YrScripts','PowellMead_Thresholds.R'))
+source(file.path('Code', '5-YrScripts','PowellTiers_RelPE_summ.R'))
 source(file.path('Code', '5-YrScripts','5yr_table.R'))
 source(file.path('Code', '5-YrScripts','Trace_Data.R'))
 source(file.path('Code', '5-YrScripts','PowellUnreg_vs.tarv,etc.R'))
 source(file.path('Code', '5-YrScripts','Energy_Compare.R'))
-
-
-
-## outstanding updates
-# secondary axis on Powell/Mead PE
-# historical data via rdfs
-# MSCP fig?
