@@ -4,7 +4,7 @@
 #     Last set of figures are produced for LC power group
 #
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm", "custom_Tr_col")))
 
 ## Inputs - control file
 library(rhdb)
@@ -55,6 +55,10 @@ rwa1 <- rwd_agg(data.frame(
 # read/process RDFs
 df<- NULL
 for (i in 1:length(scenarios)) {
+  
+  # check that directory exists
+  if (!dir.exists(data_dir[i])) { stop(paste("Data directory does not exist:", data_dir[i]))}
+  
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
     rdf_dir = data_dir[i],
@@ -156,12 +160,6 @@ df_fy_hist <- df_hist %>%
   mutate(yr_fy = as.factor(yr_fy))
 
 ## -- Setup plot
-if (length(scenarios) == 2) {
-  custom_col <- c('#f1c40f', '#8077ab')
-} else {
-  custom_col <- scales::hue_pal()(length(scenarios))
-}
-
 xbreaks = df_scens %>% filter(month(Date) %in% c(4,8,12)) %>%
   select(Date) %>% distinct()
 
@@ -204,7 +202,7 @@ for (k in 1:length(input_traces)) {
         ggplot(df_fy_k %>% filter(Variable == slot_i),
                aes(yr_fy, Value, color = Scenario, group = Scenario)) +
         geom_line(size = 1.2) +
-        scale_color_manual(values = custom_col) +
+        scale_color_manual(values = custom_Tr_col) +
         scale_x_discrete(expand = c(0.1,0.1)) 
       ggmon <-  
         ggplot(df_scens_k %>% filter(Variable == slot_i), #%>%
@@ -215,19 +213,19 @@ for (k in 1:length(input_traces)) {
                      limits = c(min(df_scens$Date), max(df_scens$Date))) +
         geom_hline(yintercept = 0, color = 'grey') +
         geom_line(size = 1.2) +
-        scale_color_manual(values = custom_col)
+        scale_color_manual(values = custom_Tr_col)
     } else {
       gg <- 
         ggplot(df_fy_k %>% filter(Variable == slot_i),
                aes(yr_fy, Value, fill = Scenario)) +
         CRSSIO::stat_boxplot_custom(position = "dodge") +
-        scale_fill_manual(values = custom_col) 
+        scale_fill_manual(values = custom_Tr_col) 
       ggmon <- 
         ggplot(df_scens_k %>% filter(Variable == slot_i),
                aes(factor(Date), Value, fill = Scenario)) +
         geom_hline(yintercept = 0, color = 'grey') +
         CRSSIO::stat_boxplot_custom(position = "dodge") +
-        scale_fill_manual(values = custom_col) 
+        scale_fill_manual(values = custom_Tr_col) 
     }
     
     gg <- gg +
@@ -293,7 +291,7 @@ fl_prt = "GlenHoover"
 
 ggplot(df_PM, aes(yr_fy, value, fill = Scenario)) +
   CRSSIO::stat_boxplot_custom(position = "dodge") +
-  scale_fill_manual(values = custom_col)  +
+  scale_fill_manual(values = custom_Tr_col)  +
   theme_bw() +
   scale_y_continuous(labels = scales::comma)  +
   scale_y_continuous(labels = scales::comma, limits = c(0, 10000), expand = c(0,0))  +
@@ -324,7 +322,7 @@ openxlsx::write.xlsx(test,
 # ## --- Plot annual cloud with historical data
 
 plottedName = c("Davis", "Parker", "Davis + Parker", "Hoover")
-cols_lines = c('black', custom_col)
+cols_lines = c('black', custom_Tr_col)
 names(cols_lines) <- c('Historical', scenarios)
 
 for (i in 1:length(plottedName)) {
@@ -375,7 +373,7 @@ for (i in 1:length(plottedName)) {
                 aes(x = yr_fy,
                     ymin = mdl.10, ymax = mdl.90, fill = Scenario),
                 alpha = 0.3) +
-    scale_fill_manual(values = custom_col)  +
+    scale_fill_manual(values = custom_Tr_col)  +
     geom_hline(yintercept = df_avg_hist$avg,
                linetype = 'dashed', color = 'black') +
     annotate("text", x = 2020,

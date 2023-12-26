@@ -234,7 +234,7 @@ MeadData.MeadBelow1050_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
 MeadData.MeadBelow1030_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
 MeadData.MeadBelow1020_Annual: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
-ICS Credits.SacWYType: file = $CRMMS_DIR/rdfOutput/flags.rdf: file = $CRMMS_DIR/rdfOutput/flags.rdf
+ICS Credits.SacWYType: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
 ## LB Use and ICS ##
 AnnualWaterUse.AzTotalAnnual: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
@@ -333,6 +333,30 @@ ICS Credits.AnnualICSDelivery_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualDeliveryCurrentYearTribConserv_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
 ICS Credits.AnnualNevadaStoredOffstream: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
 
+## ICS Bank Sharing ##
+ICS Credits.VacatedBankSpace_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedDCPICSToSysWater_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedDCPICSToBeDelivered_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedECICSToBeDelivered_CAWCD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedBankSpace_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedDCPICSToSysWater_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedDCPICSToBeDelivered_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedECICSToSysWater_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedECICSToBeDelivered_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedBankSpace_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedDCPICSToSysWater_SNWA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedDCPICSToBeDelivered_SNWA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedECICSToSysWater_SNWA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedECICSToBeDelivered_SNWA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedImpICSToBeDelivered_SNWA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedImpICSToSysWater_SNWA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedTribICSToBeDelivered_SNWA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedTribICSToSysWater_SNWA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.AnnualDeliveryCurrentYearTribConserv_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.VacatedCurrentYearTribICSToSysWater_SNWA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf  
+ICS Credits.IntendedECICSCreationToBeDelivered_MWD: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf
+
+## ICS Bank ##
 ICS Credits.Bank_AZ: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
 ICS Credits.Bank_CA: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
 ICS Credits.Bank_NV: file = $CRMMS_DIR/rdfOutput/LB_UseICS.rdf 
@@ -391,5 +415,3 @@ BlueMesaData.ReleaseControl: file = $CRMMS_DIR/rdfOutput/monthlyEIS.rdf
 #Add whitewater target the first of which is in cfs and the second in ac-ft
 GunnisonBelowCrystal.Outflow: file = $CRMMS_DIR/rdfOutput/monthlyEIS.rdf
 GunnisonBelowCrystal:GunnisonNrGJ_Whitewater.Outflow: file = $CRMMS_DIR/rdfOutput/monthlyEIS.rdf
-
-

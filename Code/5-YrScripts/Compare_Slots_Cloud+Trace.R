@@ -3,7 +3,7 @@
 #   Cloud and single trace monthly figures of specific slots
 #
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm", "custom_Tr_col")))
 
 library(tidyverse)
 library(lubridate)
@@ -63,6 +63,10 @@ rwa1 <- rwd_agg(data.frame(
 # read/process RDFs
 df <- NULL
 for (i in 1:length(scenarios)) {
+  
+  # check that directory exists
+  if (!dir.exists(data_dir[i])) { stop(paste("Data directory does not exist:", data_dir[i]))}
+  
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
     rdf_dir = data_dir[i],
@@ -76,15 +80,17 @@ for (i in 1:length(scenarios)) {
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
-  df <- rbind(df, scen_res)
+  df <- rbind(df,
+              scen_res %>%
+                mutate(TraceNumber = 1991 + TraceNumber - 
+                         min(scen_res$TraceNumber, na.rm = T)))
 }
 
 df_scens <- data.table::as.data.table(df)  %>% 
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
   select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
   filter(Date <= as.yearmon(format(ym(max_date), "%Y-%m"))) %>%
-  mutate(Scenario = factor(Scenario, levels = scenarios),
-         Trace = 1991 + Trace - min(df$TraceNumber)) %>%
+  mutate(Scenario = factor(Scenario, levels = scenarios)) %>%
   mutate(Value = ifelse(Variable %in% c('Mead.Inflow', 'Mead.Storage', "Powell.Outflow",
                                         "Powell.Inflow", "Powell.Storage"),
                         Value * 10^3,
@@ -145,11 +151,6 @@ if ("Powell.Storage" %in% slots & "Mead.Storage" %in% slots) {
 # #   pivot_wider(values_from = 'ann', names_from = Year)
 
 ## -- Setup plot
-if (length(scenarios) == 2) {
-  custom_Tr_col <- c('#f1c40f', '#8077ab')
-} else {
-  custom_Tr_col <- scales::hue_pal()(length(scenarios))
-}
 custom_cloud <- custom_Tr_col 
 custom_size <- rep(c(1,1.15,1), length(scenarios))
 custom_lt <- rep(c(2,1,4), length(scenarios))
@@ -376,7 +377,7 @@ for (k in 1:length(input_traces)) {
     }
     print(g)
     
-    ggsave(file.path(fig_dir, paste0(slot_i, "_mdlComp_monthlyCloud", file_nm_end, ".png")), 
+    ggsave(file.path(fig_dir, paste0("MonCloud_",slot_i, file_nm_end, ".png")), 
            width = 8.5, height = 7)
   }
 }

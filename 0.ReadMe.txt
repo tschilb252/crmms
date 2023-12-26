@@ -13,9 +13,8 @@ whatsoever to any individual or group entity by reason of any use made thereof.
 - The model is saved and has already been initialized and run with the MOST PROBABLE
 	conditions from the 24-MS.
 - Model outputs for the MRM run have also been generated and included in this package
-- Depending on your familiarity with RiverWare, you can either run the model by opening 
-	and running it within the interface, or you can run the model via the Batch program 
-	included in this package. 
+- You can run the model by opening and running it within the RiverWare interface. Depending 
+        on your familiarity with RiverWare, you could alternatively run the model in batch mode.
 - It is imperative that you execute the "1.SetCrmmsDirectory.bat" program to set the 
 	CRMMS_DIR Environment Variable on your local machine. The Environment Variable is 
 	referenced within the model to find the required input and output files and 
@@ -32,7 +31,7 @@ whatsoever to any individual or group entity by reason of any use made thereof.
 	to load new output traces to the workbook. Model outputs in rdf format are automatically
         placed in the rdfOutput folder. These files can be used with custom R scripts or other
         rdf file porocessing tools, such as GPAT by CADSWES.
-- Model inputs are queried by the model from the "Inflow Forecasts" and "Input Data"
+- Model slots are queried by the model from the "Inflow Forecasts" and "Input Data"
 	directories. The model relies on specific naming conventions so please do not rename 
 	files in these directories.
 	
@@ -60,8 +59,7 @@ Crmms_DIR
 	|               |- CRMMS outputs spreadsheet for input into Analysis App 
 	|		|- CRMMS outputs spreadsheet for Monthly CRSS inputs
 	|		|- CRMMS outputs spreadsheet for Yearly CRSS inputs
-	|		|- CRMMS outputs CSV file
-        |               |- MRM Model Files empty folder for individual MRM models
+	|		|- CRMMS outputs CSV file	
         |
 	|- RW Files
 	|		|- RiverWare model

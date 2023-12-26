@@ -3,7 +3,7 @@
 #   Scatter plots to compare Powell Fcst, Release, EOY Powell/Mead PE 
 #   
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm", "custom_Tr_col")))
 
 library(tidyverse)
 library(lubridate)
@@ -24,7 +24,7 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 source(file.path('Code','5-YrScripts', 'helper_functions.R'))
 
 ## Max Date
-max_yr = 2027
+max_yr = 2028
 end_file_nm = paste0('_', max_yr)
 
 ##### ------ Tiers | Powell Release ------ #####
@@ -57,6 +57,10 @@ rwa1 <- rwd_agg(data.frame(
 # read/process RDFs
 df <- NULL
 for (i in 1:length(scenarios)) {
+  
+  # check that directory exists
+  if (!dir.exists(data_dir[i])) { stop(paste("Data directory does not exist:", data_dir[i]))}
+  
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
     rdf_dir = data_dir[i]
@@ -81,11 +85,6 @@ df_scens <- data.table::as.data.table(df)  %>%
          WY = ifelse(month(Date)>=10, year(Date) + 1,
                      year(Date))) %>%
   filter(Year <= max_yr) 
-
-# df_scens <- data.table::as.data.table(df)  %>% 
-#   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
-#   select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
-  # mutate(Scenario = factor(Scenario, levels = scenarios))
 
 PowellTierLab = c('Equalization Tier' = '#a6cee3', 
                   'Upper Elevation\nBalancing Tier' = '#1f78b4',
@@ -149,7 +148,6 @@ for (i in 1:length(scenarios)) {
 
 df_flow2 = df_flow %>%
   group_by(Scenario, Variable, Trace, WY) %>%
-  # summarise(ann_wy = sum(Value)) %>%
   summarise(ann = sum(Value), 
             n = n()) %>%
   filter(n == 12) %>%
@@ -213,13 +211,6 @@ df_agg = left_join(df_i, df_flow2, by = c('Scenario', 'Trace', 'Year')) %>%
   left_join(df_st_mead, by = c('Scenario', 'Trace', 'Year'))
 
 
-## ---plot data
-if (length(scenarios) == 2) {
-  custom_Tr_col <- c('#f1c40f', '#8077ab')
-} else {
-  custom_Tr_col <- scales::hue_pal()(length(scenarios))
-}
-
 minYr = min(df_agg$Year)
 for (i in 0:1) {
   plot_yr = minYr + i
@@ -255,8 +246,8 @@ for (i in 0:1) {
          width = 8, height = 7)
   
   ## -- Powell Unreg Inflow vs. TARV -- In metric
-  breaks_y = seq(1000, 11000, by = 500)
-  breaks_y2 = seq(1000, 11000, by = 250)
+  breaks_y = seq(1000, 17000, by = 500)
+  breaks_y2 = seq(1000, 17000, by = 250)
   breaks_x = seq(0, 200000, by = 1000)
   breaks_x2 = seq(0, 200000, by = 500)
   ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 

@@ -14,22 +14,22 @@ library(rhdb)
 ## -- Inputs
 # Directory name - all directories stored in Scenario/ folder 
 scenario_dir <- c(
-  "2023-04_ESP"
-  # "2023-01_ESP"
+  "2023-08_ESP"
+  # "2023-04_ESP"
 )
 # Name when plotting
 scenarios <- c(
-  "April 2023"
-  # "January 2023"
+  "August 2023"
+  # "April 2023"
 )
-fig_dir_nm <- '2023-04_5yrCompare_v2'
+fig_dir_nm <- '2023-08_5yrCompare_web'
 # ^ script will create directory in Results/ with this name if it doesn't exist
 
 ## Plotting Inputs
-sub_title = 'April 2023 CRMMS-ESP Projection'
+sub_title = 'August 2023 CRMMS-ESP Projection'
 # crmms_nm = 'August 2022 CRMMS-ESP'
-run_date = "2023-04"
-max_yr = 2027
+run_date = "2023-08"
+max_yr = 2028
 
 ## Directories & Data
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
@@ -214,7 +214,7 @@ for (i in 1:2) {
       color = NULL, linetype = NULL, size = NULL, fill = NULL,
       title = plot_title[i],
       subtitle = sub_title,
-      caption = "1 - For modeling purposes, simulated years beyond 2026 (shaded region) assume a continuation of the 2007 Interim Guidelines, the 2019 Colorado River Basin Drought\nContingency Plans, and Minute 323, including the Binational Water Scarcity Contingency Plan. Except for certain provisions related to ICS recovery and Upper Basin\ndemand management, operations under these agreements are in effect through 2026. Reclamation anticipates beginning a process in 2023 to develop operations\nfor post-2026, and the modeling assumptions described here are subject to change for the analysis to be used in that process."
+      caption = "1 - For modeling purposes, simulated years beyond 2026 (shaded region) assume a continuation of the 2007 Interim Guidelines, the 2019 Colorado River Basin Drought\nContingency Plans, and Minute 323, including the Binational Water Scarcity Contingency Plan. Except for certain provisions related to ICS recovery and Upper Basin\ndemand management, operations under these agreements are in effect through 2026. Reclamation initiated the process to develop operations for post-2026 in June 2023,\nand the modeling assumptions described here are subject to change for the analysis to be used in that process."
     ) +
     geom_vline(
       xintercept = as.yearmon(c("Dec 2021", "Dec 2022", "Dec 2023",
@@ -277,7 +277,7 @@ for (i in 1:2) {
   
   crssplot:::add_logo_vertical(g, .87, .01, .97, .12) # add usbr logo
   
-  ggsave(file.path(fig_dir, paste0(slot_i, "_mdlComp_CRSS.v.CRMMS.png")), 
+  ggsave(file.path(fig_dir, paste0(slot_i, "_5yr_CRMMS.png")), 
          width = 11, height = 9.5)
 }
 # Warnings expected 

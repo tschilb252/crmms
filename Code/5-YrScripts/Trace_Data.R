@@ -3,7 +3,7 @@
 #   Powell Tiers / Powell TARV / LB Condition
 #   
 # ============================================================================
-rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm")))
+rm(list=setdiff(ls(), c("scenario_dir", "fig_dir_nm", "custom_Tr_col")))
 
 library(tidyverse)
 library(lubridate)
@@ -63,6 +63,10 @@ rwa1 <- rwd_agg(data.frame(
 # read/process RDFs
 df <- NULL
 for (i in 1:length(scenarios)) {
+  
+  # check that directory exists
+  if (!dir.exists(data_dir[i])) { stop(paste("Data directory does not exist:", data_dir[i]))}
+  
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
     rdf_dir = data_dir[i],
@@ -76,16 +80,18 @@ for (i in 1:length(scenarios)) {
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
-  df <- rbind(df, scen_res)
+  df <- rbind(df,
+              scen_res %>%
+                mutate(TraceNumber = 1991 + TraceNumber - 
+                         min(scen_res$TraceNumber, na.rm = T)))
 }
 
-df<- df %>% na.omit()
+df <- df %>% na.omit()
 
 df_scens <- data.table::as.data.table(df)  %>% 
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y"))  %>%
   select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
-  mutate(Scenario = factor(Scenario, levels = scenarios),
-         Trace = 1991 + Trace - min(df$TraceNumber, na.rm = T))
+  mutate(Scenario = factor(Scenario, levels = scenarios))
 
 ## Colors and Labels
 DCPlab = c('Mead > 1,090 ft'= '#a6cee3', 
@@ -225,74 +231,74 @@ df_eocy = df_scens %>%
   rename(`EOCY Powell Storage` = "EOCY_Powell.Storage", `EOCY Powell Elevation` = "EOCY_Powell.Pool Elevation", 
          `EOCY Mead Storage` = "EOCY_Mead.Storage",  `EOCY Mead Elevation` = "EOCY_Mead.Pool Elevation")
 
-## Compact Pt
-sdis <- c("Paria" = 1579, "LeesFerry" = 1578)
-start_date = format(ym("2000-10"), "%Y-%m")
-end_date = format(max(df_scens$Date) - 1/12, "%Y-%m") # assumes all same start month
-df_hdb <- hdb_query(sdis, "uc", "m", start_date, end_date) %>%
-  mutate(Variable = names(sdis)[match(sdi, sdis)],
-         Date = as.yearmon(parse_date_time(time_step, "m/d/y H:M:S")),
-         Year = ifelse(month(Date)>=10, year(Date) + 1,
-                       year(Date)),
-         value = value/1000)
-
-
-df_avgPar = df_hdb %>% mutate(mon = month(Date)) %>%
-  filter(Variable == "Paria" & Year %in% 2005:2021) %>%
-  group_by(mon) %>%
-  summarise(PariamonAvg = mean(value))
-
-df_compt = df_scens %>%  mutate(mon = month(Date)) %>%
-  filter(Variable %in% c("PowellToMead:LeesFerryGage.Local Inflow", "Powell.Outflow")) %>%
-  pivot_wider(names_from = Variable, values_from = Value) %>%
-  left_join(df_avgPar, by = "mon") %>%
-  mutate(Compt = `PowellToMead:LeesFerryGage.Local Inflow` + Powell.Outflow + PariamonAvg)  %>%
-  select(Scenario, Date, Trace, Compt) 
-
-df_histPt = df_hdb %>% select(Date, Year, Variable, value) %>%
-  pivot_wider(names_from = Variable, values_from = value) %>%
-  mutate(Compt = Paria + LeesFerry) %>%
-  select(Year, Date, Compt) %>%
-  na.omit()
-
-df_histPt = data.frame(Trace = rep(sort(unique(df_compt$Trace)), each = length(unique(df_hdb$Year))),
-                       Year = rep(sort(unique(df_hdb$Year)), times = length(unique(df_compt$Trace)))) %>% 
-  right_join(df_histPt, by = "Year")
-
-# Add historical data to model projections
-df_new <- NULL
-for (i in 1:length(scenarios)) {
-  df_scensI = df_compt %>% 
-    filter(Scenario == scenarios[i]) %>% #na.omit() %>%
-    mutate(Year = ifelse(month(Date)>=10, year(Date) + 1,
-                         year(Date)))
-  df_histAdd <- df_histPt %>% 
-    filter(Date < min(df_scensI$Date)) %>%
-    select(Trace, Date, Year, Compt)
-  
-  df_add <- df_scensI %>% 
-    filter(Year < max(df_scensI$Year)) %>%
-    select(Trace, Date, Year, Compt)
-  
-  df_comb = rbind.data.frame(df_histAdd, df_add) 
-  df_new = rbind.data.frame(df_new, df_comb %>% mutate(Scenario = scenarios[i]))
-}
-
-df_comptNew = df_new %>% group_by(Scenario, Trace, Year) %>%
-  summarise(tot = sum(Compt),
-            n = n())
-
-# check that there are 12 months for each year
-if (any(df_comptNew$n != 12)) {
-  stop('Some scenarios/WYs do not have 12 entries')
-  df_comptCheck = df_comptNew %>% filter(n != 12)
-}
-
-df_CP = df_comptNew %>%
-  mutate(`Compact Point WY` = rollsum(tot, k=10, fill=NA, align='right')) %>%
-  na.omit() %>%
-  select(Scenario, Trace, Year, `Compact Point WY`) %>%
-  filter(Year >= max(df_hdb$Year))
+# ## Compact Pt - errors rn
+# sdis <- c("Paria" = 1579, "LeesFerry" = 1578)
+# start_date = format(ym("2000-10"), "%Y-%m")
+# end_date = format(max(df_scens$Date) - 1/12, "%Y-%m") # assumes all same start month
+# df_hdb <- hdb_query(sdis, "uc", "m", start_date, end_date) %>%
+#   mutate(Variable = names(sdis)[match(sdi, sdis)],
+#          Date = as.yearmon(parse_date_time(time_step, "m/d/y H:M:S")),
+#          Year = ifelse(month(Date)>=10, year(Date) + 1,
+#                        year(Date)),
+#          value = value/1000)
+# 
+# 
+# df_avgPar = df_hdb %>% mutate(mon = month(Date)) %>%
+#   filter(Variable == "Paria" & Year %in% 2005:2021) %>%
+#   group_by(mon) %>%
+#   summarise(PariamonAvg = mean(value))
+# 
+# df_compt = df_scens %>%  mutate(mon = month(Date)) %>%
+#   filter(Variable %in% c("PowellToMead:LeesFerryGage.Local Inflow", "Powell.Outflow")) %>%
+#   pivot_wider(names_from = Variable, values_from = Value) %>%
+#   left_join(df_avgPar, by = "mon") %>%
+#   mutate(Compt = `PowellToMead:LeesFerryGage.Local Inflow` + Powell.Outflow + PariamonAvg)  %>%
+#   select(Scenario, Date, Trace, Compt) 
+# 
+# df_histPt = df_hdb %>% select(Date, Year, Variable, value) %>%
+#   pivot_wider(names_from = Variable, values_from = value) %>%
+#   mutate(Compt = Paria + LeesFerry) %>%
+#   select(Year, Date, Compt) %>%
+#   na.omit()
+# 
+# df_histPt = data.frame(Trace = rep(sort(unique(df_compt$Trace)), each = length(unique(df_hdb$Year))),
+#                        Year = rep(sort(unique(df_hdb$Year)), times = length(unique(df_compt$Trace)))) %>% 
+#   right_join(df_histPt, by = "Year")
+# 
+# # Add historical data to model projections
+# df_new <- NULL
+# for (i in 1:length(scenarios)) {
+#   df_scensI = df_compt %>% 
+#     filter(Scenario == scenarios[i]) %>% #na.omit() %>%
+#     mutate(Year = ifelse(month(Date)>=10, year(Date) + 1,
+#                          year(Date)))
+#   df_histAdd <- df_histPt %>% 
+#     filter(Date < min(df_scensI$Date)) %>%
+#     select(Trace, Date, Year, Compt)
+#   
+#   df_add <- df_scensI %>% 
+#     filter(Year < max(df_scensI$Year)) %>%
+#     select(Trace, Date, Year, Compt)
+#   
+#   df_comb = rbind.data.frame(df_histAdd, df_add) 
+#   df_new = rbind.data.frame(df_new, df_comb %>% mutate(Scenario = scenarios[i]))
+# }
+# 
+# df_comptNew = df_new %>% group_by(Scenario, Trace, Year) %>%
+#   summarise(tot = sum(Compt),
+#             n = n())
+# 
+# # check that there are 12 months for each year
+# if (any(df_comptNew$n != 12)) {
+#   stop('Some scenarios/WYs do not have 12 entries')
+#   df_comptCheck = df_comptNew %>% filter(n != 12)
+# }
+# 
+# df_CP = df_comptNew %>%
+#   mutate(`Compact Point WY` = rollsum(tot, k=10, fill=NA, align='right')) %>%
+#   na.omit() %>%
+#   select(Scenario, Trace, Year, `Compact Point WY`) %>%
+#   filter(Year >= max(df_hdb$Year))
 
 # ggplot(df_CP, aes(x = factor(Year), y = `Compact Point WY`, fill = Scenario)) +
 #   geom_boxplot()
@@ -303,8 +309,8 @@ df_agg = left_join(df_i, df_flow, by = c('Scenario', 'Trace', 'Year')) %>%
   left_join(df_flowMead, by = c('Scenario', 'Trace', 'Year')) %>%
   left_join(df_eowy, by = c('Scenario', 'Trace', 'Year')) %>%
   left_join(df_eocy, by = c('Scenario', 'Trace', 'Year')) %>%
-  left_join(df_lb_use, by = c('Scenario', 'Trace', 'Year')) %>%
-  left_join(df_CP, by = c('Scenario', 'Trace', 'Year'))
+  left_join(df_lb_use, by = c('Scenario', 'Trace', 'Year')) 
+  # left_join(df_CP, by = c('Scenario', 'Trace', 'Year'))
 
 write.csv(df_agg, file.path(fig_dir, "TraceData.csv"))
 
