@@ -13,15 +13,15 @@ library(here)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2023-11')
+run_date = c('2023-12')
 
-most_mrid <- 3239
-min_mrid <- 3240
+most_mrid <- 3241
+min_mrid <- 3242
 max_mrid <- 3238
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2023-11')
-min_run_date = c('2023-11')
+most_run_date = c('2023-12')
+min_run_date = c('2023-12')
 max_run_date = c('2023-10')
 
 ## UPDATE! this to add "DROA" to legend. T = add "DROA", F = don't add "DROA"
@@ -52,7 +52,7 @@ hist_nMons = 7 # keep 7 months before start date
 
 #
 if (month(ym(run_date)) > 10) {
-  end_date = format(ym(run_date) + months(22), "%Y-%m")
+  end_date = format(ym(run_date) + months(33-month(ym(run_date))), "%Y-%m")
 } else {
   end_date = format(ym(run_date) + months(23), "%Y-%m")
 }

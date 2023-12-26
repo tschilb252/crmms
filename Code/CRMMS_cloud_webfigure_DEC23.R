@@ -20,13 +20,13 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 ### --- Inputs
 
 ## 24-MS MRIDs & Date - UPDATE!
-most_mrid <- 3239 
-min_mrid <- 3240
+most_mrid <- 3241 
+min_mrid <- 3242
 max_mrid <- 3238
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2023-11')
-min_run_date = c('2023-11')
+most_run_date = c('2023-12')
+min_run_date = c('2023-12')
 max_run_date = c('2023-10') 
 
 ## Directories & Data
@@ -167,7 +167,7 @@ minLab_droa = F #ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
 ## naming for figures
 esp_label <- "CRMMS-ESP Projection \n(30 traces)"
 lab_names <- c(paste(format(ym(max_run_date), "%B %Y"),
-                     ifelse(maxLab_droa, 'Probable Maximum ', "DROA Probable Maximum"), 
+                     ifelse(maxLab_droa, 'Probable Maximum', "DROA Probable Maximum"), 
                      "24-Month Study"), 
                paste(format(ym(most_run_date), "%B %Y"),"Most Probable 24-Month Study"),
                paste(format(ym(min_run_date), "%B %Y"), 
