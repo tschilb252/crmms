@@ -20,14 +20,14 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 ### --- Inputs
 
 ## 24-MS MRIDs & Date - UPDATE!
-most_mrid <- 3241 
-min_mrid <- 3242
-max_mrid <- 3238
+most_mrid <- 3243 
+min_mrid <- 3244
+max_mrid <- 3245
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2023-12')
-min_run_date = c('2023-12')
-max_run_date = c('2023-10') 
+most_run_date = c('2024-01')
+min_run_date = c('2024-01')
+max_run_date = c('2024-01') 
 
 ## Directories & Data
 # * opening CRMMS.Rproj will set your working directory to Rproj location
