@@ -160,9 +160,10 @@ df_stat <- bind_rows(
 
 ### ----------------- PLOTTING
 
-# labeling 24-MS lines
+# labeling 24-MS lines - UPDATE THIS!!
+# This is to add "DROA" to the legend. T = add "DROA", F = "don't add "DROA"
 maxLab_droa = T #ifelse(month(ym(max_run_date)) %in% c(1,4,8), T, F)
-minLab_droa = F #ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
+minLab_droa = T #ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
 
 ## naming for figures
 esp_label <- "CRMMS-ESP Projection \n(30 traces)"
