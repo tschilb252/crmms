@@ -7,11 +7,11 @@ rm(list=ls())
 ## -- Inputs
 # Scenarios: "Name of Scenario" = "Directory name" 
 #   (data are in sub-directories of the Scenario folder)
-scenario_dir <- c("Dec" = "2023-12_ESP",
-                  "Aug" = "2023-08_ESP")
+scenario_dir <- c("Jan" = "2024-01_ESP",
+                  "Dec" = "2023-12_ESP")
 
 
-fig_dir_nm <- '2023-12v08_Compare'
+fig_dir_nm <- '2024-01_2yr_Compare'
 # ^ script will create directory in Results/ with this name if it doesn't exist
 
 ## Scenario colors
