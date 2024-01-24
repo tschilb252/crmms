@@ -157,8 +157,8 @@ ggplot() +
   labs(x = 'Water Year', y = '10-year Volume (maf)',
        fill = NULL) +
   theme(
-    panel.background = element_rect(fill='transparent'),
-    plot.background = element_rect(fill='transparent', color=NA),
+    # panel.background = element_rect(fill='transparent'),
+    # plot.background = element_rect(fill='transparent', color=NA),
     legend.background = element_rect(fill='transparent')
   )
 

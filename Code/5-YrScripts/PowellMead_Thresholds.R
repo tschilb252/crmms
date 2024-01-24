@@ -72,7 +72,7 @@ df_scens <- data.table::as.data.table(df)  %>%
 
 # # mead < 1020, 1000, 950, 895 ---------------------------------------
 ss <- 'Mead.Pool Elevation Min CY'
-mead_elevs <- c(1020, 1000, 950, 896)
+mead_elevs <- c(1025, 1020, 1000, 950, 896)
 
 df_i = df_scens %>%
   filter(Variable == ss) %>%
@@ -234,3 +234,11 @@ df_mead_thresholdsDATE %>%
 
 ggsave(file.path(fig_dir, paste0("Thresholds_MeadMonthly.png")), 
        width = 8.5, height = 8)
+
+## email summary
+df_powell_thresholdsDATE %>% ungroup() %>%
+  filter(thresh == 3490 & Value > 0) %>%
+  summarize(firstDate = min(Date))
+df_mead_thresholdsDATE %>% ungroup() %>%
+  filter(thresh == 1025 & Value > 0) %>%
+  summarize(firstDate = min(Date))
