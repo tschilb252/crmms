@@ -13,20 +13,20 @@ library(here)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2023-12')
+run_date = c('2024-01')
 
-most_mrid <- 3241
-min_mrid <- 3242
-max_mrid <- 3238
+most_mrid <- 3243
+min_mrid <- 3244
+max_mrid <- 3245
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2023-12')
-min_run_date = c('2023-12')
-max_run_date = c('2023-10')
+most_run_date = c('2024-01')
+min_run_date = c('2024-01')
+max_run_date = c('2024-01')
 
 ## UPDATE! this to add "DROA" to legend. T = add "DROA", F = don't add "DROA"
 maxLab_droa = F
-minLab_droa = T
+minLab_droa = F
 
 ## Get month names for chart subheading
 if (month(ym(most_run_date)) == month(ym(max_run_date))) {
@@ -173,17 +173,36 @@ mostrd <- ym(most_run_date)
 minrd <- ym(min_run_date)
 maxrd <- ym(max_run_date)
 
-mostlab <- paste(month.name[month(mostrd)],year(mostrd), "Most Probable Inflow with a Lake Powell release of",
-                format(powReleaseWY$MostRel[1],nsmall = 2), "maf in WY", powReleaseWY$WY[1], "and", 
-                format(powReleaseWY$MostRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
+if (powReleaseWY$MostRel[1] != powReleaseWY$MostRel[2]){
+  mostlab <- paste(month.name[month(mostrd)],year(mostrd), "Most Probable Inflow with a Lake Powell release of",
+                   format(powReleaseWY$MostRel[1],nsmall = 2), "maf in WY", powReleaseWY$WY[1], "and", 
+                   format(powReleaseWY$MostRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
+} else {
+  mostlab <- paste(month.name[month(mostrd)],year(mostrd), "Most Probable Inflow with a Lake Powell release of",
+                   format(powReleaseWY$MostRel[1],nsmall = 2), "maf in WY", powReleaseWY$WY[1], "and WY", 
+                    powReleaseWY$WY[2])
+}
 
-minlab <- paste(month.name[month(minrd)],year(minrd), ifelse(minLab_droa, 'DROA Probable Minimum', "Probable Minimum"),
-                "Inflow with a Lake Powell release of",  format(powReleaseWY$MinRel[1],nsmall = 2), "maf in WY", 
-                powReleaseWY$WY[1], "and", format(powReleaseWY$MinRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
+if (powReleaseWY$MinRel[1] != powReleaseWY$MinRel[2]){
+  minlab <- paste(month.name[month(minrd)],year(minrd), ifelse(minLab_droa, 'DROA Probable Minimum', "Probable Minimum"),
+                  "Inflow with a Lake Powell release of",  format(powReleaseWY$MinRel[1],nsmall = 2), "maf in WY", 
+                  powReleaseWY$WY[1], "and", format(powReleaseWY$MinRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
+} else {
+  minlab <- paste(month.name[month(minrd)],year(minrd), ifelse(minLab_droa, 'DROA Probable Minimum', "Probable Minimum"),
+                  "Inflow with a Lake Powell release of",  format(powReleaseWY$MinRel[1],nsmall = 2), "maf in WY", 
+                  powReleaseWY$WY[1], "and WY", powReleaseWY$WY[2])
+}
 
-maxlab <- paste(month.name[month(maxrd)],year(maxrd), ifelse(maxLab_droa, 'DROA Probable Maximum', "Probable Maximum"),
-                "Inflow with a Lake Powell release of",  format(powReleaseWY$MaxRel[1],nsmall = 2), "maf in WY", 
-                powReleaseWY$WY[1], "and", format(powReleaseWY$MaxRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
+if (powReleaseWY$MaxRel[1] != powReleaseWY$MaxRel[2]){
+  maxlab <- paste(month.name[month(maxrd)],year(maxrd), ifelse(maxLab_droa, 'DROA Probable Maximum', "Probable Maximum"),
+                  "Inflow with a Lake Powell release of",  format(powReleaseWY$MaxRel[1],nsmall = 2), "maf in WY", 
+                  powReleaseWY$WY[1], "and", format(powReleaseWY$MaxRel[2],nsmall = 2), "maf in WY", powReleaseWY$WY[2])
+} else {
+  maxlab <- paste(month.name[month(maxrd)],year(maxrd), ifelse(maxLab_droa, 'DROA Probable Maximum', "Probable Maximum"),
+                  "Inflow with a Lake Powell release of",  format(powReleaseWY$MaxRel[1],nsmall = 2), "maf in WY", 
+                  powReleaseWY$WY[1], "and WY", powReleaseWY$WY[2])
+}
+
 #######################################################################################
 
 lab_names <- c("Historical Elevations",
@@ -313,7 +332,7 @@ gg <-
     legend.position = "bottom",
     legend.justification = "left",
     legend.key.width = unit(1.2, "cm"),
-    plot.margin = unit(c(0.2,0.1,1,0.1), "cm"),
+    plot.margin = unit(c(0.2,1,1,1), "cm"),
     plot.title = element_text(face="bold", hjust = 0.5, size = 14,margin=margin(5,0,0,0)),
     plot.subtitle = element_text(hjust = 0.5, size = 13, margin=margin(5,0,5,0)),
     plot.caption = element_text(hjust = 0, size = 10, face = "italic"),
@@ -326,8 +345,8 @@ ggsave(here::here("Powell24MS.png"),
 crmms_p <- image_read(here::here("Powell24MS.png"))
 logo_raw <- image_read("https://www.usbr.gov/lc/region/g4000/BofR-vert.png")
 test_plot <- image_composite(crmms_p,image_resize(logo_raw,"325"),offset = "+2860+2060")
-image_write(test_plot, here::here("Powell24MS.png"))
-
+image_write(test_plot, here::here("Powell24MS.png")) # write png
+image_write(image_convert(test_plot, format = "pdf"), here::here("Powell24MS.pdf")) # write pdf
 
 
 
@@ -428,7 +447,7 @@ gg <-
     legend.position = "bottom",
     legend.justification = "left",
     legend.key.width = unit(1.2, "cm"),
-    plot.margin = unit(c(0.2,0.1,1,0.1), "cm"),
+    plot.margin = unit(c(0.2,1,1,1), "cm"),
     plot.title = element_text(face="bold", hjust = 0.5, size = 14,margin=margin(5,0,0,0)),
     plot.subtitle = element_text(hjust = 0.5, size = 13, margin=margin(5,0,5,0)),
     plot.caption = element_text(hjust = 0, size = 10, face = "italic"),
@@ -444,4 +463,4 @@ crmms_m <- image_read(here::here("Mead24MS.png"))
 logo_raw <- image_read("https://www.usbr.gov/lc/region/g4000/BofR-vert.png")
 test_plot <- image_composite(crmms_m,image_resize(logo_raw,"325"),offset = "+2860+2060")
 image_write(test_plot, here::here("Mead24MS.png"))
-
+image_write(image_convert(test_plot, format = "pdf"), here::here("Mead24MS.pdf"))

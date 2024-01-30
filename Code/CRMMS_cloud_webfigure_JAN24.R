@@ -20,14 +20,14 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 ### --- Inputs
 
 ## 24-MS MRIDs & Date - UPDATE!
-most_mrid <- 3241 
-min_mrid <- 3242
-max_mrid <- 3238
+most_mrid <- 3243 
+min_mrid <- 3244
+max_mrid <- 3245
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2023-12')
-min_run_date = c('2023-12')
-max_run_date = c('2023-10') 
+most_run_date = c('2024-01')
+min_run_date = c('2024-01')
+max_run_date = c('2024-01') 
 
 ## Directories & Data
 # * opening CRMMS.Rproj will set your working directory to Rproj location
@@ -160,9 +160,10 @@ df_stat <- bind_rows(
 
 ### ----------------- PLOTTING
 
-# labeling 24-MS lines
+# labeling 24-MS lines - UPDATE THIS!!
+# This is to add "DROA" to the legend. T = add "DROA", F = "don't add "DROA"
 maxLab_droa = T #ifelse(month(ym(max_run_date)) %in% c(1,4,8), T, F)
-minLab_droa = F #ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
+minLab_droa = T #ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
 
 ## naming for figures
 esp_label <- "CRMMS-ESP Projection \n(30 traces)"
