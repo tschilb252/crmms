@@ -95,7 +95,7 @@ for (i in 1:length(mead_elevs)){
       subtitle = paste0('Percent of Traces Less Than Elevation ',mead_elevs[i],' feet msl'),
       x = 'Year', y = 'Percent of Traces', fill = NULL
     ) +
-    scale_y_continuous(labels = scales::percent_format(), limits = c(0, lims_max),
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, lims_max),
                        expand = c(0,0)) +
     scale_x_continuous(breaks = 2023:2050, expand = c(0.02,0.02)) +
     scale_fill_manual(values = custom_Tr_col)
@@ -127,10 +127,10 @@ df_i = df_scens %>%
   filter(Variable == ss) %>%
   mutate(year = year(Date))
 
-for (i in 1:length(custom_Tr_col)){ 
+for (i in 1:length(pwl_elevs)){ 
   
   df_iplot = df_i %>%
-    mutate(Value = Value < custom_Tr_col[i]) %>%
+    mutate(Value = Value < pwl_elevs[i]) %>%
     group_by(year, Scenario) %>%
     summarise(Value = mean(Value)) 
   
@@ -141,15 +141,15 @@ for (i in 1:length(custom_Tr_col)){
     bor_theme() +
     labs(
       title = 'Lake Powell Minimum Water Year Elevation',
-      subtitle = paste0('Percent of Traces Less Than Elevation ',custom_Tr_col[i],' feet msl'),
+      subtitle = paste0('Percent of Traces Less Than Elevation ',pwl_elevs[i],' feet msl'),
       x = 'Year', y = 'Percent of Traces', fill = NULL
     ) +
-    scale_y_continuous(labels = scales::percent_format(), limits = c(0, lims_max),
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, lims_max),
                        expand = c(0,0)) +
     scale_x_continuous(breaks = 2023:2050, expand = c(0.02,0.02)) +
     scale_fill_manual(values = custom_Tr_col)
   
-  ggsave(filename = file.path(fig_dir, paste0('Thresholds_Powell_lt_', custom_Tr_col[i], '.png')),
+  ggsave(filename = file.path(fig_dir, paste0('Thresholds_Powell_lt_', pwl_elevs[i], '.png')),
          width = 6.5, height = 5)
 }
 

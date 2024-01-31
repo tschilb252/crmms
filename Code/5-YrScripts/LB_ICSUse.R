@@ -381,7 +381,7 @@ for (i in 1:length(scenarios)) {
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
     rdf_dir = data_dir[i],
-    find_all_slots = T
+    find_all_slots = F
   )
   scen_res$Scenario <- scenarios[i]
   
@@ -391,10 +391,13 @@ for (i in 1:length(scenarios)) {
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
-  df2 <- rbind(df2,
+  if (nrow(scen_res)>0) {
+    df2 <- rbind(df2,
               scen_res %>%
                 mutate(TraceNumber = 1991 + TraceNumber - 
                          min(scen_res$TraceNumber, na.rm = T)))
+  }
+  
 }
 
 df2 = df2 %>% filter(!(TraceNumber == -99)) 
