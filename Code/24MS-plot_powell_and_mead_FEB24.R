@@ -13,20 +13,20 @@ library(here)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2024-01')
+run_date = c('2024-02')
 
-most_mrid <- 3243
-min_mrid <- 3244
+most_mrid <- 3246
+min_mrid <- 3247
 max_mrid <- 3245
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2024-01')
-min_run_date = c('2024-01')
+most_run_date = c('2024-02')
+min_run_date = c('2024-02')
 max_run_date = c('2024-01')
 
 ## UPDATE! this to add "DROA" to legend. T = add "DROA", F = don't add "DROA"
 maxLab_droa = F
-minLab_droa = F
+minLab_droa = T
 
 ## Get month names for chart subheading
 if (month(ym(most_run_date)) == month(ym(max_run_date))) {
@@ -56,6 +56,17 @@ if (month(ym(run_date)) > 10) {
 } else {
   end_date = format(ym(run_date) + months(23), "%Y-%m")
 }
+
+
+# This code checks if the run month is in (Jan, Apr, Aug, or Oct) and sets the 
+# end_date to match the max if not
+
+if (month(ym(run_date)) %in% list(1,4,8,10)) {
+  end_date = end_date
+} else {
+  end_date = format(ym(max_run_date) + months(23), "%Y-%m")
+}
+
 
 histStart_date = format(ym(run_date) - months(hist_nMons), "%Y-%m")
 sdis <- c("Mead.Pool Elevation" = 1930, "Powell.Pool Elevation" = 1928)
@@ -292,7 +303,7 @@ gg <-
   ) +
   geom_hline(yintercept = 3490, color = 'grey20', linetype = 2) +
   geom_vline(
-    xintercept = as.yearmon(c("Dec 2022", "Dec 2023", "Dec 2024")), 
+    xintercept = as.yearmon(c("Dec 2022", "Dec 2024")), 
     size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
     alpha = 0.8
   ) +
@@ -426,7 +437,7 @@ gg <-
            y=1015, label="Level 3 Shortage Condition\n(<1,025')",
            angle=00, size=3, hjust = 0) +
   geom_vline(
-    xintercept = as.yearmon(c("Dec 2023", "Dec 2024")),
+    xintercept = as.yearmon(c("Dec 2022", "Dec 2024")),
     size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
     alpha = 0.8
   ) +

@@ -20,14 +20,18 @@ source(file.path('Code', 'add_MeadPowell_tiers.R'))
 ### --- Inputs
 
 ## 24-MS MRIDs & Date - UPDATE!
-most_mrid <- 3243 
-min_mrid <- 3244
+most_mrid <- 3246 
+min_mrid <- 3247
 max_mrid <- 3245
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2024-01')
-min_run_date = c('2024-01')
+most_run_date = c('2024-02')
+min_run_date = c('2024-02')
 max_run_date = c('2024-01') 
+
+## UPDATE! this to add "DROA" to legend. F = add "DROA", T = don't add "DROA"
+maxLab_droa = T
+minLab_droa = F
 
 ## Directories & Data
 # * opening CRMMS.Rproj will set your working directory to Rproj location
@@ -62,9 +66,10 @@ esp_traces = paste('ESP', 1991:2020)
 colnames(dfi)[4:33] <- esp_traces
 colnames(dfi)[3] <- "Date"
 df_full = dfi %>% na.omit() %>%
-  mutate(Date = ceiling_date(Date + month(1), "month") - days(1)) %>%
+  mutate(Date = ceiling_date(Date + month(1), "month") - days(1)) %>% 
+         #minDate = min(Date) %m+% months(23)) %>% 
   # keep first 24 months of data
-  filter(Date < min(Date) + months(24)) %>%
+  filter(Date < min(Date) %m+% months(24)) %>%
   mutate(Date = as.yearmon(Date)) 
 
 ## Historical data info / end date
@@ -160,10 +165,10 @@ df_stat <- bind_rows(
 
 ### ----------------- PLOTTING
 
-# labeling 24-MS lines - UPDATE THIS!!
-# This is to add "DROA" to the legend. T = add "DROA", F = "don't add "DROA"
-maxLab_droa = T #ifelse(month(ym(max_run_date)) %in% c(1,4,8), T, F)
-minLab_droa = T #ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
+# # labeling 24-MS lines - UPDATE THIS!!
+# # This is to add "DROA" to the legend. T = add "DROA", F = "don't add "DROA"
+# maxLab_droa = T #ifelse(month(ym(max_run_date)) %in% c(1,4,8), T, F)
+# minLab_droa = T #ifelse(month(ym(min_run_date)) %in% c(1,4,8), T, F)
 
 ## naming for figures
 esp_label <- "CRMMS-ESP Projection \n(30 traces)"
@@ -257,7 +262,7 @@ gg <-
   ) +
   geom_hline(yintercept = 3490, color = 'grey20', linetype = 2) +
   geom_vline(
-    xintercept = as.yearmon(c("Dec 2022", "Dec 2023", "Dec 2024")), 
+    xintercept = as.yearmon(c("Dec 2023", "Dec 2024", "Dec 2025")), 
     size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
     alpha = 0.8
   ) +
@@ -377,7 +382,7 @@ gg <-
            y=1015, label="Level 3 Shortage Condition\n(<1,025')",
            angle=00, size=3, hjust = 0) +
   geom_vline(
-    xintercept = as.yearmon(c("Dec 2022", "Dec 2023", "Dec 2024")),
+    xintercept = as.yearmon(c("Dec 2023", "Dec 2024", "Dec 2025")),
     size = 1, color = "#ffdc70",  #"#ffdc70" or "grey45"
     alpha = 0.8
   ) +
