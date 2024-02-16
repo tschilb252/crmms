@@ -220,132 +220,161 @@ for (i in 0:1) {
   ## -- Powell Unreg Inflow vs. TARV
   breaks_x = seq(0, 40000, by = 1000)
   breaks_x2 = seq(0, 40000, by = 500)
-  ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
-                      alpha = 0.5, size = 1.5)) +
-    # geom_point(data = df_plot_avg, aes(ann, act_TARV, color = Scenario), 
-    #            shape = 4, alpha = 1, size = 4, stroke = 3) +
-    geom_point() +
-    scale_color_manual(values = custom_Tr_col) +
-    scale_y_continuous(labels = scales::comma) +
-    scale_x_continuous(labels = scales::comma, 
-                       breaks = breaks_x, minor_breaks = breaks_x2,
-                       sec.axis = sec_axis(
-                         trans = ~unregkaf_to_poa(.),
-                         breaks = unregkaf_to_poa(breaks_x),
-                         labels = scales::label_percent(),
-                         name = '% of Avg. Unregulated Inflow'
-                       )) +
-    theme_bw() +
-    labs(x = paste('WY', plot_yr, 'Powell Unregulated Inflow (kaf)'),
-         y = paste('WY', plot_yr, 'Powell Release (kaf)'),
-         title = paste('Powell Unreg. Inflow vs. Powell Relese for WY', plot_yr)) +
-    guides(alpha = 'none', size = 'none')  +
-    theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
-          axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
-  ggsave(file.path(fig_dir, paste0("Scatter_PowellUnreg_PowellRel_",plot_yr, ".png")), 
-         width = 8, height = 7)
-  
-  ## -- Powell Unreg Inflow vs. TARV -- In metric
-  breaks_y = seq(1000, 17000, by = 500)
-  breaks_y2 = seq(1000, 17000, by = 250)
-  breaks_x = seq(0, 200000, by = 1000)
-  breaks_x2 = seq(0, 200000, by = 500)
-  ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
-                      alpha = 0.5, size = 1.5)) +
-    geom_point() +
-    scale_color_manual(values = custom_Tr_col) +
-    scale_y_continuous(
-      labels = scales::comma, breaks = breaks_y, minor_breaks = breaks_y2,
-      sec.axis = sec_axis(
-        trans = ~kaf_to_mcm(.)/1000,
-        breaks = kaf_to_mcm(breaks_y)/1000,
-        labels = scales::comma,
-        name = 'WY Annual Release Volume (bcm)'
-      )) +
-    scale_x_continuous(labels = scales::comma, 
-                       breaks = breaks_x, minor_breaks = breaks_x2,
-                       sec.axis = sec_axis(
-                         trans = ~kaf_to_mcm(.)/1000,
-                         breaks = kaf_to_mcm(breaks_x)/1000,
-                         labels = scales::comma,
-                         name = 'WY Annual Unregulated Inflow (bcm)'
-                       )) +
-    theme_bw() +
-    labs(x = 'WY Annual Unregulated Inflow (kaf)',
-         y = 'WY Annual Release Volume (kaf)',
-         title = paste('Powell Unreg. Inflow vs. TARV for WY', plot_yr)) +
-    guides(alpha = 'none', size = 'none') +
-    theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
-          axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
-  
-  ggsave(file.path(fig_dir, paste0("Scatter_PowellUnreg_PowellRel_",plot_yr, "_MX.png")), 
-         width = 8, height = 7)
-  
-  ## -- Powell TARV vs. EOWY PE
-  ggplot(df_plot, aes(act_TARV, eowyPowellPE, color = Scenario, shape = Scenario, 
-                      alpha = 0.5, size = 1.5)) +
-    geom_hline(yintercept = 3490, color = "grey", linetype = 'dashed') +
-    geom_point() +
+  if (!all(is.na(df_plot$ann))) {
+    ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
+                        alpha = 0.5, size = 1.5)) +
+      # geom_point(data = df_plot_avg, aes(ann, act_TARV, color = Scenario), 
+      #            shape = 4, alpha = 1, size = 4, stroke = 3) +
+      geom_point() +
+      scale_color_manual(values = custom_Tr_col) +
+      scale_y_continuous(labels = scales::comma) +
+      scale_x_continuous(labels = scales::comma, 
+                         breaks = breaks_x, minor_breaks = breaks_x2,
+                         sec.axis = sec_axis(
+                           trans = ~unregkaf_to_poa(.),
+                           breaks = unregkaf_to_poa(breaks_x),
+                           labels = scales::label_percent(),
+                           name = '% of Avg. Unregulated Inflow'
+                         )) +
+      theme_bw() +
+      labs(x = paste('WY', plot_yr, 'Powell Unregulated Inflow (kaf)'),
+           y = paste('WY', plot_yr, 'Powell Release (kaf)'),
+           title = paste('Powell Unreg. Inflow vs. Powell Relese for WY', plot_yr)) +
+      guides(alpha = 'none', size = 'none')  +
+      theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
+            axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
+    ggsave(file.path(fig_dir, paste0("Scatter_PowellUnreg_PowellRel_",plot_yr, ".png")), 
+           width = 8, height = 7)
     
-    scale_color_manual(values = custom_Tr_col) +
-    scale_x_continuous(labels = scales::comma) +
-    scale_y_continuous(labels = scales::comma, breaks = seq(3000, 3700, by = 10)) +
-    theme_bw()+
-    labs(y = 'EOWY Pool Elevation (ft)',
-         x = 'WY Annual Release Volume (kaf)',
-         title = paste('Powell Comparison', plot_yr))+
-    guides(alpha = 'none', size = 'none') +
-    theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1))
-  
-  ggsave(file.path(fig_dir, paste0("Scatter_PowellRel_eowyPowellPE_",plot_yr, ".png")), 
-         width = 8, height = 7)
-  
-  ## -- Powell unreg inflow vs. min power pool deficit
-  ggplot(df_plot, aes(ann, MinPPDeficit, color = Scenario, shape = Scenario, 
-                      alpha = 0.5,
-                      size = 1.5)) +
-    geom_hline(yintercept = 0, color = 'gray') +
-    geom_point() +
+    ## -- Powell Unreg Inflow vs. TARV -- In metric
+    breaks_y = seq(1000, 17000, by = 500)
+    breaks_y2 = seq(1000, 17000, by = 250)
+    breaks_x = seq(0, 200000, by = 1000)
+    breaks_x2 = seq(0, 200000, by = 500)
+    ggplot(df_plot, aes(ann, act_TARV, color = Scenario, shape = Scenario, 
+                        alpha = 0.5, size = 1.5)) +
+      geom_point() +
+      scale_color_manual(values = custom_Tr_col) +
+      scale_y_continuous(
+        labels = scales::comma, breaks = breaks_y, minor_breaks = breaks_y2,
+        sec.axis = sec_axis(
+          trans = ~kaf_to_mcm(.)/1000,
+          breaks = kaf_to_mcm(breaks_y)/1000,
+          labels = scales::comma,
+          name = 'WY Annual Release Volume (bcm)'
+        )) +
+      scale_x_continuous(labels = scales::comma, 
+                         breaks = breaks_x, minor_breaks = breaks_x2,
+                         sec.axis = sec_axis(
+                           trans = ~kaf_to_mcm(.)/1000,
+                           breaks = kaf_to_mcm(breaks_x)/1000,
+                           labels = scales::comma,
+                           name = 'WY Annual Unregulated Inflow (bcm)'
+                         )) +
+      theme_bw() +
+      labs(x = 'WY Annual Unregulated Inflow (kaf)',
+           y = 'WY Annual Release Volume (kaf)',
+           title = paste('Powell Unreg. Inflow vs. TARV for WY', plot_yr)) +
+      guides(alpha = 'none', size = 'none') +
+      theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
+            axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
     
-    scale_color_manual(values = custom_Tr_col) +
-    scale_y_continuous(labels = scales::comma) +
-    scale_x_continuous(labels = scales::comma, 
-                       breaks = breaks_x, minor_breaks = breaks_x2,
-                       sec.axis = sec_axis(
-                         trans = ~unregkaf_to_poa(.),
-                         breaks = unregkaf_to_poa(breaks_x),
-                         labels = scales::label_percent(),
-                         name = '% of Avg. Unregulated Inflow'
-                       )) +
-    theme_bw() +
-    labs(x = 'WY Annual Unregulated Inflow (kaf)',
-         y = 'Minimum Power Pool Deficit (kaf)',
-         title = paste('Powell Unreg. Inflow vs. Maximum Volume Below Min Power Pool in WY', plot_yr)) +
-    guides(alpha = 'none', size = 'none')+
-    theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
-          axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
-  
-  ggsave(file.path(fig_dir, paste0("Scatter_PowellUnreg_PowellMinPP_",plot_yr, ".png")), 
-         width = 8, height = 7)
-  
-  ## -- Powell Release vs. Powell Elevation
-  ggplot(df_plot, aes(act_TARV, eowyPowellPE, color = Scenario, shape = Scenario, 
-                      alpha = 0.5,
-                      size = 1.5)) +
-    geom_point() +
+    ggsave(file.path(fig_dir, paste0("Scatter_PowellUnreg_PowellRel_",plot_yr, "_MX.png")), 
+           width = 8, height = 7)
     
-    scale_color_manual(values = custom_Tr_col) +
-    scale_y_continuous(labels = scales::comma,
-                       breaks = seq(0,5000, by =10)) +
-    scale_x_continuous(labels = scales::comma, breaks = seq(0, 40000, by = 1000)) +
-    theme_bw() +
-    labs(y = paste0("End-of-WY ", plot_yr, ' Powell Pool Elevation (ft)'),
-         x = paste0("WY ", plot_yr, ' Powell Release (kaf)'),
-         title = paste('Powell Release vs. Powell Pool Elevation in', plot_yr)) +
-    guides(alpha = 'none', size = 'none') + 
-    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-  ggsave(file.path(fig_dir, paste0("Scatter_PowellRel_PowellEOWYPE_",plot_yr, ".png")), 
-         width = 8, height = 7)
+    ## -- Powell TARV vs. EOWY PE
+    ggplot(df_plot, aes(act_TARV, eowyPowellPE, color = Scenario, shape = Scenario, 
+                        alpha = 0.5, size = 1.5)) +
+      geom_hline(yintercept = 3490, color = "grey", linetype = 'dashed') +
+      geom_point() +
+      
+      scale_color_manual(values = custom_Tr_col) +
+      scale_x_continuous(labels = scales::comma) +
+      scale_y_continuous(labels = scales::comma, breaks = seq(3000, 3700, by = 10)) +
+      theme_bw()+
+      labs(y = 'EOWY Pool Elevation (ft)',
+           x = 'WY Annual Release Volume (kaf)',
+           title = paste('Powell Comparison', plot_yr))+
+      guides(alpha = 'none', size = 'none') +
+      theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1))
+    
+    ggsave(file.path(fig_dir, paste0("Scatter_PowellRel_eowyPowellPE_",plot_yr, ".png")), 
+           width = 8, height = 7)
+    
+    ## -- Powell unreg inflow vs. min power pool deficit
+    ggplot(df_plot, aes(ann, MinPPDeficit, color = Scenario, shape = Scenario, 
+                        alpha = 0.5,
+                        size = 1.5)) +
+      geom_hline(yintercept = 0, color = 'gray') +
+      geom_point() +
+      
+      scale_color_manual(values = custom_Tr_col) +
+      scale_y_continuous(labels = scales::comma) +
+      scale_x_continuous(labels = scales::comma, 
+                         breaks = breaks_x, minor_breaks = breaks_x2,
+                         sec.axis = sec_axis(
+                           trans = ~unregkaf_to_poa(.),
+                           breaks = unregkaf_to_poa(breaks_x),
+                           labels = scales::label_percent(),
+                           name = '% of Avg. Unregulated Inflow'
+                         )) +
+      theme_bw() +
+      labs(x = 'WY Annual Unregulated Inflow (kaf)',
+           y = 'Minimum Power Pool Deficit (kaf)',
+           title = paste('Powell Unreg. Inflow vs. Maximum Volume Below Min Power Pool in WY', plot_yr)) +
+      guides(alpha = 'none', size = 'none')+
+      theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
+            axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
+    
+    ggsave(file.path(fig_dir, paste0("Scatter_PowellUnreg_PowellMinPP_",plot_yr, ".png")), 
+           width = 8, height = 7)
+    
+    ## -- Powell Release vs. Powell Elevation
+    ggplot(df_plot, aes(act_TARV, eowyPowellPE, color = Scenario, shape = Scenario, 
+                        alpha = 0.5,
+                        size = 1.5)) +
+      geom_point() +
+      
+      scale_color_manual(values = custom_Tr_col) +
+      scale_y_continuous(labels = scales::comma,
+                         breaks = seq(0,5000, by =10)) +
+      scale_x_continuous(labels = scales::comma, breaks = seq(0, 40000, by = 1000)) +
+      theme_bw() +
+      labs(y = paste0("End-of-WY ", plot_yr, ' Powell Pool Elevation (ft)'),
+           x = paste0("WY ", plot_yr, ' Powell Release (kaf)'),
+           title = paste('Powell Release vs. Powell Pool Elevation in', plot_yr)) +
+      guides(alpha = 'none', size = 'none') + 
+      theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+    ggsave(file.path(fig_dir, paste0("Scatter_PowellRel_PowellEOWYPE_",plot_yr, ".png")), 
+           width = 8, height = 7)
+    
+    ## -- Powell Unreg Inflow vs. Mead Elevation
+    ggplot(df_plot, aes(ann, eocyMeadPE, color = Scenario, shape = Scenario, 
+                        alpha = 0.5,
+                        size = 1.5)) +
+      geom_point() +
+      
+      scale_color_manual(values = custom_Tr_col) +
+      scale_y_continuous(labels = scales::comma,
+                         breaks = seq(0,2000, by =10)) +
+      scale_x_continuous(labels = scales::comma, 
+                         breaks = breaks_x, minor_breaks = breaks_x2,
+                         sec.axis = sec_axis(
+                           trans = ~unregkaf_to_poa(.),
+                           breaks = unregkaf_to_poa(breaks_x),
+                           labels = scales::label_percent(),
+                           name = '% of Avg. Unregulated Inflow'
+                         )) +
+      theme_bw() +
+      labs(y = paste0("End-of-CY ", plot_yr, ' Mead Pool Elevation (ft)'),
+           x = paste0("WY ", plot_yr, ' Powell Unregulated Inflow (kaf)'),
+           title = paste('Powell Release vs. Mead Pool Elevation in', plot_yr)) +
+      guides(alpha = 'none', size = 'none') + 
+      theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
+            axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
+    ggsave(file.path(fig_dir, paste0("Scatter_PowellUnreg_MeadEOCYPE_",plot_yr, ".png")), 
+           width = 8, height = 7)
+  }
   
   ## -- Powell Release vs. Mead Elevation
   ggplot(df_plot, aes(act_TARV, eocyMeadPE, color = Scenario, shape = Scenario, 
@@ -366,32 +395,7 @@ for (i in 0:1) {
   ggsave(file.path(fig_dir, paste0("Scatter_PowellRel_MeadEOCYPE_",plot_yr, ".png")), 
          width = 8, height = 7)
   
-  ## -- Powell Unreg Inflow vs. Mead Elevation
-  ggplot(df_plot, aes(ann, eocyMeadPE, color = Scenario, shape = Scenario, 
-                      alpha = 0.5,
-                      size = 1.5)) +
-    geom_point() +
-    
-    scale_color_manual(values = custom_Tr_col) +
-    scale_y_continuous(labels = scales::comma,
-                       breaks = seq(0,2000, by =10)) +
-    scale_x_continuous(labels = scales::comma, 
-                       breaks = breaks_x, minor_breaks = breaks_x2,
-                       sec.axis = sec_axis(
-                         trans = ~unregkaf_to_poa(.),
-                         breaks = unregkaf_to_poa(breaks_x),
-                         labels = scales::label_percent(),
-                         name = '% of Avg. Unregulated Inflow'
-                       )) +
-    theme_bw() +
-    labs(y = paste0("End-of-CY ", plot_yr, ' Mead Pool Elevation (ft)'),
-         x = paste0("WY ", plot_yr, ' Powell Unregulated Inflow (kaf)'),
-         title = paste('Powell Release vs. Mead Pool Elevation in', plot_yr)) +
-    guides(alpha = 'none', size = 'none') + 
-    theme(axis.text.x.bottom  = element_text(angle = 45, vjust = 1, hjust = 1),
-          axis.text.x.top  = element_text(angle = 45, vjust = 0, hjust = 0))
-  ggsave(file.path(fig_dir, paste0("Scatter_PowellUnreg_MeadEOCYPE_",plot_yr, ".png")), 
-         width = 8, height = 7)
+  
   
   ## -- Powell PE vs. Mead Elevation
   pe_breaks = seq(0, 4000, by =10)
@@ -400,7 +404,7 @@ for (i in 0:1) {
                       alpha = 0.5,
                       size = 1.5)) +
     geom_point() +
-  
+    
     scale_color_manual(values = custom_Tr_col) +
     geom_vline(xintercept = 3490, color = 'gray', linetype = 'dashed') +
     annotate(

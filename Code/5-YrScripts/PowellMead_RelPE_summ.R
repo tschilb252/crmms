@@ -214,15 +214,12 @@ ggplot(df_i, aes(factor(Year), Value, fill = Scenario)) +
 ggsave(filename = file.path(fig_dir, paste0('Mead_EOCY_box', end_file_nm, '.png')), 
        width=6+0.5*length(scenarios), height=6)
 
-## Summary
-# df_i %>%
-#   filter(Year %in% 2024:2026) %>%
-#   group_by(Scenario, Year)%>%
-#   summarise(
-#     min = min(Value),
-#     med = quantile(Value, 0.5),
-#     q75 = quantile(Value, 0.75),
-#     q88 = quantile(Value, 0.12),
-#     q25 = quantile(Value, 0.25),
-#     max = max(Value),
-#     qx5 = quantile(Value, 0.05))
+## Summary for email
+test = df_scens %>%
+  filter(Variable %in% c('Mead.Pool Elevation', 'Powell.Pool Elevation') & month(Date) == 12) %>%
+  filter(Year %in% 2024:2026) %>%
+  group_by(Scenario, Variable, Year)%>%
+  summarise(
+    min = min(Value),
+    med = quantile(Value, 0.5),
+    max = max(Value))

@@ -185,14 +185,10 @@ for (i in 0:1) {
 }
 
 
-# average of wy annuals
-# df_ann %>% 
-#   group_by(Scenario, wy) %>%
-#   # summarise(avgI = mean(ann_wy)) %>%
-#   # summarise(avgI = quantile(ann_wy,0.5)/9603.392*100) %>% 
-#   summarise(avgI = quantile(ann_wy,0.5)) %>%
-#   ungroup() %>%
-#   pivot_wider(names_from = Scenario, values_from = avgI)
-# 
-# 
-# df_ann %>% filter(Trace == 25)
+# average of wy annuals for email
+df_ann %>%
+  group_by(Scenario, wy) %>%
+  summarise(medI = quantile(ann_wy,0.5)/9603.392*100) %>%
+  # summarise(medI = quantile(ann_wy,0.5)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Scenario, values_from = medI)

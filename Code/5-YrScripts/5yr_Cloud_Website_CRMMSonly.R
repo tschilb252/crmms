@@ -13,25 +13,20 @@ library(rhdb)
 
 ## -- Inputs
 # Directory name - all directories stored in Scenario/ folder 
-scenario_dir <- c(
-  "2023-08_ESP"
-  # "2023-04_ESP"
-)
-# Name when plotting
-scenarios <- c(
-  "August 2023"
-  # "April 2023"
-)
-fig_dir_nm <- '2023-08_5yrCompare_web'
+scenario_dir <- c("January 2024" = "2024-01_ESP",
+                  "August 2023" = "2023-08_ESP")
+
+fig_dir_nm <- '2024-01v2023-08_Compare'
 # ^ script will create directory in Results/ with this name if it doesn't exist
 
 ## Plotting Inputs
-sub_title = 'August 2023 CRMMS-ESP Projection'
+sub_title = 'January 2024 vs August 2023 CRMMS-ESP Projection'
 # crmms_nm = 'August 2022 CRMMS-ESP'
-run_date = "2023-08"
+run_date = "2024-01"
 max_yr = 2028
 
 ## Directories & Data
+scenarios = names(scenario_dir)
 # Sys.getenv('CRMMS_DIR') # can be used to change directory to CRMMS_DIR
 fig_dir <- file.path('Results', fig_dir_nm)
 data_dir <- file.path('Scenario', scenario_dir)

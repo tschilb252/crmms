@@ -47,18 +47,10 @@ slots = c(
   'ICS Credits.AnnualCreationTrib_NV',  'ICS Credits.AnnualDeliveryCurrentYearTribConserv_NV',
   'ICS Credits.AnnualDeliveryBiNat_CA', 'ICS Credits.AnnualDeliveryBiNat_NV',
   "ICS Credits.VacatedBankSpace_AZ", "ICS Credits.VacatedBankSpace_CA",
-  "ICS Credits.VacatedBankSpace_NV", "ICS Credits.IntendedECICSCreationToBeDelivered_MWD",
-  
-
-  ## new slots
-  "AnnualWaterUse.ComputedDepletion_Ann_LBMX", "AnnualWaterUse.ComputedDepletion_Ann_LB",
-  "AnnualWaterUse.ComputedDepletion_Ann_MX", "AnnualWaterUse.ComputedDepletion_Ann_LBMX_wBypassExcess",
-  "Mead.Pool Elevation"
+  "ICS Credits.VacatedBankSpace_NV", "ICS Credits.IntendedECICSCreationToBeDelivered_MWD"
 )
-rdfs = c(rep('LB_UseICS.rdf', length(slots) - 5),
-         rep("flags.rdf", 4), 'res.rdf')
+rdfs = rep('LB_UseICS.rdf', length(slots))
 
-# custom_colors <- c("#e94849", "#5f98c6", "#71bf6e", "#fdb462", "#B79F00", "#00BFC4")
 
 # slots/agg to read
 rwa1 <- rwd_agg(data.frame(
@@ -94,10 +86,6 @@ for (i in 1:length(scenarios)) {
                          min(scen_res$TraceNumber, na.rm = T)))
 }
 
-# df_scens <- data.table::as.data.table(df)  %>% 
-#   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
-#   dplyr::select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
-#   mutate(Scenario = factor(Scenario, levels = scenarios))
 
 ## -- process and combine hydrologies
 df_scens <- data.table::as.data.table(df)  %>% 
@@ -107,7 +95,6 @@ df_scens <- data.table::as.data.table(df)  %>%
          # Trace = 1991 + Trace - min(df2$TraceNumber, na.rm = T),
          Year = year(Date)) %>%
   filter(Year <= max_yr) 
-
 
 
 ## LB ICS bank 
@@ -213,15 +200,7 @@ df_i2 = df_i %>%
                names_to = 'Variable', values_to = 'Value') %>%
   select(all_of(colnames(df_i))) %>%
   mutate(Variable = factor(Variable, levels = slots_all, labels = slots_all))
-# df_i = rbind.data.frame(df_i, df_i2)
 
-# Edit scenario that didn't update states apportionment
-#   ie, scenarios that protect Mead elevations absolutely
-# scen_issue = c("Protect 3490',950'")
-# scen_good = which(!(scenarios_2 %in% scen_issue))
-# df_i2 = df_i2 %>%
-#   filter(Scenario %in% scenarios_2[scen_good])
-# custom_col_i <- custom_Tr_col[scen_good]
 
 ## LB as per CRMMS accounting
 var_plot = list(c('Arizona', 'California', 'Nevada', "Mexico", 'Total LB States + MX'),
@@ -233,7 +212,7 @@ df_useConst = data.frame(Variable = c('Arizona', 'California', 'Nevada', "Mexico
 
 for (i in 1:length(plt_nm)) {
   g1 <- ggplot(df_i2 %>%
-                 filter(Variable %in% var_plot[[i]] & Year %in% 2024:2026), 
+                 filter(Variable %in% var_plot[[i]]), 
                aes(Year, Value, fill = Scenario)) +
     bor_theme()+
     CRSSIO::stat_boxplot_custom(position = "dodge") +
@@ -243,80 +222,12 @@ for (i in 1:length(plt_nm)) {
     geom_hline(data = df_useConst %>%
                  filter(Variable %in% var_plot[[i]]), 
                aes(yintercept = Value), linetype = 'dashed') +
-    labs(x = NULL, y = 'Annual Use (kaf)', title = "Use when not hydrologically shorted") +
+    labs(x = NULL, y = 'Annual Use (kaf)', title = "Annual Use when not hydrologically shorted") +
     facet_grid(Variable ~ ., scales = 'free_y')
   print(g1)
   ggsave(file.path(fig_dir, paste0(plt_nm[i], end_file_nm , "_est.png")), 
          width = 8, height = 6+length(var_plot[[i]])*0.5)
 }
-
-# # New use calculation - not available for No Action!
-# UseNew_slots = c("AnnualWaterUse.ComputedDepletion_Ann_LB", "AnnualWaterUse.ComputedDepletion_Ann_MX", 
-#                  "AnnualWaterUse.ComputedDepletion_Ann_LBMX", "AnnualWaterUse.ComputedDepletion_Ann_LBMX_wBypassExcess")
-# names(UseNew_slots) <- c("Total LB States", "Mexico", 'Total LB States + MX', "LB+MX with BypassExcess")
-# df_useNew = df_scens %>% 
-#   filter(Variable %in% UseNew_slots) %>%
-#   na.omit() %>% filter(year(Date) <= max_yr) %>%
-#   mutate(Year = factor(year(Date)),
-#          Variable = factor(Variable, levels = UseNew_slots, labels = names(UseNew_slots)),
-#          Value = Value / 10^3)
-# 
-# g1 <- ggplot(df_useNew, aes(Year, Value, fill = Scenario)) +
-#   bor_theme()+
-#   CRSSIO::stat_boxplot_custom(position = "dodge") +
-#   scale_fill_manual(values = custom_Tr_col) +
-#   geom_point(position = position_dodge(0.75), size = 0.75) +
-#   
-#   scale_y_continuous(labels = scales::comma) +
-#   labs(x = NULL, y = 'Annual Use (kaf)') +
-#   facet_grid(Variable ~ ., scales = 'free_y')
-# print(g1)
-# ggsave(file.path(fig_dir, paste0("LB_MX_", end_file_nm , "_CUActual.png")), 
-#        width = 8, height = 6+4*0.5)
-
-# ## LB Reductions
-# lb_minus_nv = 4400+2800
-# nv_incr = c(245, 250, 255, 260, 265)
-# df_norm = cbind.data.frame(Year = 2022:2026, NormUse = c(nv_incr + lb_minus_nv))
-# df_red = df_useNew %>% 
-#   filter(Variable == "Total LB States") %>%
-#   mutate(Year = as.numeric(as.character(Year))) %>%
-#   left_join(df_norm) %>%
-#   mutate(`LB Reductions` = NormUse - Value) %>%
-#   mutate(Year = factor(Year))
-# g1 <- ggplot(df_red, aes(Year, `LB Reductions`, fill = Scenario)) +
-#   bor_theme()+
-#   CRSSIO::stat_boxplot_custom(position = "dodge") +
-#   scale_fill_manual(values = custom_Tr_col) +
-#   geom_point(position = position_dodge(0.75), size = 0.75) +
-#   # scale_fill_manual(values = custom_col_i) +
-#   scale_y_continuous(labels = scales::comma, 
-#                      limits = c(0, max(df_red$`LB Reductions`)+200), expand = c(0,0)) +
-#   labs(x = NULL, y = 'LB Reductions (kaf)') 
-# print(g1)
-# ggsave(file.path(fig_dir, paste0("LB_Reductions_", end_file_nm , "_Actual.png")), 
-#        width = 8, height = 6)
-
-# ## Mead EOCY range
-# df_pe = df_scens %>% 
-#   filter(Variable %in% "Mead.Pool Elevation") %>%
-#   na.omit() %>% filter(year(Date) <= max_yr) %>%
-#   mutate(Year = factor(year(Date))) %>%
-#   filter(month(Date) == 12)
-# hlines = c(895, 950, 975, 1000, 1025, 1030, 1035, 1040, 1045, 1050, 1075)
-# 
-# ggplot(df_pe, aes(Year, Value, fill = Scenario)) +
-#   bor_theme()+
-#   geom_hline(yintercept = hlines, color = 'grey', linetype = 'dashed') +
-#   CRSSIO::stat_boxplot_custom(position = "dodge") +
-#   scale_fill_manual(values = custom_Tr_col) +
-#   geom_point(position = position_dodge(0.75), size = 0.75) +
-#   # scale_fill_manual(values = custom_col_i) +
-#   scale_y_continuous(labels = scales::comma, breaks = seq(0,2000, by = 20)) +
-#   labs(x = NULL, y = 'Mead EOCY Pool Elevation (kaf)') 
-# ggsave(file.path(fig_dir, paste0("LB_MeadEOCYPE_", end_file_nm , "_Actual.png")), 
-#        width = 8, height = 6)
-
 
 ## ICS
 df_ICS_init = df_scens %>% 
@@ -420,27 +331,27 @@ ggsave(file.path(fig_dir, paste0("LB_ICS_type_byState", end_file_nm , ".png")),
        width = 9, height = 6)
 
 ## ICS summary with vacated bank space - not in model output rn!
-# df_ICS_plot2 = df_ICS_init %>%
-#   pivot_wider(names_from = ICS, values_from = Value) %>%
-#   mutate(Creation = if_else(is.na(Creation), 0, Creation),
-#          Delivery = if_else(is.na(Delivery), 0, Delivery)) %>%
-#   mutate(Value = (Creation - Delivery)/1000)
+df_ICS_plot2 = df_ICS_init %>%
+  pivot_wider(names_from = ICS, values_from = Value) %>%
+  mutate(Creation = if_else(is.na(Creation), 0, Creation),
+         Delivery = if_else(is.na(Delivery), 0, Delivery)) %>%
+  mutate(Value = (Creation - Delivery)/1000)
 
-# g2 <- ggplot(df_ICS_plot2, aes(factor(type), Value, fill = Scenario, shape = Scenario, color = Scenario))+
-#   bor_theme()+
-#   geom_hline(yintercept = 0, color = 'gray') +
-#   CRSSIO::stat_boxplot_custom(position = "dodge") +
-#   scale_fill_manual(values = lgt_cols) +
-#   scale_color_manual(values = drk_cols) +
-#   # geom_point(size = 2, position=position_dodge(0.8)) +
-#   scale_y_continuous(labels = scales::comma) +
-#   labs(x = NULL, y = 'Annual ICS Amount\n[Creation - Delivery]\n(kaf)') +
-#   theme(legend.position="top",
-#         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
-#   facet_grid(State ~ Year, scales = 'free_y')
-# print(g2)
-# ggsave(file.path(fig_dir, paste0("LB_ICS_type_byState", end_file_nm , "_vacated.png")), 
-#        width = 9, height = 6)
+g2 <- ggplot(df_ICS_plot2, aes(factor(type), Value, fill = Scenario, shape = Scenario, color = Scenario))+
+  bor_theme()+
+  geom_hline(yintercept = 0, color = 'gray') +
+  CRSSIO::stat_boxplot_custom(position = "dodge") +
+  scale_fill_manual(values = lgt_cols) +
+  scale_color_manual(values = drk_cols) +
+  # geom_point(size = 2, position=position_dodge(0.8)) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = NULL, y = 'Annual ICS Amount\n[Creation - Delivery]\n(kaf)') +
+  theme(legend.position="top",
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  facet_grid(State ~ Year, scales = 'free_y')
+print(g2)
+ggsave(file.path(fig_dir, paste0("LB_ICS_type_byState", end_file_nm , "_vacated.png")),
+       width = 9, height = 6)
 
 ## === Read vacated space to system water slots - 
 #   cant read in BiNatICS but those wont be vacated to system water in these runs!
@@ -480,10 +391,13 @@ for (i in 1:length(scenarios)) {
   tr_keep = trces[(length(trces)-29):length(trces)]
   scen_res = scen_res %>% filter(TraceNumber %in% tr_keep)
   
-  df2 <- rbind(df2,
+  if (nrow(scen_res)>0) {
+    df2 <- rbind(df2,
               scen_res %>%
                 mutate(TraceNumber = 1991 + TraceNumber - 
                          min(scen_res$TraceNumber, na.rm = T)))
+  }
+  
 }
 
 df2 = df2 %>% filter(!(TraceNumber == -99)) 
@@ -491,7 +405,7 @@ df_scens2 <- data.table::as.data.table(df2)  %>%
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
   dplyr::select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
   mutate(Scenario = factor(Scenario, levels = scenarios),
-         Trace = 1991 + Trace - min(df2$TraceNumber, na.rm = T),
+         # Trace = 1991 + Trace - min(df2$TraceNumber, na.rm = T),
          Year = year(Date)) %>%
   filter(Year <= max_yr) 
 
@@ -516,7 +430,7 @@ df_vac = df_scens2 %>% filter(year(Date) <= max_yr) %>%
 
 df_vac2 = df_vac %>%
   group_by(Scenario, Year, Trace, State, ICS, type) %>%
-  summarise(Value = sum(Value))
+  summarise(Value = sum(Value)/1000)
 
 g2 <- ggplot(df_vac2, aes(factor(type), Value, fill = Scenario, shape = Scenario, color = Scenario))+
   bor_theme()+
@@ -533,56 +447,6 @@ g2 <- ggplot(df_vac2, aes(factor(type), Value, fill = Scenario, shape = Scenario
 print(g2)
 ggsave(file.path(fig_dir, paste0("LB_ICS_VacatedSysWater_byState", end_file_nm , ".png")), 
        width = 9, height = 6) 
-
-
-# replace(is.na(.), 0) %>%
-## summary years
-yrs_tot = 2024:2026
-df_vac2 = df_vac %>%
-  filter(Year %in% yrs_tot) %>%
-  group_by(Scenario, Trace, State) %>%
-  summarise(SystemWater = sum(Value)/1000)
-
-## three year aggregated ICS Creation/Delivery
-df_ICStest = df_ICS %>%
-  filter(Year %in% yrs_tot) %>%
-  group_by(Trace, Scenario, State) %>%
-  summarise(Creation = sum(Creation),
-            Delivery = sum(Delivery))# %>%
-# mutate(ICS_net = Creation - Delivery) %>%
-# pivot_longer(cols = c(ICS_net, Creation, Delivery))
-
-df_ICSVac = left_join(df_vac2, df_ICStest, by = c("Scenario", "Trace", "State")) %>%
-  pivot_longer(cols = c(SystemWater, Creation, Delivery))
-
-g1 <- ggplot(df_ICSVac, aes(factor(name), value, fill = Scenario))+
-  bor_theme()+
-  geom_hline(yintercept = 0, color = 'gray') +
-  CRSSIO::stat_boxplot_custom(position = "dodge") +
-  scale_fill_manual(values = custom_Tr_col) +
-  scale_y_continuous(labels = scales::comma) +
-  labs(x = NULL, y = 'Annual ICS Amount\n[Creation - Delivery]\n(kaf)') +
-  theme(legend.position="top") +
-  facet_grid(State ~ ., scales = 'free_y')
-print(g1)
-ggsave(file.path(fig_dir, paste0("LB_ICS_SysWater_byState", end_file_nm , ".png")), 
-       width = 9, height = 6) 
-
-
-# stats for df
-xx2_med = df_ICSVac %>%
-  group_by(Scenario, State, name) %>%
-  summarise(med = median(value),
-            ymin = min(value),
-            ymax = max(value))
-
-testout = xx2_med %>% ungroup() %>%
-  mutate(StateAlt = paste0(State, '-', Scenario)) %>%
-  select(StateAlt, name, med) %>%
-  pivot_wider(names_from = StateAlt, values_from = med) %>%
-  select(name,sort(names(.)))
-write.csv(testout, file.path(fig_dir, "TraceDataSum_LBICS_NVfix.csv"))
-
 
 ## ====  LB Users -set up 
 slots = c(
@@ -607,12 +471,12 @@ rwa1 <- rwd_agg(data.frame(
 
 # read/process RDFs
 df<- NULL
-for (i in 1:length(scenarios_2)) {
+for (i in 1:length(scenarios)) {
   scen_res <- rdf_aggregate(  
     agg = rwa1, 
     rdf_dir = data_dir[i]
   )
-  scen_res$Scenario <- scenarios_2[i]
+  scen_res$Scenario <- scenarios[i]
   
   # keep only last 30 traces (ESP)
   trces = sort(unique(scen_res$TraceNumber))
@@ -625,7 +489,7 @@ for (i in 1:length(scenarios_2)) {
 df_scens <- data.table::as.data.table(df)  %>% 
   mutate(Date = as.yearmon(paste0(Month, Year), "%B%Y")) %>%
   dplyr::select(Scenario, Variable, Date, Trace = TraceNumber, Value) %>%
-  mutate(Scenario = factor(Scenario, levels = scenarios_2),
+  mutate(Scenario = factor(Scenario, levels = scenarios),
          Variable = factor(Variable, levels = slots, labels = slot_nms)) 
 
 
@@ -646,4 +510,3 @@ g1 <- ggplot(df_ann, aes(Year, Value, fill = Scenario)) +
 print(g1)
 ggsave(file.path(fig_dir, paste0("LB_SpecificUsers", end_file_nm , ".png")), 
        width = 8, height = 7)
-
