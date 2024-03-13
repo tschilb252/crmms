@@ -190,6 +190,7 @@ MeadData.EffectiveEOCYPoolElev: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.LBAnnualWaterInPowell: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.LBBankInPowell: file = $CRMMS_DIR/rdfOutput/flags.rdf
 PowellData.ConstrainedLEBT_LowerElevBalancingBranch: file = $CRMMS_DIR/rdfOutput/flags.rdf
+PowellData.ReleaseConstrained_3500Bypass: file = $CRMMS_DIR/rdfOutput/flags.rdf
 
 LowerBasinDemandVariability.AbvHooverTriggerSet: file = $CRMMS_DIR/rdfOutput/flags.rdf
 CoordinatedOperationsFlagsForFreqTbl.AnnualFloodControlFlag: file = $CRMMS_DIR/rdfOutput/flags.rdf
