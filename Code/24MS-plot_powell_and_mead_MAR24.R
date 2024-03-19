@@ -13,15 +13,15 @@ library(here)
 source(file.path('Code', 'add_MeadPowell_tiers.R'))
 
 ## 24-MS MRIDs & Date - UPDATE!
-run_date = c('2024-02')
+run_date = c('2024-03')
 
-most_mrid <- 3246
-min_mrid <- 3247
+most_mrid <- 3248
+min_mrid <- 3249
 max_mrid <- 3245
 
 ## 24MS Run Date - UPDATE!
-most_run_date = c('2024-02')
-min_run_date = c('2024-02')
+most_run_date = c('2024-03')
+min_run_date = c('2024-03')
 max_run_date = c('2024-01')
 
 ## UPDATE! this to add "DROA" to legend. T = add "DROA", F = don't add "DROA"
